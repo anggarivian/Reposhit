@@ -18,11 +18,6 @@
                         Tambah Data Dosen
                     </button>
                 </div>
-                <div class="tombol">
-                    <button type="button" class="btn btn-info" >
-                        Export
-                    </button>
-                </div>
             </div>
             <table id="table-data" class="table table-stripped text-center">
                 <thead>

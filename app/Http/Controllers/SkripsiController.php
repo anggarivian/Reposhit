@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\User;
+use App\Models\Dosen;
 use App\Models\Skripsi;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -12,7 +14,9 @@ class SkripsiController extends Controller
     // Tambah Data Skripsi ----------------------------------------------------------------------------------------------
     public function index() {
         $skripsi = Skripsi::All();
-        return view('skripsi', compact('skripsi'));
+        $namaDospem = Dosen::All();
+        $namaPenulis = User::where('roles_id', 2)->get();
+        return view('skripsi', compact('skripsi', 'namaDospem', 'namaPenulis'));
     }
 
     public function mahasiswa() {
@@ -25,7 +29,7 @@ class SkripsiController extends Controller
 
         //Searching Data Skripsi ----------------------------------------------------------------------------------------
         $query = Skripsi::query();
-        $query->select('id','judul','penulis','rilis', 'abstrak','keterangan','halaman');
+        $query->select('id','judul','penulis','rilis', 'abstrak','dospem','halaman');
         if(!empty($req->judul)){
             $query->where('judul', 'LIKE', '%' . $req->judul . '%');
         }
@@ -49,7 +53,7 @@ class SkripsiController extends Controller
         $skripsi->judul = $req->get('judul');
         $skripsi->penulis = $req->get('penulis');
         $skripsi->abstrak = $req->get('abstrak');
-        $skripsi->keterangan = $req->get('keterangan');
+        $skripsi->dospem = $req->get('dospem');
         $skripsi->rilis = $req->get('rilis');
         $skripsi->halaman = $req->get('halaman');
 
@@ -104,7 +108,7 @@ class SkripsiController extends Controller
         $skripsi->judul = $req->get('judul');
         $skripsi->penulis = $req->get('penulis');
         $skripsi->abstrak = $req->get('abstrak');
-        $skripsi->keterangan = $req->get('keterangan');
+        $skripsi->dospem = $req->get('dospem');
         $skripsi->rilis = $req->get('rilis');
         $skripsi->halaman = $req->get('halaman');
 

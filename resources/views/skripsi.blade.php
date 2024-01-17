@@ -18,11 +18,11 @@
                         Tambah Data Skripsi
                     </button>
                 </div>
-                <div class="tombol">
+                {{-- <div class="tombol">
                     <button type="button" class="btn btn-info" >
                         Export
                     </button>
-                </div>
+                </div> --}}
             </div>
             <table id="table-data" class="table table-stripped text-center">
                 <thead>
@@ -31,7 +31,7 @@
                         <th>Judul</th>
                         <th>Penulis</th>
                         <th>Abstrak</th>
-                        <th>Keterangan</th>
+                        <th>Dosen Pembimbing</th>
                         <th>Rilis</th>
                         <th>Halaman</th>
                         <th>Opsi</th>
@@ -45,7 +45,7 @@
                         <td>{{$skripsis->judul}}</td>
                         <td>{{$skripsis->penulis}}</td>
                         <td>{{ Str::limit($skripsis->abstrak, 20) }}</td>
-                        <td>{{$skripsis->keterangan}}</td>
+                        <td>{{$skripsis->dospem}}</td>
                         <td>{{$skripsis->rilis}}</td>
                         <td>{{$skripsis->halaman}}</td>
                         <td>
@@ -96,15 +96,25 @@
                         </div>
                         <div class="form-group">
                             <label for="penulis">Penulis</label>
-                            <input type="text" class="form-control" name="penulis" id="penulis">
+                            <select name="penulis" class="form-control" id="penulis">
+                                <option selected >Pilih</option>
+                                @foreach ($namaPenulis as $nama)
+                                    <option value="{{$nama->name}}" >{{$nama->name}}</option>
+                                @endforeach
+                            </select>
                         </div>
                         <div class="form-group">
                             <label for="abstrak">Abstrak</label>
                             <input type="text" class="form-control" name="abstrak" id="abstrak">
                         </div>
                         <div class="form-group">
-                            <label for="keterangan">Keterangan</label>
-                            <input type="text" class="form-control" name="keterangan" id="keterangan">
+                            <label for="dospem">Dosen Pembimbing</label>
+                            <select name="dospem" class="form-control" id="dospem">
+                                <option selected >Pilih</option>
+                                @foreach ($namaDospem as $nama)
+                                    <option value="{{$nama->nama}}" >{{$nama->nama}}</option>
+                                @endforeach
+                            </select>
                         </div>
                         <div class="d-flex" style="margin: -7px">
                             <div class="form-group col-md-6">
@@ -151,15 +161,25 @@
                         </div>
                         <div class="form-group">
                             <label for="penulis">Penulis</label>
-                            <input type="text" class="form-control" name="penulis" id="edit-penulis">
+                            <select name="penulis" class="form-control" id="edit-penulis">
+                                <option selected >Pilih</option>
+                                @foreach ($namaPenulis as $nama)
+                                    <option value="{{$nama->name}}" >{{$nama->name}}</option>
+                                @endforeach
+                            </select>
                         </div>
                         <div class="form-group">
                             <label for="abstrak">Abstrak</label>
                             <input type="text" class="form-control" name="abstrak" id="edit-abstrak">
                         </div>
                         <div class="form-group">
-                            <label for="keterangan">Keterangan</label>
-                            <input type="text" class="form-control" name="keterangan" id="edit-keterangan">
+                            <label for="dospem">Dosen Pembimbing</label>
+                            <select name="dospem" class="form-control" id="edit-dospem">
+                                <option selected >Pilih</option>
+                                @foreach ($namaDospem as $nama)
+                                    <option value="{{$nama->nama}}" >{{$nama->nama}}</option>
+                                @endforeach
+                            </select>
                         </div>
                         <div class="d-flex" style="margin: -7px">
                             <div class="form-group col-md-6">
@@ -205,7 +225,7 @@
                         $('#edit-penulis').val(res.penulis);
                         $('#edit-abstrak').val(res.abstrak);
                         $('#edit-id').val(res.id);
-                        $('#edit-keterangan').val(res.keterangan);
+                        $('#edit-dospem').val(res.dospem);
                         $('#edit-rilis').val(res.rilis);
                         $('#edit-volume').val(res.volume);
                         $('#edit-halaman').val(res.halaman);

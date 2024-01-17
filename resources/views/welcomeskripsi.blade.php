@@ -99,9 +99,9 @@
                                     <td>{{$skripsi->abstrak}}</td>
                                 </tr>
                                 <tr>
-                                    <td style="width: 200px;">Keterangan</td>
+                                    <td style="width: 200px;">Dosen Pembimbing</td>
                                     <td>:</td>
-                                    <td>{{$skripsi->keterangan}}</td>
+                                    <td>{{$skripsi->dospem}}</td>
                                 </tr>
                                 <tr>
                                     <td style="width: 200px;">Rilis Tahun</td>

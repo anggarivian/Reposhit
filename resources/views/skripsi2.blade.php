@@ -18,7 +18,7 @@
                         <th>Judul</th>
                         <th>Penulis</th>
                         <th>Abstrak</th>
-                        <th>Keterangan</th>
+                        <th>Dosen Pembimbing</th>
                         <th>Rilis</th>
                         <th>Halaman</th>
                         <th>Opsi</th>
@@ -32,7 +32,7 @@
                         <td>{{$skripsis->judul}}</td>
                         <td>{{$skripsis->penulis}}</td>
                         <td>{{ Str::limit($skripsis->abstrak, 20) }}</td>
-                        <td>{{$skripsis->keterangan}}</td>
+                        <td>{{$skripsis->dospem}}</td>
                         <td>{{$skripsis->rilis}}</td>
                         <td>{{$skripsis->halaman}}</td>
                         <td>
