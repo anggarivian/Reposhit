@@ -25,6 +25,10 @@ class User extends Authenticatable
 
     protected $guarded = [];
 
+    public function findForPassport($username) {
+        return $this->orWhere('email', $username)->orWhere('npm', $username)->first();
+    }
+
     /**
      * The attributes that should be hidden for serialization.
      *
