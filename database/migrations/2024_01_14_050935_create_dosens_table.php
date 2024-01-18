@@ -19,10 +19,10 @@ class CreateDosensTable extends Migration
             $table->string('nip')->unique();
             $table->string('alamat');
             $table->string('email');
-            $table->string('tanggalLahir');
+            $table->string('tgl_lahir');
             $table->string('kontak');
-            $table->string('gelarAkademik');
-            $table->string('programStudi');
+            $table->string('gelar_akademik');
+            $table->string('program_studi');
             $table->string('jabatan');
             $table->timestamps();
         });

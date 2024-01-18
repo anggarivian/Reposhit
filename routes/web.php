@@ -57,6 +57,7 @@ Route::middleware('is_admin')->group(function () {
 
     // Route Import -------------------------------------------------------------------------------
     Route::post('/admin/mahasiswa/import', [MahasiswaController::class,'import'])->name('mahasiswa.import');
+    Route::post('/admin/dosen/import', [DosenController::class,'import'])->name('dosen.import');
 });
 
 // Route Detail Skripsi ---------------------------------------------------------------------------

@@ -40,11 +40,6 @@
                             <li class="nav-item mx-0 mx-lg-1">
                                 <a href="{{ route('login') }}" class="nav-link py-3 px-0 px-lg-3 rounded">Log in</a>
                             </li>
-                            @if (Route::has('register'))
-                                <li class="nav-item mx-0 mx-lg-1">
-                                    <a href="{{ route('register') }}" class="nav-link py-3 px-0 px-lg-3 rounded">Register</a>
-                                </li>
-                            @endif
                             @endauth
                         @endif
                     </ul>
@@ -163,11 +158,9 @@
                     </div>
                     <!-- Footer About Text-->
                     <div class="col-lg-4">
-                        <h4 class="text-uppercase mb-4">About Freelancer</h4>
+                        <h4 class="text-uppercase mb-4">About Faster</h4>
                         <p class="lead mb-0">
-                            Freelance is a free to use, MIT licensed Bootstrap theme created by
-                            <a href="http://startbootstrap.com">Start Bootstrap</a>
-                            .
+                            Universitas Suryakancana - Fakultas - Sains Terapan
                         </p>
                     </div>
                 </div>

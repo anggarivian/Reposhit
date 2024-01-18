@@ -18,6 +18,11 @@
                         Tambah Data Dosen
                     </button>
                 </div>
+                <div class="tombol">
+                    <button type="button" class="btn btn-info" data-toggle="modal" data-target="#import">
+                        Import Data Dosen
+                    </button>
+                </div>
             </div>
             <table id="table-data" class="table table-stripped text-center">
                 <thead>
@@ -42,8 +47,8 @@
                         <td>{{$dosens->nama}}</td>
                         <td>{{$dosens->nip}}</td>
                         <td>{{$dosens->email}}</td>
-                        <td>{{$dosens->gelarAkademik}}</td>
-                        <td>{{$dosens->programStudi}}</td>
+                        <td>{{$dosens->gelar_akademik}}</td>
+                        <td>{{$dosens->program_studi}}</td>
                         <td>{{$dosens->jabatan}}</td>
                         <td>{{$dosens->kontak}}</td>
                         <td>{{$dosens->alamat}}</td>
@@ -191,6 +196,32 @@
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
                         <button type="submit" class="btn btn-primary">Ubah Data</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="import" tabindex="-1" aria-labelledby="importLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="importLabel">Import Data Dosen</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <form method="post" action="{{ route('dosen.import') }}" enctype="multipart/form-data">
+                    @csrf
+                    <div class="modal-body">
+                        <div class="form-group col-md-12">
+                            <label for="file">File</label>
+                            <input type="file"class="form-control p-1" name="file" id="edit-file" required/>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-primary">Save changes</button>
                     </div>
                 </form>
             </div>
