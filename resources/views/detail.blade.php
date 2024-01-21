@@ -13,51 +13,38 @@
             <div class="card-body">
                 <table class="table table-borderless">
                     <tr>
-                        <td>Judul Skripsi</td>
-                        <td>:</td>
+                        <td style="width: 200px;">Judul Skripsi</td>
+                        <td style="width: 20px;">:</td>
                         <td>{{$skripsi->judul}}</td>
                     </tr>
                     <tr>
-                        <td>Penulis</td>
-                        <td>:</td>
+                        <td style="width: 200px;">Penulis</td>
+                        <td style="width: 20px;">:</td>
                         <td>{{$skripsi->penulis}}</td>
                     </tr>
                     <tr>
-                        <td>Abstrak</td>
-                        <td>:</td>
+                        <td style="width: 200px;">Abstrak</td>
+                        <td style="width: 20px;">:</td>
                         <td>{{$skripsi->abstrak}}</td>
                     </tr>
                     <tr>
-                        <td>Keterangan</td>
-                        <td>:</td>
-                        <td>{{$skripsi->keterangan}}</td>
-                    </tr>
-                    <tr>
-                        <td>Rilis Tahun</td>
-                        <td>:</td>
+                        <td style="width: 200px;">Rilis Tahun</td>
+                        <td style="width: 20px;">:</td>
                         <td>{{$skripsi->rilis}}</td>
                     </tr>
                     <tr>
-                        <td>Volume</td>
-                        <td>:</td>
-                        <td>{{$skripsi->volume}}</td>
-                    </tr>
-                    <tr>
-                        <td>Halaman</td>
-                        <td>:</td>
+                        <td style="width: 200px;">Halaman</td>
+                        <td style="width: 20px;">:</td>
                         <td>{{$skripsi->halaman}}</td>
                     </tr>
-                    <tr>
-                        <td>File PDF</td>
-                        <td>:</td>
-                        <td>{{$skripsi->file}}</td>
-                    </tr>
                 </table>
-                <a href="{{ route('pdf.show', ['id' => $skripsi->id]) }}"  target="_blank">
+                <hr>
+                <iframe src="data:application/pdf;base64,{{ $pdf }}#toolbar=0&navpanes=0&view=fitH" width="100%" height="600px"></iframe>
+                {{-- <a href="{{ route('pdf.show', ['id' => $skripsi->id]) }}"  target="_blank">
                     <button class="btn btn-info m-3">
                         Lihat Skripsi
                     </button>
-                </a>
+                </a> --}}
             </div>
         </div>
     </div>

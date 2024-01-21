@@ -91,14 +91,36 @@ class SkripsiController extends Controller
     public function detailskripsi($id){
         $user = Auth::user();
         $skripsi = Skripsi::find($id);
-        return view('detail', compact('skripsi', 'user'));
+        $data = Skripsi::findOrFail($id);
+
+        $pdfPath = storage_path('app/public/file_skripsi/' . $data->file);
+
+        if (!Storage::exists('public/file_skripsi/' . $data->file)) {
+            abort(404);
+        }
+
+        $pdfContent = Storage::get('public/file_skripsi/' . $data->file);
+        $pdf = base64_encode($pdfContent);
+
+        return view('detail', compact('pdf', 'user', 'skripsi'));
     }
 
     // Get Data Skripsi ----------------------------------------------------------------------------------------------
     public function welcomeskripsi($id){
         $user = Auth::user();
         $skripsi = Skripsi::find($id);
-        return view('welcomeskripsi', compact('skripsi', 'user'));
+        $data = Skripsi::findOrFail($id);
+
+        $pdfPath = storage_path('app/public/file_skripsi/' . $data->file);
+
+        if (!Storage::exists('public/file_skripsi/' . $data->file)) {
+            abort(404);
+        }
+
+        $pdfContent = Storage::get('public/file_skripsi/' . $data->file);
+        $pdf = base64_encode($pdfContent);
+
+        return view('welcomeskripsi', compact('pdf', 'user', 'skripsi'));
     }
 
     // Ubah Data Skripsi ----------------------------------------------------------------------------------------------

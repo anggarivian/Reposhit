@@ -104,32 +104,24 @@
                                     <td>{{$skripsi->rilis}}</td>
                                 </tr>
                                 <tr>
-                                    <td style="width: 200px;">Volume</td>
-                                    <td>:</td>
-                                    <td>{{$skripsi->volume}}</td>
-                                </tr>
-                                <tr>
                                     <td style="width: 200px;">Halaman</td>
                                     <td>:</td>
                                     <td>{{$skripsi->halaman}}</td>
                                 </tr>
-                                <tr>
-                                    <td style="width: 200px;">File PDF</td>
-                                    <td>:</td>
-                                    <td>{{$skripsi->file}}</td>
-                                </tr>
                             </table>
+                            <hr>
                             @if(auth()->check())
-                                <a href="{{ route('pdf.show', ['id' => $skripsi->id]) }}"  target="_blank">
+                            <iframe src="data:application/pdf;base64,{{ $pdf }}#toolbar=0&navpanes=0&view=fitH" width="100%" height="600px"></iframe>
+                                {{-- <a href="{{ route('pdf.show', ['id' => $skripsi->id]) }}"  target="_blank">
                                     <button class="btn btn-info m-3">
                                         Lihat Skripsi
                                     </button>
-                                </a>
+                                </a> --}}
                             @else
                                 {{-- Pengguna belum login, tampilkan pesan --}}
-                                <button class="btn btn-info m-3">
+                                <a href="/login" class="btn btn-info m-3">
                                     Silahkan Login Untuk Melihat
-                                </button>
+                                </a>
                             @endif
                         </div>
                     </div>

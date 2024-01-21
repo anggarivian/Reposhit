@@ -83,7 +83,7 @@
                 <form method="post" action="{{ route('tambah.dosen')}}" enctype="multipart/form-data">
                     @csrf
                     <div class="modal-body">
-                        <div class="form-group">
+                        <div class="form-group col-md-12">
                             <label for="name">Nama Lengkap</label>
                             <input type="text" class="form-control" name="name" id="name" required>
                         </div>
@@ -93,22 +93,22 @@
                                 <input type="text" class="form-control" name="nip" id="nip" required>
                             </div>
                             <div class="form-group col-md-6">
-                                <label for="tanggalLahir">Tanggal Lahir</label>
-                                <input type="date" class="form-control" name="tanggalLahir" id="tanggalLahir" required>
+                                <label for="tgl_lahir">Tanggal Lahir</label>
+                                <input type="date" class="form-control" name="tgl_lahir" id="tgl_lahir" required>
                             </div>
                         </div>
-                        <div class="form-group">
+                        <div class="form-group col-md-12">
                             <label for="email">Email</label>
                             <input type="email" class="form-control" name="email" id="email" required>
                         </div>
                         <div class="d-flex">
                             <div class="form-group col-md-6">
-                                <label for="gelarAkademik">Gelar Akademik</label>
-                                <input type="text" class="form-control" name="gelarAkademik" id="gelarAkademik" placeholder="Opsional">
+                                <label for="gelas_akademik">Gelar Akademik</label>
+                                <input type="text" class="form-control" name="gelas_akademik" id="gelas_akademik" placeholder="Opsional">
                             </div>
                             <div class="form-group col-md-6">
-                                <label for="programStudi">Program Studi</label>
-                                <input type="text" class="form-control" name="programStudi" id="programStudi" required>
+                                <label for="program_studi">Program Studi</label>
+                                <input type="text" class="form-control" name="program_studi" id="program_studi" required>
                             </div>
                         </div>
                         <div class="d-flex">
@@ -121,7 +121,7 @@
                                 <input type="text" class="form-control" name="kontak" id="kontak" required>
                             </div>
                         </div>
-                        <div class="form-group">
+                        <div class="form-group col-md-12">
                             <label for="alamat">Alamat</label>
                             <input type="text" class="form-control" name="alamat" id="alamat" required>
                         </div>
@@ -150,7 +150,7 @@
                     @method ('PATCH')
                     <div class="modal-body">
                         <input type="text" class="form-control" name="id" id="edit-id" required hidden>
-                        <div class="form-group">
+                        <div class="form-group col-md-12">
                             <label for="name">Nama Lengkap</label>
                             <input type="text" class="form-control" name="name" id="edit-name" required>
                         </div>
@@ -160,22 +160,22 @@
                                 <input type="text" class="form-control" name="nip" id="edit-nip" required>
                             </div>
                             <div class="form-group col-md-6">
-                                <label for="tanggalLahir">Tanggal Lahir</label>
-                                <input type="date" class="form-control" name="tanggalLahir" id="edit-tanggalLahir" required>
+                                <label for="tgl_lahir">Tanggal Lahir</label>
+                                <input type="date" class="form-control" name="tgl_lahir" id="edit-tgl_lahir" required>
                             </div>
                         </div>
-                        <div class="form-group">
+                        <div class="form-group col-md-12">
                             <label for="email">Email</label>
                             <input type="email" class="form-control" name="email" id="edit-email" required>
                         </div>
                         <div class="d-flex">
                             <div class="form-group col-md-6">
-                                <label for="gelarAkademik">Gelar Akademik</label>
-                                <input type="text" class="form-control" name="gelarAkademik" id="edit-gelarAkademik" required>
+                                <label for="gelas_akademik">Gelar Akademik</label>
+                                <input type="text" class="form-control" name="gelas_akademik" id="edit-gelas_akademik" required>
                             </div>
                             <div class="form-group col-md-6">
-                                <label for="programStudi">Program Studi</label>
-                                <input type="text" class="form-control" name="programStudi" id="edit-programStudi" required>
+                                <label for="program_studi">Program Studi</label>
+                                <input type="text" class="form-control" name="program_studi" id="edit-program_studi" required>
                             </div>
                         </div>
                         <div class="d-flex">
@@ -188,7 +188,7 @@
                                 <input type="text" class="form-control" name="kontak" id="edit-kontak" required>
                             </div>
                         </div>
-                        <div class="form-group">
+                        <div class="form-group col-md-12">
                             <label for="alamat">Alamat</label>
                             <input type="text" class="form-control" name="alamat" id="edit-alamat" required>
                         </div>
@@ -250,9 +250,9 @@
                         $('#edit-id').val(res.id);
                         $('#edit-nip').val(res.nip);
                         $('#edit-jabatan').val(res.jabatan);
-                        $('#edit-tanggalLahir').val(res.tanggalLahir);
-                        $('#edit-gelarAkademik').val(res.gelarAkademik);
-                        $('#edit-programStudi').val(res.programStudi);
+                        $('#edit-tgl_lahir').val(res.tgl_lahir);
+                        $('#edit-gelas_akademik').val(res.gelas_akademik);
+                        $('#edit-program_studi').val(res.program_studi);
                     },
                 });
             });
