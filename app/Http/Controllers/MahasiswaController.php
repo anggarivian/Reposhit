@@ -18,6 +18,21 @@ class MahasiswaController extends Controller
 
     // Tambah Data Mahasiswa ----------------------------------------------------------------------------------------------
     public function tambah(Request $req){
+
+        // Validasi Data Mahasiswa ----------------------------------------------------------------
+        $req->validate([
+            'name' => 'required|string|max:30',
+            'npm' => 'required|string|max:10|min:10|unique:users,npm',
+            'email' => 'required|email|max:50|unique:users,email',
+            'tgl_lahir' => 'required|date',
+            'alamat' => 'required|string|max:255',
+            'jurusan' => 'required|string|max:255',
+            'angkatan' => 'required|string|max:4|min:4',
+            'password' => 'required|string|min:8|max:255',
+            'prodi' => 'required|string|max:25',
+        ]);
+
+        // Create Data Mahasiswa ------------------------------------------------------------------
         $mahasiswa = new User;
 
         $mahasiswa->name = $req->get('name');
@@ -47,6 +62,20 @@ class MahasiswaController extends Controller
 
     // Ubah Data Mahasiswa ----------------------------------------------------------------------------------------------
     public function ubah(Request $req) {
+
+        // Validasi Data Mahasiswa ----------------------------------------------------------------
+        $req->validate([
+            'name' => 'required|string|max:30',
+            'npm' => 'required|string|max:10|min:10',
+            'email' => 'required|email|max:50',
+            'tgl_lahir' => 'required|date',
+            'alamat' => 'required|string|max:255',
+            'jurusan' => 'required|string|max:255',
+            'angkatan' => 'required|string|max:4|min:4',
+            'prodi' => 'required|string|max:25',
+        ]);
+
+        // Update Data Mahasiswa ------------------------------------------------------------------
         $mahasiswa = User::find($req->get('id'));
 
         $mahasiswa->name = $req->get('name');

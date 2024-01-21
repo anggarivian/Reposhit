@@ -92,7 +92,7 @@
                     <div class="modal-body">
                         <div class="form-group">
                             <label for="judul">Judul</label>
-                            <input type="text" class="form-control" name="judul" id="judul" required>
+                            <input type="text" class="form-control" name="judul" id="judul" required placeholder="Masukkan Judul Skripsi">
                         </div>
                         <div class="form-group">
                             <label for="penulis">Penulis</label>
@@ -105,7 +105,7 @@
                         </div>
                         <div class="form-group">
                             <label for="abstrak">Abstrak</label>
-                            <input type="text" class="form-control" name="abstrak" id="abstrak">
+                            <input type="text" class="form-control" name="abstrak" id="abstrak" required placeholder="Masukkan Abstrak">
                         </div>
                         <div class="form-group">
                             <label for="dospem">Dosen Pembimbing</label>
@@ -118,12 +118,12 @@
                         </div>
                         <div class="d-flex" style="margin: -7px">
                             <div class="form-group col-md-6">
-                                <label for="rilis">Rilis</label>
-                                <input type="text" class="form-control" name="rilis" id="rilis" required>
+                                <label for="rilis">Rilis Pada Tahun</label>
+                                <input type="text" class="form-control" name="rilis" id="rilis" required placeholder="Harus 4 Angka">
                             </div>
                             <div class="form-group col-md-6">
                                 <label for="halaman">Halaman</label>
-                                <input type="text" class="form-control" name="halaman" id="halaman" required>
+                                <input type="text" class="form-control" name="halaman" id="halaman" required placeholder="Masukkan Jumlah Halaman">
                             </div>
                         </div>
                         <div class="form-group">
@@ -157,7 +157,7 @@
                         <input type="text" class="form-control" name="id" id="edit-id" hidden>
                         <div class="form-group">
                             <label for="judul">Judul</label>
-                            <input type="text" class="form-control" name="judul" id="edit-judul" required>
+                            <input type="text" class="form-control" name="judul" id="edit-judul" required placeholder="Masukkan Judul Skripsi">
                         </div>
                         <div class="form-group">
                             <label for="penulis">Penulis</label>
@@ -170,7 +170,7 @@
                         </div>
                         <div class="form-group">
                             <label for="abstrak">Abstrak</label>
-                            <input type="text" class="form-control" name="abstrak" id="edit-abstrak">
+                            <input type="text" class="form-control" name="abstrak" id="edit-abstrak" placeholder="Masukkan Abstrak">
                         </div>
                         <div class="form-group">
                             <label for="dospem">Dosen Pembimbing</label>
@@ -183,12 +183,12 @@
                         </div>
                         <div class="d-flex" style="margin: -7px">
                             <div class="form-group col-md-6">
-                                <label for="rilis">Rilis</label>
-                                <input type="text" class="form-control" name="rilis" id="edit-rilis" required>
+                                <label for="rilis">Rilis Pada Tahun</label>
+                                <input type="text" class="form-control" name="rilis" id="edit-rilis" required placeholder="Harus 4 Angka">
                             </div>
                             <div class="form-group col-md-6">
                                 <label for="halaman">Halaman</label>
-                                <input type="text" class="form-control" name="halaman" id="edit-halaman" required>
+                                <input type="text" class="form-control" name="halaman" id="edit-halaman" required placeholder="Masukkan Jumlah Halaman">
                             </div>
                         </div>
                         <div class="form-group">

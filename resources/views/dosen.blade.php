@@ -31,7 +31,6 @@
                         <th>Nama</th>
                         <th>NIP</th>
                         <th>Email</th>
-                        <th>Gelar Akademik</th>
                         <th>Prodi</th>
                         <th>Jabatan</th>
                         <th>Kontak</th>
@@ -47,7 +46,6 @@
                         <td>{{$dosens->nama}}</td>
                         <td>{{$dosens->nip}}</td>
                         <td>{{$dosens->email}}</td>
-                        <td>{{$dosens->gelar_akademik}}</td>
                         <td>{{$dosens->program_studi}}</td>
                         <td>{{$dosens->jabatan}}</td>
                         <td>{{$dosens->kontak}}</td>
@@ -85,12 +83,12 @@
                     <div class="modal-body">
                         <div class="form-group col-md-12">
                             <label for="name">Nama Lengkap</label>
-                            <input type="text" class="form-control" name="name" id="name" required>
+                            <input type="text" class="form-control" name="name" id="name" required placeholder="Masukan Nama Dosen">
                         </div>
                         <div class="d-flex">
                             <div class="form-group col-md-6">
                                 <label for="nip">NIP</label>
-                                <input type="text" class="form-control" name="nip" id="nip" required>
+                                <input type="text" class="form-control" name="nip" id="nip" required placeholder="Harus 18 Nomor">
                             </div>
                             <div class="form-group col-md-6">
                                 <label for="tgl_lahir">Tanggal Lahir</label>
@@ -99,31 +97,27 @@
                         </div>
                         <div class="form-group col-md-12">
                             <label for="email">Email</label>
-                            <input type="email" class="form-control" name="email" id="email" required>
+                            <input type="email" class="form-control" name="email" id="email" required placeholder="Masukan Email">
                         </div>
                         <div class="d-flex">
-                            <div class="form-group col-md-6">
-                                <label for="gelas_akademik">Gelar Akademik</label>
-                                <input type="text" class="form-control" name="gelas_akademik" id="gelas_akademik" placeholder="Opsional">
-                            </div>
-                            <div class="form-group col-md-6">
+                            <div class="form-group col-md-12">
                                 <label for="program_studi">Program Studi</label>
-                                <input type="text" class="form-control" name="program_studi" id="program_studi" required>
+                                <input type="text" class="form-control" name="program_studi" id="program_studi" required placeholder="Masukan Program Pendidikan">
                             </div>
                         </div>
                         <div class="d-flex">
                             <div class="form-group col-md-6">
                                 <label for="jabatan">Jabatan</label>
-                                <input type="text" class="form-control" name="jabatan" id="jabatan" required>
+                                <input type="text" class="form-control" name="jabatan" id="jabatan" required placeholder="Masukan Jabatan">
                             </div>
                             <div class="form-group col-md-6">
                                 <label for="kontak">Kontak</label>
-                                <input type="text" class="form-control" name="kontak" id="kontak" required>
+                                <input type="text" class="form-control" name="kontak" id="kontak" required placeholder="Maksimal 15 Nomor">
                             </div>
                         </div>
                         <div class="form-group col-md-12">
                             <label for="alamat">Alamat</label>
-                            <input type="text" class="form-control" name="alamat" id="alamat" required>
+                            <input type="text" class="form-control" name="alamat" id="alamat" required placeholder="Maksimal 255 Karakter">
                         </div>
                     </div>
                     <div class="modal-footer">
@@ -152,12 +146,12 @@
                         <input type="text" class="form-control" name="id" id="edit-id" required hidden>
                         <div class="form-group col-md-12">
                             <label for="name">Nama Lengkap</label>
-                            <input type="text" class="form-control" name="name" id="edit-name" required>
+                            <input type="text" class="form-control" name="name" id="edit-name" required placeholder="Masukan Nama Dosen">
                         </div>
                         <div class="d-flex">
                             <div class="form-group col-md-6">
                                 <label for="nip">NIP</label>
-                                <input type="text" class="form-control" name="nip" id="edit-nip" required>
+                                <input type="text" class="form-control" name="nip" id="edit-nip" required placeholder="Maksimal 18 Nomor">
                             </div>
                             <div class="form-group col-md-6">
                                 <label for="tgl_lahir">Tanggal Lahir</label>
@@ -166,31 +160,27 @@
                         </div>
                         <div class="form-group col-md-12">
                             <label for="email">Email</label>
-                            <input type="email" class="form-control" name="email" id="edit-email" required>
+                            <input type="email" class="form-control" name="email" id="edit-email" required placeholder="Masukan Email">
                         </div>
                         <div class="d-flex">
-                            <div class="form-group col-md-6">
-                                <label for="gelas_akademik">Gelar Akademik</label>
-                                <input type="text" class="form-control" name="gelas_akademik" id="edit-gelas_akademik" required>
-                            </div>
-                            <div class="form-group col-md-6">
+                            <div class="form-group col-md-12">
                                 <label for="program_studi">Program Studi</label>
-                                <input type="text" class="form-control" name="program_studi" id="edit-program_studi" required>
+                                <input type="text" class="form-control" name="program_studi" id="edit-program_studi" required placeholder="Masukan Program Pendidikan">
                             </div>
                         </div>
                         <div class="d-flex">
                             <div class="form-group col-md-6">
                                 <label for="jabatan">Jabatan</label>
-                                <input type="text" class="form-control" name="jabatan" id="edit-jabatan" required>
+                                <input type="text" class="form-control" name="jabatan" id="edit-jabatan" required placeholder="Masukan Jabatan">
                             </div>
                             <div class="form-group col-md-6">
                                 <label for="kontak">Kontak</label>
-                                <input type="text" class="form-control" name="kontak" id="edit-kontak" required>
+                                <input type="text" class="form-control" name="kontak" id="edit-kontak" required placeholder="Maksimal 15 Nomor">
                             </div>
                         </div>
                         <div class="form-group col-md-12">
                             <label for="alamat">Alamat</label>
-                            <input type="text" class="form-control" name="alamat" id="edit-alamat" required>
+                            <input type="text" class="form-control" name="alamat" id="edit-alamat" required placeholder="Maksimal 255 Karakter">
                         </div>
                     </div>
                     <div class="modal-footer">
@@ -251,7 +241,6 @@
                         $('#edit-nip').val(res.nip);
                         $('#edit-jabatan').val(res.jabatan);
                         $('#edit-tgl_lahir').val(res.tgl_lahir);
-                        $('#edit-gelas_akademik').val(res.gelas_akademik);
                         $('#edit-program_studi').val(res.program_studi);
                     },
                 });

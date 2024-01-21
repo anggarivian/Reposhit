@@ -16,6 +16,20 @@ class DosenController extends Controller
 
     // Tambah Data Dosen ----------------------------------------------------------------------------------------------
     public function tambah(Request $req){
+
+        // Validasi Data Dosen ----------------------------------------------------------------
+        $req->validate([
+            'name' => 'required|string|max:30',
+            'nip' => 'required|string|max:18|min:18|unique:dosens,nip',
+            'email' => 'required|email|max:50|unique:dosens,email',
+            'jabatan' => 'required|string|max:15',
+            'kontak' => 'required|string|max:15',
+            'alamat' => 'required|string|max:255',
+            'tgl_lahir' => 'required|date',
+            'program_studi' => 'required|string|max:25',
+        ]);
+
+        // Create Data Dosen ------------------------------------------------------------------
         $dosen = new Dosen;
 
         $dosen->nama = $req->get('name');
@@ -25,11 +39,6 @@ class DosenController extends Controller
         $dosen->kontak = $req->get('kontak');
         $dosen->alamat = $req->get('alamat');
         $dosen->tgl_lahir = $req->get('tgl_lahir');
-        if ($req->gelar_akademik == null){
-            $dosen->gelar_akademik = '-';
-        } else {
-            $dosen->gelar_akademik = $req->get('gelar_akademik');
-        }
         $dosen->program_studi = $req->get('program_studi');
 
         $dosen->save();
@@ -48,6 +57,20 @@ class DosenController extends Controller
 
     // Ubah Data Dosen ----------------------------------------------------------------------------------------------
     public function ubah(Request $req) {
+
+        // Validasi Data Dosen ----------------------------------------------------------------
+        $req->validate([
+            'name' => 'required|string|max:30',
+            'nip' => 'required|string|max:18|min:18',
+            'email' => 'required|email|max:50',
+            'jabatan' => 'required|string|max:15',
+            'kontak' => 'required|string|max:15',
+            'alamat' => 'required|string|max:255',
+            'tgl_lahir' => 'required|date',
+            'program_studi' => 'required|string|max:25',
+        ]);
+
+        // Update Data Dosen ------------------------------------------------------------------
         $dosen = Dosen::find($req->get('id'));
 
         $dosen->nama = $req->get('name');
@@ -57,7 +80,6 @@ class DosenController extends Controller
         $dosen->kontak = $req->get('kontak');
         $dosen->alamat = $req->get('alamat');
         $dosen->tgl_lahir = $req->get('tgl_lahir');
-        $dosen->gelar_akademik = $req->get('gelar_akademik');
         $dosen->program_studi = $req->get('program_studi');
 
         $dosen->save();

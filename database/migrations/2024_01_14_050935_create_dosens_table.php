@@ -21,7 +21,6 @@ class CreateDosensTable extends Migration
             $table->string('email');
             $table->string('tgl_lahir');
             $table->string('kontak');
-            $table->string('gelar_akademik');
             $table->string('program_studi');
             $table->string('jabatan');
             $table->timestamps();

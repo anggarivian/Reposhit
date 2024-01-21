@@ -48,6 +48,19 @@ class SkripsiController extends Controller
 
     // Tambah Data Skripsi ----------------------------------------------------------------------------------------------
     public function tambah(Request $req){
+
+        // Validasi Data Skripsi ----------------------------------------------------------------
+        $req->validate([
+            'judul' => 'required|string|max:50',
+            'penulis' => 'required|string|max:30',
+            'abstrak' => 'required|string',
+            'dospem' => 'required|string|max:30',
+            'rilis' => 'required|max:4|min:4',
+            'halaman' => 'required|min:1',
+            'file' => 'required|mimes:pdf',
+        ]);
+
+        // Create Data Skripsi ------------------------------------------------------------------
         $skripsi = new Skripsi;
 
         $skripsi->judul = $req->get('judul');
@@ -125,6 +138,19 @@ class SkripsiController extends Controller
 
     // Ubah Data Skripsi ----------------------------------------------------------------------------------------------
     public function ubah(Request $req) {
+
+        // Validasi Data Skripsi ----------------------------------------------------------------
+        $req->validate([
+            'judul' => 'required|string|max:50',
+            'penulis' => 'required|string|max:30',
+            'abstrak' => 'required|string',
+            'dospem' => 'required|string|max:30',
+            'rilis' => 'required|max:4|min:4',
+            'halaman' => 'required|min:1',
+            'file' => 'required|mimes:pdf',
+        ]);
+
+        // Update Data Skripsi ------------------------------------------------------------------
         $skripsi = Skripsi::find($req->get('id'));
 
         $skripsi->judul = $req->get('judul');
