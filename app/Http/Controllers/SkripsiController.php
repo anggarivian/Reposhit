@@ -57,7 +57,13 @@ class SkripsiController extends Controller
             'dospem' => 'required|string|max:30',
             'rilis' => 'required|max:4|min:4',
             'halaman' => 'required|min:1',
-            'file' => 'nullable|mimes:pdf|max:2048',
+            'cover' => 'nullable|mimes:pdf|max:2048',
+            'bab1' => 'nullable|mimes:pdf|max:2048',
+            'bab2' => 'nullable|mimes:pdf|max:2048',
+            'bab3' => 'nullable|mimes:pdf|max:2048',
+            'bab4' => 'nullable|mimes:pdf|max:2048',
+            'bab5' => 'nullable|mimes:pdf|max:2048',
+            'dapus' => 'nullable|mimes:pdf|max:2048',
         ]);
 
         // Create Data Skripsi ------------------------------------------------------------------
@@ -70,18 +76,39 @@ class SkripsiController extends Controller
         $skripsi->rilis = $req->get('rilis');
         $skripsi->halaman = $req->get('halaman');
 
-        if($req->hasFile('file')){
-            $extension = $req->file('file')->extension();
-            $filename = 'file_skripsi'.time().'.'. $extension;
-            $req->file('file')->storeAs('public/file_skripsi', $filename);
-            $skripsi->file = $filename;
+        function uploadFile($req, $fieldName, $storagePath){
+            if ($req->hasFile($fieldName)) {
+                $extension = $req->file($fieldName)->extension();
+                $filename = $fieldName . '_skripsi' . time() . '.' . $extension;
+                $req->file($fieldName)->storeAs('public/' . $storagePath, $filename);
+                return $filename;
+            }
+            return null;
         }
 
+        $skripsi->cover = uploadFile($req, 'cover', 'cover_skripsi');
+        $skripsi->bab1 = uploadFile($req, 'bab1', 'bab1_skripsi');
+        $skripsi->bab2 = uploadFile($req, 'bab2', 'bab2_skripsi');
+        $skripsi->bab3 = uploadFile($req, 'bab3', 'bab3_skripsi');
+        $skripsi->bab4 = uploadFile($req, 'bab4', 'bab4_skripsi');
+        $skripsi->bab5 = uploadFile($req, 'bab5', 'bab5_skripsi');
+        $skripsi->dapus = uploadFile($req, 'dapus', 'dapus_skripsi');
         $skripsi->save();
         $notification = array(
             'message' =>'Data Skripsi berhasil ditambahkan', 'alert-type' =>'success'
         );
         return redirect()->route('skripsi')->with($notification);
+    }
+
+    public function uploadFile($req, $fieldName, $storagePath){
+        if ($req->hasFile($fieldName)) {
+            $extension = $req->file($fieldName)->extension();
+            $filename = $fieldName . '_skripsi' . time() . '.' . $extension;
+            $req->file($fieldName)->storeAs('public/' . $storagePath, $filename);
+            return $filename;
+        }
+
+        return null;
     }
 
     // Tampil PDF  Skripsi ----------------------------------------------------------------------------------------------
@@ -147,7 +174,6 @@ class SkripsiController extends Controller
             'dospem' => 'required|string|max:30',
             'rilis' => 'required|max:4|min:4',
             'halaman' => 'required|min:1',
-            'file' => 'nullable|mimes:pdf|max:2048',
         ]);
 
         // Update Data Skripsi ------------------------------------------------------------------
@@ -160,14 +186,27 @@ class SkripsiController extends Controller
         $skripsi->rilis = $req->get('rilis');
         $skripsi->halaman = $req->get('halaman');
 
-
-        if ($req->hasFile('file')) {
-            $extension = $req->file('file')->extension();
-            $filename = 'file_skripsi_'.time().'.'.$extension;
-            $req->file('file')->storeAs('public/file_skripsi', $filename );
-            Storage::delete('public/file_skripsi/'.$req->get('old_file'));
-            $skripsi->file = $filename;
+        function uploadFile($req, $fieldName, $storagePath, $oldFileName = null){
+            if ($req->hasFile($fieldName)) {
+                $extension = $req->file($fieldName)->extension();
+                $filename = $fieldName . '_skripsi' . time() . '.' . $extension;
+                $req->file($fieldName)->storeAs('public/' . $storagePath, $filename);
+                // Delete old file
+                if($oldFileName) {
+                    Storage::delete('public/' . $storagePath . '/' . $oldFileName);
+                }
+                return $filename;
+            }
+            return $oldFileName;
         }
+
+        $skripsi->cover = uploadFile($req, 'cover', 'cover_skripsi', $skripsi->cover);
+        $skripsi->bab1 = uploadFile($req, 'bab1', 'bab1_skripsi', $skripsi->bab1);
+        $skripsi->bab2 = uploadFile($req, 'bab2', 'bab2_skripsi', $skripsi->bab2);
+        $skripsi->bab3 = uploadFile($req, 'bab3', 'bab3_skripsi', $skripsi->bab3);
+        $skripsi->bab4 = uploadFile($req, 'bab4', 'bab4_skripsi', $skripsi->bab4);
+        $skripsi->bab5 = uploadFile($req, 'bab5', 'bab5_skripsi', $skripsi->bab5);
+        $skripsi->dapus = uploadFile($req, 'dapus', 'dapus_skripsi', $skripsi->dapus);
 
         $skripsi->save();
 

@@ -21,7 +21,13 @@ class CreateSkripsisTable extends Migration
             $table->string('dospem');
             $table->string('rilis');
             $table->string('halaman');
-            $table->string('file');
+            $table->string('cover');
+            $table->string('bab1');
+            $table->string('bab2');
+            $table->string('bab3');
+            $table->string('bab4');
+            $table->string('bab5');
+            $table->string('dapus');
             $table->timestamps();
         });
     }

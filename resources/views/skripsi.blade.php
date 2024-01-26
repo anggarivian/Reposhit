@@ -126,9 +126,39 @@
                                 <input type="text" class="form-control" name="halaman" id="halaman" required placeholder="Masukkan Jumlah Halaman">
                             </div>
                         </div>
+                        <div class="d-flex" style="margin: -7px">
+                            <div class="form-group col-md-6">
+                                <label for="cover">Pilih Cover (Maks. 2 MB) :</label>
+                                <input type="file" class="form-control" style="padding-bottom: 37px" name="cover" id="cover" required>
+                            </div>
+                            <div class="form-group col-md-6">
+                                <label for="bab1">Pilih BAB 1 (Maks. 2 MB) :</label>
+                                <input type="file" class="form-control" style="padding-bottom: 37px" name="bab1" id="bab1" required>
+                            </div>
+                        </div>
+                        <div class="d-flex" style="margin: -7px">
+                            <div class="form-group col-md-6">
+                                <label for="bab2">Pilih BAB 2 (Maks. 2 MB) :</label>
+                                <input type="file" class="form-control" style="padding-bottom: 37px" name="bab2" id="bab2" required>
+                            </div>
+                            <div class="form-group col-md-6">
+                                <label for="bab3">Pilih BAB 3 (Maks. 2 MB) :</label>
+                                <input type="file" class="form-control" style="padding-bottom: 37px" name="bab3" id="bab3" required>
+                            </div>
+                        </div>
+                        <div class="d-flex" style="margin: -7px">
+                            <div class="form-group col-md-6">
+                                <label for="bab4">Pilih BAB 4 (Maks. 2 MB) :</label>
+                                <input type="file" class="form-control" style="padding-bottom: 37px" name="bab4" id="bab4" required>
+                            </div>
+                            <div class="form-group col-md-6">
+                                <label for="bab5">Pilih BAB 5 (Maks. 2 MB) :</label>
+                                <input type="file" class="form-control" style="padding-bottom: 37px" name="bab5" id="bab5" required>
+                            </div>
+                        </div>
                         <div class="form-group">
-                            <label for="file">Pilih File (Maksimal 2 MB) :</label>
-                            <input type="file" class="form-control" style="padding-bottom: 37px" name="file" id="file" required>
+                            <label for="dapus">Pilih Daftar Pustaka (Maks. 2 MB) :</label>
+                            <input type="file" class="form-control" style="padding-bottom: 37px" name="dapus" id="dapus" required>
                         </div>
                     </div>
                     <div class="modal-footer">
@@ -191,14 +221,56 @@
                                 <input type="text" class="form-control" name="halaman" id="edit-halaman" required placeholder="Masukkan Jumlah Halaman">
                             </div>
                         </div>
+                        <div class="d-flex" style="margin: -7px">
+                            <div class="form-group col-md-6">
+                                <label for="cover">Pilih Cover (Maks. 2 MB) :</label>
+                                <input type="file" class="form-control" style="padding-bottom: 37px" name="cover" id="edit-cover">
+                                <div class="form-group" id="cover-area"></div>
+                            </div>
+                            <div class="form-group col-md-6">
+                                <label for="bab1">Pilih BAB 1 (Maks. 2 MB) :</label>
+                                <input type="file" class="form-control" style="padding-bottom: 37px" name="bab1" id="edit-bab1">
+                                <div class="form-group" id="bab1-area"></div>
+                            </div>
+                        </div>
+                        <div class="d-flex" style="margin: -7px">
+                            <div class="form-group col-md-6">
+                                <label for="bab2">Pilih BAB 2 (Maks. 2 MB) :</label>
+                                <input type="file" class="form-control" style="padding-bottom: 37px" name="bab2" id="edit-bab2">
+                                <div class="form-group" id="bab2-area"></div>
+                            </div>
+                            <div class="form-group col-md-6">
+                                <label for="bab3">Pilih BAB 3 (Maks. 2 MB) :</label>
+                                <input type="file" class="form-control" style="padding-bottom: 37px" name="bab3" id="edit-bab3">
+                                <div class="form-group" id="bab3-area"></div>
+                            </div>
+                        </div>
+                        <div class="d-flex" style="margin: -7px">
+                            <div class="form-group col-md-6">
+                                <label for="bab4">Pilih BAB 4 (Maks. 2 MB) :</label>
+                                <input type="file" class="form-control" style="padding-bottom: 37px" name="bab4" id="edit-bab4">
+                                <div class="form-group" id="bab4-area"></div>
+                            </div>
+                            <div class="form-group col-md-6">
+                                <label for="bab5">Pilih BAB 5 (Maks. 2 MB) :</label>
+                                <input type="file" class="form-control" style="padding-bottom: 37px" name="bab5" id="edit-bab5">
+                                <div class="form-group" id="bab5-area"></div>
+                            </div>
+                        </div>
                         <div class="form-group">
-                            <label for="file">Pilih File (Maksimal 2 MB) :</label>
-                            <input type="file" class="form-control" style="padding-bottom: 37px" name="file" id="edit-file">
-                            <div class="form-group" id="image-area"></div>
+                            <label for="dapus">Pilih Daftar Pustaka (Maks. 2 MB) :</label>
+                            <input type="file" class="form-control" style="padding-bottom: 37px" name="dapus" id="edit-dapus">
+                            <div class="form-group" id="dapus-area"></div>
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <input type="text" name="old_file" id="edit-old-file"/>
+                        <input type="text" name="old_cover" id="edit-old-cover" hidden/>
+                        <input type="text" name="old_bab1" id="edit-old-bab1" hidden/>
+                        <input type="text" name="old_bab2" id="edit-old-bab2" hidden/>
+                        <input type="text" name="old_bab3" id="edit-old-bab3" hidden/>
+                        <input type="text" name="old_bab4" id="edit-old-bab4" hidden/>
+                        <input type="text" name="old_bab5" id="edit-old-bab5" hidden/>
+                        <input type="text" name="old_dapus" id="edit-old-dapus" hidden/>
                         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
                         <button type="submit" class="btn btn-primary">Ubah Data</button>
                     </div>
@@ -229,12 +301,48 @@
                         $('#edit-rilis').val(res.rilis);
                         $('#edit-volume').val(res.volume);
                         $('#edit-halaman').val(res.halaman);
-                        $('#edit-old-file').val(res.file);
+                        $('#old-cover').val(res.cover);
+                        $('#old-bab1').val(res.bab1);
+                        $('#old-bab2').val(res.bab2);
+                        $('#old-bab3').val(res.bab3);
+                        $('#old-bab4').val(res.bab4);
+                        $('#old-bab5').val(res.bab5);
+                        $('#old-dapus').val(res.dapus);
 
-                        if (res.file !== null) {
-                            $('#image-area').append('[File tersedia]');
+                        if (res.cover !== null) {
+                            $('#cover-area').append('[Cover tersedia]');
                         } else {
-                            $('#image-area').append('[File tidak tersedia]');
+                            $('#cover-area').append('[Cover tidak tersedia]');
+                        }
+                        if (res.bab1 !== null) {
+                            $('#bab1-area').append('[Bab 1 tersedia]');
+                        } else {
+                            $('#bab1-area').append('[Bab 1 tidak tersedia]');
+                        }
+                        if (res.bab2 !== null) {
+                            $('#bab2-area').append('[Bab 2 tersedia]');
+                        } else {
+                            $('#bab2-area').append('[Bab 2 tidak tersedia]');
+                        }
+                        if (res.bab3 !== null) {
+                            $('#bab3-area').append('[Bab 3 tersedia]');
+                        } else {
+                            $('#bab3-area').append('[Bab 3 tidak tersedia]');
+                        }
+                        if (res.bab4 !== null) {
+                            $('#bab4-area').append('[Bab 4 tersedia]');
+                        } else {
+                            $('#bab4-area').append('[Bab 4 tidak tersedia]');
+                        }
+                        if (res.bab5 !== null) {
+                            $('#bab5-area').append('[Bab 5 tersedia]');
+                        } else {
+                            $('#bab5-area').append('[Bab 5 tidak tersedia]');
+                        }
+                        if (res.dapus !== null) {
+                            $('#dapus-area').append('[Daftar Pustaka tersedia]');
+                        } else {
+                            $('#dapus-area').append('[Daftar Pustaka tidak tersedia]');
                         }
                     },
                 });
