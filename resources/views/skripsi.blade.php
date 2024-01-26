@@ -50,7 +50,7 @@
                         <td>{{$skripsis->halaman}}</td>
                         <td>
                             <div class="form-group" role="group" aria-label="Basic example">
-                                <a href="{{ route('pdf.show', ['id' => $skripsis->id]) }}"  target="_blank">
+                                <a href="/admin/skripsi/detail/{{$skripsis->id}}">
                                     <button class="btn btn-sm btn-info">
                                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
                                     </button>

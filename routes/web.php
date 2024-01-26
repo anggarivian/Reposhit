@@ -66,4 +66,4 @@ Route::get('/welcome/detail/{id}', [SkripsiController::class, 'welcomeskripsi'])
 Route::get('/home/skripsi', [SkripsiController::class, 'mahasiswa'])->name('mahasiswa.skripsi');
 
 // View File PDF -----------------------------------------------------------------------------------
-Route::get('/pdf/{id}', [SkripsiController::class, 'showPdf'])->name('pdf.show');
+Route::get('/admin/skripsi/detail/{id}', [SkripsiController::class, 'showPdf'])->name('pdf.show');

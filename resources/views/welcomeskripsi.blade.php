@@ -110,12 +110,55 @@
                             </table>
                             <hr>
                             @if(auth()->check())
-                            <iframe src="data:application/pdf;base64,{{ $pdf }}#toolbar=0&navpanes=0&view=fitH" width="100%" height="600px"></iframe>
-                                {{-- <a href="{{ route('pdf.show', ['id' => $skripsi->id]) }}"  target="_blank">
-                                    <button class="btn btn-info m-3">
-                                        Lihat Skripsi
-                                    </button>
-                                </a> --}}
+                            {{-- Tombol untuk menampilkan/menyembunyikan iframe --}}
+                @foreach($pdfs as $attribute => $pdf)
+                @php
+                    $label = $attribute == 'dapus'
+                        ? 'Daftar Pustaka'
+                        : (strpos($attribute, 'bab') === 0
+                            ? 'Bab ' . (
+                                $attribute == 'bab1' ? 'I' : (
+                                    $attribute == 'bab2' ? 'II' : (
+                                        $attribute == 'bab3' ? 'III' : (
+                                            $attribute == 'bab4' ? 'IV' : (
+                                                $attribute == 'bab5' ? 'V' : $attribute
+                                            )
+                                        )
+                                    )
+                                )
+                            )
+                            : $attribute
+                        );
+                @endphp
+                <button class="btn btn-info m-3 showPdfButton" data-target="{{ $attribute }}">
+                    Lihat {{ ucfirst($label) }}
+                </button>
+            @endforeach
+
+            {{-- Menampilkan semua PDF --}}
+            @foreach($pdfs as $attribute => $pdf)
+                @php
+                    $label = $attribute == 'dapus'
+                        ? 'Daftar Pustaka'
+                        : (strpos($attribute, 'bab') === 0
+                            ? 'Bab ' . (
+                                $attribute == 'bab1' ? 'I' : (
+                                    $attribute == 'bab2' ? 'II' : (
+                                        $attribute == 'bab3' ? 'III' : (
+                                            $attribute == 'bab4' ? 'IV' : (
+                                                $attribute == 'bab5' ? 'V' : $attribute
+                                            )
+                                        )
+                                    )
+                                )
+                            )
+                            : $attribute
+                        );
+                @endphp
+                <h2 id="{{ $attribute }}Header" style="display: none;">{{ ucfirst($label) }}</h2>
+                <!-- Sembunyikan iframe dengan ID sesuai dengan atribut -->
+                <iframe id="{{ $attribute }}Frame" src="data:application/pdf;base64,{{ $pdf }}#toolbar=0&navpanes=0&view=fitH" width="100%" height="600px" style="display: none;"></iframe>
+            @endforeach
                             @else
                                 {{-- Pengguna belum login, tampilkan pesan --}}
                                 <a href="/login" class="btn btn-info m-3">
@@ -166,5 +209,28 @@
         <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
         <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
         <script src="{{ asset('vendor/sweetalert2/sweetalert2.min.js') }}"></script>
+        <script>
+            document.querySelectorAll('.showPdfButton').forEach(function(button) {
+                button.addEventListener('click', function() {
+                    var targetAttribute = this.getAttribute('data-target');
+    
+                    // Sembunyikan semua iframe dan header (nama atribut) terlebih dahulu
+                    document.querySelectorAll('iframe').forEach(function(iframe) {
+                        iframe.style.display = 'none';
+                    });
+    
+                    document.querySelectorAll('h2').forEach(function(header) {
+                        header.style.display = 'none';
+                    });
+    
+                    // Tampilkan iframe dan header yang sesuai dengan tombol yang ditekan
+                    var pdfFrame = document.getElementById(targetAttribute + 'Frame');
+                    var pdfHeader = document.getElementById(targetAttribute + 'Header');
+    
+                    pdfFrame.style.display = 'block';
+                    pdfHeader.style.display = 'block';
+                });
+            });
+        </script>
     </body>
 </html>

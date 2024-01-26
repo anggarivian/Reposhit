@@ -100,69 +100,6 @@ class SkripsiController extends Controller
         return redirect()->route('skripsi')->with($notification);
     }
 
-    public function uploadFile($req, $fieldName, $storagePath){
-        if ($req->hasFile($fieldName)) {
-            $extension = $req->file($fieldName)->extension();
-            $filename = $fieldName . '_skripsi' . time() . '.' . $extension;
-            $req->file($fieldName)->storeAs('public/' . $storagePath, $filename);
-            return $filename;
-        }
-
-        return null;
-    }
-
-    // Tampil PDF  Skripsi ----------------------------------------------------------------------------------------------
-    public function showPdf($id){
-        $data = Skripsi::find($id);
-        if ($data) {
-            $pdfPath = $data->file; // Tentukan kolom yang berisi path file PDF di model Anda
-            return response()->file(Storage::path('public/file_skripsi/'.$pdfPath));
-        }
-        return abort(404);
-    }
-
-    // Get Data Skripsi ----------------------------------------------------------------------------------------------
-    public function getDataSkripsi($id){
-        $skripsi = Skripsi::find($id);
-        return response()->json($skripsi);
-    }
-
-    // Get Data Skripsi ----------------------------------------------------------------------------------------------
-    public function detailskripsi($id){
-        $user = Auth::user();
-        $skripsi = Skripsi::find($id);
-        $data = Skripsi::findOrFail($id);
-
-        $pdfPath = storage_path('app/public/file_skripsi/' . $data->file);
-
-        if (!Storage::exists('public/file_skripsi/' . $data->file)) {
-            abort(404);
-        }
-
-        $pdfContent = Storage::get('public/file_skripsi/' . $data->file);
-        $pdf = base64_encode($pdfContent);
-
-        return view('detail', compact('pdf', 'user', 'skripsi'));
-    }
-
-    // Get Data Skripsi ----------------------------------------------------------------------------------------------
-    public function welcomeskripsi($id){
-        $user = Auth::user();
-        $skripsi = Skripsi::find($id);
-        $data = Skripsi::findOrFail($id);
-
-        $pdfPath = storage_path('app/public/file_skripsi/' . $data->file);
-
-        if (!Storage::exists('public/file_skripsi/' . $data->file)) {
-            abort(404);
-        }
-
-        $pdfContent = Storage::get('public/file_skripsi/' . $data->file);
-        $pdf = base64_encode($pdfContent);
-
-        return view('welcomeskripsi', compact('pdf', 'user', 'skripsi'));
-    }
-
     // Ubah Data Skripsi ----------------------------------------------------------------------------------------------
     public function ubah(Request $req) {
 
@@ -230,5 +167,131 @@ class SkripsiController extends Controller
             'success' => $success,
             'message' => $message,
         ]);
+    }
+
+    // Get Data Skripsi ----------------------------------------------------------------------------------------------
+    public function getDataSkripsi($id){
+        $skripsi = Skripsi::find($id);
+        return response()->json($skripsi);
+    }
+
+    // Tampil PDF  Skripsi ----------------------------------------------------------------------------------------------
+    public function showPdf($id){
+        $user = Auth::user();
+        $skripsi = Skripsi::find($id);
+        $data = Skripsi::findOrFail($id);
+
+        // Menyusun path untuk setiap file PDF yang ingin diambil
+        $pdfPaths = [
+            'cover' => storage_path('app/public/cover_skripsi/' . $data->cover),
+            'bab1' => storage_path('app/public/bab1_skripsi/' . $data->bab1),
+            'bab2' => storage_path('app/public/bab2_skripsi/' . $data->bab2),
+            'bab3' => storage_path('app/public/bab3_skripsi/' . $data->bab3),
+            'bab4' => storage_path('app/public/bab4_skripsi/' . $data->bab4),
+            'bab5' => storage_path('app/public/bab5_skripsi/' . $data->bab5),
+            'dapus' => storage_path('app/public/dapus_skripsi/' . $data->dapus),
+        ];
+
+        // Memeriksa apakah setiap file PDF ada di storage
+        foreach ($pdfPaths as $attribute => $pdfPath) {
+            if (!Storage::exists('public/' . $attribute . '_skripsi/' . $data->$attribute)) {
+                abort(404);
+            }
+        }
+
+        // Mengambil konten setiap file PDF
+        $pdfContents = [];
+        foreach ($pdfPaths as $attribute => $pdfPath) {
+            $pdfContents[$attribute] = Storage::get('public/' . $attribute . '_skripsi/' . $data->$attribute);
+        }
+
+        // Mengubah konten setiap file PDF menjadi base64
+        $pdfs = [];
+        foreach ($pdfContents as $attribute => $pdfContent) {
+            $pdfs[$attribute] = base64_encode($pdfContent);
+        }
+
+        // Mengirim data PDF, data user, dan data skripsi ke view 'detail'
+        return view('skripsiadmin', compact('pdfs', 'user', 'skripsi'));
+    }
+
+    // Get Data Skripsi ----------------------------------------------------------------------------------------------
+    public function detailskripsi($id){
+        $user = Auth::user();
+        $skripsi = Skripsi::find($id);
+        $data = Skripsi::findOrFail($id);
+
+        // Menyusun path untuk setiap file PDF yang ingin diambil
+        $pdfPaths = [
+            'cover' => storage_path('app/public/cover_skripsi/' . $data->cover),
+            'bab1' => storage_path('app/public/bab1_skripsi/' . $data->bab1),
+            'bab2' => storage_path('app/public/bab2_skripsi/' . $data->bab2),
+            'bab3' => storage_path('app/public/bab3_skripsi/' . $data->bab3),
+            'bab4' => storage_path('app/public/bab4_skripsi/' . $data->bab4),
+            'bab5' => storage_path('app/public/bab5_skripsi/' . $data->bab5),
+            'dapus' => storage_path('app/public/dapus_skripsi/' . $data->dapus),
+        ];
+
+        // Memeriksa apakah setiap file PDF ada di storage
+        foreach ($pdfPaths as $attribute => $pdfPath) {
+            if (!Storage::exists('public/' . $attribute . '_skripsi/' . $data->$attribute)) {
+                abort(404);
+            }
+        }
+
+        // Mengambil konten setiap file PDF
+        $pdfContents = [];
+        foreach ($pdfPaths as $attribute => $pdfPath) {
+            $pdfContents[$attribute] = Storage::get('public/' . $attribute . '_skripsi/' . $data->$attribute);
+        }
+
+        // Mengubah konten setiap file PDF menjadi base64
+        $pdfs = [];
+        foreach ($pdfContents as $attribute => $pdfContent) {
+            $pdfs[$attribute] = base64_encode($pdfContent);
+        }
+
+        // Mengirim data PDF, data user, dan data skripsi ke view 'detail'
+        return view('detail', compact('pdfs', 'user', 'skripsi'));
+    }
+
+    // Get Data Skripsi ----------------------------------------------------------------------------------------------
+    public function welcomeskripsi($id){
+        $user = Auth::user();
+        $skripsi = Skripsi::find($id);
+        $data = Skripsi::findOrFail($id);
+
+        // Menyusun path untuk setiap file PDF yang ingin diambil
+        $pdfPaths = [
+            'cover' => storage_path('app/public/cover_skripsi/' . $data->cover),
+            'bab1' => storage_path('app/public/bab1_skripsi/' . $data->bab1),
+            'bab2' => storage_path('app/public/bab2_skripsi/' . $data->bab2),
+            'bab3' => storage_path('app/public/bab3_skripsi/' . $data->bab3),
+            'bab4' => storage_path('app/public/bab4_skripsi/' . $data->bab4),
+            'bab5' => storage_path('app/public/bab5_skripsi/' . $data->bab5),
+            'dapus' => storage_path('app/public/dapus_skripsi/' . $data->dapus),
+        ];
+
+        // Memeriksa apakah setiap file PDF ada di storage
+        foreach ($pdfPaths as $attribute => $pdfPath) {
+            if (!Storage::exists('public/' . $attribute . '_skripsi/' . $data->$attribute)) {
+                abort(404);
+            }
+        }
+
+        // Mengambil konten setiap file PDF
+        $pdfContents = [];
+        foreach ($pdfPaths as $attribute => $pdfPath) {
+            $pdfContents[$attribute] = Storage::get('public/' . $attribute . '_skripsi/' . $data->$attribute);
+        }
+
+        // Mengubah konten setiap file PDF menjadi base64
+        $pdfs = [];
+        foreach ($pdfContents as $attribute => $pdfContent) {
+            $pdfs[$attribute] = base64_encode($pdfContent);
+        }
+
+        // Mengirim data PDF, data user, dan data skripsi ke view 'detail'
+        return view('welcomeskripsi', compact('pdfs', 'user', 'skripsi'));
     }
 }
