@@ -34,7 +34,6 @@
                         <th>Tanggal Lahir</th>
                         <th>Angkatan</th>
                         <th>Prodi</th>
-                        <th>Jurusan</th>
                         <th>Alamat</th>
                         <th>Opsi</th>
                     </tr>
@@ -49,7 +48,6 @@
                         <td>{{$mahasiswas->tgl_lahir}}</td>
                         <td>{{$mahasiswas->angkatan}}</td>
                         <td>{{$mahasiswas->prodi}}</td>
-                        <td>{{$mahasiswas->jurusan}}</td>
                         <td>{{$mahasiswas->alamat}}</td>
                         <td>
                             <div class="btn-group" role="group" aria-label="Basic example">
@@ -113,19 +111,18 @@
                         </div>
                         <div class="form-group col-md-6">
                             <label for="prodi">Program Studi</label>
-                            <input type="text" class="form-control" name="prodi" id="prodi" required placeholder="Masukan Program Studi">
+                            <select name="prodi" class="form-control" id="prodi" >
+                                <option disabled >Pilih</option>
+                                <option value="Agribisnis">Agribisnis</option>
+                                <option value="Agroteknologi">Agroteknologi</option>
+                                <option value="Pemanfaatan Sumberdaya Perikanan">Pemanfaatan Sumberdaya Perikanan</option>
+                            </select>
                         </div>
                     </div>
-                    <div class="d-flex">
-                        <div class="form-group col-md-6">
-                            <label for="jurusan">Jurusan</label>
-                            <input type="text" class="form-control" name="jurusan" id="jurusan" required placeholder="Masukan Jurusan">
-                        </div>
-                        <div class="form-group col-md-6">
+                        <div class="form-group">
                             <label for="alamat">Alamat</label>
                             <input type="text" class="form-control" name="alamat" id="alamat" required placeholder="Maksimal 255 Karakter">
                         </div>
-                    </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
@@ -177,19 +174,18 @@
                         </div>
                         <div class="form-group col-md-6">
                             <label for="prodi">Program Studi</label>
-                            <input type="text" class="form-control" name="prodi" id="edit-prodi" required placeholder="Masukan Program Studi">
+                            <select name="prodi" class="form-control" id="prodi" >
+                                <option disabled >Pilih</option>
+                                <option value="Agribisnis">Agribisnis</option>
+                                <option value="Agroteknologi">Agroteknologi</option>
+                                <option value="Pemanfaatan Sumberdaya Perikanan">Pemanfaatan Sumberdaya Perikanan</option>
+                            </select>
                         </div>
                     </div>
-                    <div class="d-flex">
-                        <div class="form-group col-md-6">
-                            <label for="jurusan">Jurusan</label>
-                            <input type="text" class="form-control" name="jurusan" id="edit-jurusan" required placeholder="Masukan Jurusan">
-                        </div>
-                        <div class="form-group col-md-6">
+                        <div class="form-group">
                             <label for="alamat">Alamat</label>
                             <input type="text" class="form-control" name="alamat" id="edit-alamat" required placeholder="Maksimal 255 Karakter">
                         </div>
-                    </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>

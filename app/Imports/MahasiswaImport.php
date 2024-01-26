@@ -24,7 +24,6 @@ class MahasiswaImport implements WithHeadingRow, ToModel
             'alamat' => $row['alamat'],
             'angkatan' => $row['angkatan'],
             'prodi' => $row['prodi'],
-            'jurusan' => $row['jurusan'],
             'password' => Hash::make($row['password']),
             'roles_id' => 2 ,
         ]);

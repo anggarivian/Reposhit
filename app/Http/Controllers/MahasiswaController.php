@@ -26,7 +26,6 @@ class MahasiswaController extends Controller
             'email' => 'required|email|max:50|unique:users,email',
             'tgl_lahir' => 'required|date',
             'alamat' => 'required|string|max:255',
-            'jurusan' => 'required|string|max:255',
             'angkatan' => 'required|string|max:4|min:4',
             'password' => 'required|string|min:8|max:255',
             'prodi' => 'required|string|max:25',
@@ -40,7 +39,6 @@ class MahasiswaController extends Controller
         $mahasiswa->email = $req->get('email');
         $mahasiswa->tgl_lahir = $req->get('tgl_lahir');
         $mahasiswa->alamat = $req->get('alamat');
-        $mahasiswa->jurusan = $req->get('jurusan');
         $mahasiswa->angkatan = $req->get('angkatan');
         $mahasiswa->password = Hash::make($req->get('password'));
         $mahasiswa->prodi = $req->get('prodi');
@@ -70,7 +68,6 @@ class MahasiswaController extends Controller
             'email' => 'required|email|max:50',
             'tgl_lahir' => 'required|date',
             'alamat' => 'required|string|max:255',
-            'jurusan' => 'required|string|max:255',
             'angkatan' => 'required|string|max:4|min:4',
             'prodi' => 'required|string|max:25',
         ]);
@@ -83,7 +80,6 @@ class MahasiswaController extends Controller
         $mahasiswa->email = $req->get('email');
         $mahasiswa->tgl_lahir = $req->get('tgl_lahir');
         $mahasiswa->alamat = $req->get('alamat');
-        $mahasiswa->jurusan = $req->get('jurusan');
         $mahasiswa->angkatan = $req->get('angkatan');
         $mahasiswa->prodi = $req->get('prodi');
 

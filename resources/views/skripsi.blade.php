@@ -127,7 +127,7 @@
                             </div>
                         </div>
                         <div class="form-group">
-                            <label for="file">Pilih File</label>
+                            <label for="file">Pilih File (Maksimal 2 MB) :</label>
                             <input type="file" class="form-control" style="padding-bottom: 37px" name="file" id="file" required>
                         </div>
                     </div>
@@ -192,7 +192,7 @@
                             </div>
                         </div>
                         <div class="form-group">
-                            <label for="file">Pilih File</label>
+                            <label for="file">Pilih File (Maksimal 2 MB) :</label>
                             <input type="file" class="form-control" style="padding-bottom: 37px" name="file" id="edit-file">
                             <div class="form-group" id="image-area"></div>
                         </div>

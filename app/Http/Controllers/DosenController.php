@@ -19,11 +19,11 @@ class DosenController extends Controller
 
         // Validasi Data Dosen ----------------------------------------------------------------
         $req->validate([
-            'name' => 'required|string|max:30',
+            'nama' => 'required|string|max:30',
             'nip' => 'required|string|max:18|min:18|unique:dosens,nip',
             'email' => 'required|email|max:50|unique:dosens,email',
             'jabatan' => 'required|string|max:15',
-            'kontak' => 'required|string|max:15',
+            'kontak' => 'required|string|max:12',
             'alamat' => 'required|string|max:255',
             'tgl_lahir' => 'required|date',
             'program_studi' => 'required|string|max:25',
@@ -32,7 +32,7 @@ class DosenController extends Controller
         // Create Data Dosen ------------------------------------------------------------------
         $dosen = new Dosen;
 
-        $dosen->nama = $req->get('name');
+        $dosen->nama = $req->get('nama');
         $dosen->nip = $req->get('nip');
         $dosen->email = $req->get('email');
         $dosen->jabatan = $req->get('jabatan');
@@ -60,11 +60,11 @@ class DosenController extends Controller
 
         // Validasi Data Dosen ----------------------------------------------------------------
         $req->validate([
-            'name' => 'required|string|max:30',
+            'nama' => 'required|string|max:30',
             'nip' => 'required|string|max:18|min:18',
             'email' => 'required|email|max:50',
             'jabatan' => 'required|string|max:15',
-            'kontak' => 'required|string|max:15',
+            'kontak' => 'required|string|max:12',
             'alamat' => 'required|string|max:255',
             'tgl_lahir' => 'required|date',
             'program_studi' => 'required|string|max:25',
@@ -73,7 +73,7 @@ class DosenController extends Controller
         // Update Data Dosen ------------------------------------------------------------------
         $dosen = Dosen::find($req->get('id'));
 
-        $dosen->nama = $req->get('name');
+        $dosen->nama = $req->get('nama');
         $dosen->nip = $req->get('nip');
         $dosen->email = $req->get('email');
         $dosen->jabatan = $req->get('jabatan');

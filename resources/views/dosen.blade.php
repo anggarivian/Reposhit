@@ -83,7 +83,7 @@
                     <div class="modal-body">
                         <div class="form-group col-md-12">
                             <label for="name">Nama Lengkap</label>
-                            <input type="text" class="form-control" name="name" id="name" required placeholder="Masukan Nama Dosen">
+                            <input type="text" class="form-control" name="nama" id="nama" required placeholder="Masukan Nama Dosen">
                         </div>
                         <div class="d-flex">
                             <div class="form-group col-md-6">
@@ -102,7 +102,12 @@
                         <div class="d-flex">
                             <div class="form-group col-md-12">
                                 <label for="program_studi">Program Studi</label>
-                                <input type="text" class="form-control" name="program_studi" id="program_studi" required placeholder="Masukan Program Pendidikan">
+                                <select name="program_studi" class="form-control" id="program_studi" >
+                                    <option disabled >Pilih</option>
+                                    <option value="Agribisnis">Agribisnis</option>
+                                    <option value="Agroteknologi">Agroteknologi</option>
+                                    <option value="Pemanfaatan Sumberdaya Perikanan">Pemanfaatan Sumberdaya Perikanan</option>
+                                </select>
                             </div>
                         </div>
                         <div class="d-flex">
@@ -112,7 +117,7 @@
                             </div>
                             <div class="form-group col-md-6">
                                 <label for="kontak">Kontak</label>
-                                <input type="text" class="form-control" name="kontak" id="kontak" required placeholder="Maksimal 15 Nomor">
+                                <input type="text" class="form-control" name="kontak" id="kontak" required placeholder="Maksimal 12 Nomor">
                             </div>
                         </div>
                         <div class="form-group col-md-12">
@@ -146,7 +151,7 @@
                         <input type="text" class="form-control" name="id" id="edit-id" required hidden>
                         <div class="form-group col-md-12">
                             <label for="name">Nama Lengkap</label>
-                            <input type="text" class="form-control" name="name" id="edit-name" required placeholder="Masukan Nama Dosen">
+                            <input type="text" class="form-control" name="nama" id="edit-nama" required placeholder="Masukan Nama Dosen">
                         </div>
                         <div class="d-flex">
                             <div class="form-group col-md-6">
@@ -165,7 +170,12 @@
                         <div class="d-flex">
                             <div class="form-group col-md-12">
                                 <label for="program_studi">Program Studi</label>
-                                <input type="text" class="form-control" name="program_studi" id="edit-program_studi" required placeholder="Masukan Program Pendidikan">
+                                <select name="program_studi" class="form-control" id="program_studi" >
+                                    <option disabled >Pilih</option>
+                                    <option value="Agribisnis">Agribisnis</option>
+                                    <option value="Agroteknologi">Agroteknologi</option>
+                                    <option value="Pemanfaatan Sumberdaya Perikanan">Pemanfaatan Sumberdaya Perikanan</option>
+                                </select>
                             </div>
                         </div>
                         <div class="d-flex">
@@ -175,7 +185,7 @@
                             </div>
                             <div class="form-group col-md-6">
                                 <label for="kontak">Kontak</label>
-                                <input type="text" class="form-control" name="kontak" id="edit-kontak" required placeholder="Maksimal 15 Nomor">
+                                <input type="text" class="form-control" name="kontak" id="edit-kontak" required placeholder="Maksimal 12 Nomor">
                             </div>
                         </div>
                         <div class="form-group col-md-12">
@@ -233,7 +243,7 @@
                     url: "{{url('/admin/ajaxadmin/dataDosen')}}/"+id,
                     dataType: 'json',
                     success: function(res){
-                        $('#edit-name').val(res.nama);
+                        $('#edit-nama').val(res.nama);
                         $('#edit-email').val(res.email);
                         $('#edit-kontak').val(res.kontak);
                         $('#edit-alamat').val(res.alamat);

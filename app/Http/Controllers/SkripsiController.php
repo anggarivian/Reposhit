@@ -51,13 +51,13 @@ class SkripsiController extends Controller
 
         // Validasi Data Skripsi ----------------------------------------------------------------
         $req->validate([
-            'judul' => 'required|string|max:50',
+            'judul' => 'required|string|max:200',
             'penulis' => 'required|string|max:30',
             'abstrak' => 'required|string',
             'dospem' => 'required|string|max:30',
             'rilis' => 'required|max:4|min:4',
             'halaman' => 'required|min:1',
-            'file' => 'required|mimes:pdf',
+            'file' => 'nullable|mimes:pdf|max:2048',
         ]);
 
         // Create Data Skripsi ------------------------------------------------------------------
@@ -141,13 +141,13 @@ class SkripsiController extends Controller
 
         // Validasi Data Skripsi ----------------------------------------------------------------
         $req->validate([
-            'judul' => 'required|string|max:50',
+            'judul' => 'required|string|max:200',
             'penulis' => 'required|string|max:30',
             'abstrak' => 'required|string',
             'dospem' => 'required|string|max:30',
             'rilis' => 'required|max:4|min:4',
             'halaman' => 'required|min:1',
-            'file' => 'required|mimes:pdf',
+            'file' => 'nullable|mimes:pdf|max:2048',
         ]);
 
         // Update Data Skripsi ------------------------------------------------------------------

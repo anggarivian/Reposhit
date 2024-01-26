@@ -23,6 +23,11 @@
                         <td>{{$skripsi->penulis}}</td>
                     </tr>
                     <tr>
+                        <td style="width: 200px;">Dosen Pembimbing</td>
+                        <td style="width: 20px;">:</td>
+                        <td>{{$skripsi->dospem}}</td>
+                    </tr>
+                    <tr>
                         <td style="width: 200px;">Abstrak</td>
                         <td style="width: 20px;">:</td>
                         <td>{{$skripsi->abstrak}}</td>

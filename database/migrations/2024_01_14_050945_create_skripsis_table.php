@@ -17,10 +17,9 @@ class CreateSkripsisTable extends Migration
             $table->id();
             $table->string('judul');
             $table->string('penulis');
-            $table->string('abstrak');
+            $table->longtext('abstrak');
             $table->string('dospem');
             $table->string('rilis');
-            $table->string('volume')->nullable();
             $table->string('halaman');
             $table->string('file');
             $table->timestamps();
