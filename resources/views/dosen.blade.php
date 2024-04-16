@@ -29,8 +29,7 @@
                     <tr class="text-center">
                         <th>No.</th>
                         <th>Nama</th>
-                        <th>NIP</th>
-                        <th>Email</th>
+                        <th>NIDN</th>
                         <th>Prodi</th>
                         <th>Jabatan</th>
                         <th>Kontak</th>
@@ -45,7 +44,6 @@
                         <td>{{$no++}}</td>
                         <td>{{$dosens->nama}}</td>
                         <td>{{$dosens->nip}}</td>
-                        <td>{{$dosens->email}}</td>
                         <td>{{$dosens->program_studi}}</td>
                         <td>{{$dosens->jabatan}}</td>
                         <td>{{$dosens->kontak}}</td>
@@ -87,17 +85,13 @@
                         </div>
                         <div class="d-flex">
                             <div class="form-group col-md-6">
-                                <label for="nip">NIP</label>
+                                <label for="nip">NIDN</label>
                                 <input type="text" class="form-control" name="nip" id="nip" required placeholder="Harus 18 Nomor">
                             </div>
                             <div class="form-group col-md-6">
                                 <label for="tgl_lahir">Tanggal Lahir</label>
                                 <input type="date" class="form-control" name="tgl_lahir" id="tgl_lahir" required>
                             </div>
-                        </div>
-                        <div class="form-group col-md-12">
-                            <label for="email">Email</label>
-                            <input type="email" class="form-control" name="email" id="email" required placeholder="Masukan Email">
                         </div>
                         <div class="d-flex">
                             <div class="form-group col-md-12">
@@ -123,6 +117,10 @@
                         <div class="form-group col-md-12">
                             <label for="alamat">Alamat</label>
                             <input type="text" class="form-control" name="alamat" id="alamat" required placeholder="Maksimal 255 Karakter">
+                        </div>
+                        <div class="form-group col-md-12">
+                            <label for="password">Password</label>
+                            <input type="text" class="form-control" name="password" id="password" required placeholder="Maksimal 255 Karakter">
                         </div>
                     </div>
                     <div class="modal-footer">
@@ -155,17 +153,13 @@
                         </div>
                         <div class="d-flex">
                             <div class="form-group col-md-6">
-                                <label for="nip">NIP</label>
+                                <label for="nip">NIDN </label>
                                 <input type="text" class="form-control" name="nip" id="edit-nip" required placeholder="Maksimal 18 Nomor">
                             </div>
                             <div class="form-group col-md-6">
                                 <label for="tgl_lahir">Tanggal Lahir</label>
                                 <input type="date" class="form-control" name="tgl_lahir" id="edit-tgl_lahir" required>
                             </div>
-                        </div>
-                        <div class="form-group col-md-12">
-                            <label for="email">Email</label>
-                            <input type="email" class="form-control" name="email" id="edit-email" required placeholder="Masukan Email">
                         </div>
                         <div class="d-flex">
                             <div class="form-group col-md-12">
@@ -191,6 +185,10 @@
                         <div class="form-group col-md-12">
                             <label for="alamat">Alamat</label>
                             <input type="text" class="form-control" name="alamat" id="edit-alamat" required placeholder="Maksimal 255 Karakter">
+                        </div>
+                        <div class="form-group col-md-12">
+                            <label for="password">Password</label>
+                            <input type="text" class="form-control" name="password" id="edit-password" required placeholder="Maksimal 255 Karakter">
                         </div>
                     </div>
                     <div class="modal-footer">
@@ -244,7 +242,6 @@
                     dataType: 'json',
                     success: function(res){
                         $('#edit-nama').val(res.nama);
-                        $('#edit-email').val(res.email);
                         $('#edit-kontak').val(res.kontak);
                         $('#edit-alamat').val(res.alamat);
                         $('#edit-id').val(res.id);

@@ -35,7 +35,7 @@
                         <td>{{$skripsis->halaman}}</td>
                         <td>
                             <a type="button" id="btn-edit-skripsi" class="btn btn-sm btn-success" href="/home/skripsi/detail/{{$skripsis->id}}">
-                                Lihat Detail
+                                Lihat Detail Skripsi
                             </a>
                         </td>
                     </tr>

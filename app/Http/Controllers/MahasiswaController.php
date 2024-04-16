@@ -40,8 +40,8 @@ class MahasiswaController extends Controller
         $mahasiswa->tgl_lahir = $req->get('tgl_lahir');
         $mahasiswa->alamat = $req->get('alamat');
         $mahasiswa->angkatan = $req->get('angkatan');
-        $mahasiswa->password = Hash::make($req->get('password'));
         $mahasiswa->prodi = $req->get('prodi');
+        $mahasiswa->password = Hash::make($req->get('password'));
         $mahasiswa->roles_id = 2 ;
 
         $mahasiswa->save();

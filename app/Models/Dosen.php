@@ -10,4 +10,8 @@ class Dosen extends Model
     use HasFactory;
 
     protected $guarded = [];
+
+    public function findForPassport($username) {
+        return $this->orWhere('email', $username)->orWhere('npm', $username)->first();
+    }
 }

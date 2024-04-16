@@ -63,14 +63,25 @@ Route::middleware('is_admin')->group(function () {
     Route::get('/admin/skripsi/detail/{id}', [SkripsiController::class, 'showPdf'])->name('pdf.show');
 });
 
-// Route Detail Skripsi ---------------------------------------------------------------------------
 
+Route::get('/welcome/detail/{id}', [SkripsiController::class, 'welcomeskripsi']);
+// Route Detail Mahasiswa ---------------------------------------------------------------------------
 Route::middleware('is_mahasiswa')->group(function () {
-    
+
     Route::get('/home/skripsi/detail/{id}', [SkripsiController::class, 'detailskripsi']);
-    Route::get('/welcome/detail/{id}', [SkripsiController::class, 'welcomeskripsi']);
     Route::get('/home/skripsi', [SkripsiController::class, 'mahasiswa'])->name('mahasiswa.skripsi');
 
 });
 
 // View File PDF -----------------------------------------------------------------------------------
+Route::middleware('is_dosen')->group(function () {
+
+    Route::get('/dosen/skripsi', [SkripsiController::class, 'indexDosen'])->name('dosenskripsi');
+    Route::post('/dosen/skripsi', [SkripsiController::class, 'add'])->name('add.skripsi');
+    Route::patch('/dosen/skripsi/ubah1', [SkripsiController::class, 'ubah1'])->name('ubah1.skripsi');
+    Route::get('dosen/ajaxdosen/dataSkripsi/{id}', [SkripsiController::class, 'ambilDataSkripsi']);
+    Route::get('/dosen/skripsi/delete/{id}', [SkripsiController::class, 'delete'])->name('delete.skripsi');
+
+    Route::get('/dosen/skripsi/detail/{id}', [SkripsiController::class, 'tampilPdf'])->name('pdf.show');
+    // Route::get('/welcome/detail/{id}', [SkripsiController::class, 'welcomeskripsi']);
+});

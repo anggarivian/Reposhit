@@ -112,7 +112,6 @@
                                         <th>No</th>
                                         <th>Judul</th>
                                         <th>Penulis</th>
-                                        <th>Abstrak</th>
                                         <th>Dosen Pembimbing</th>
                                         <th>Rilis</th>
                                         <th>Halaman</th>
@@ -126,7 +125,6 @@
                                         <td>{{$no++}}</td>
                                         <td>{{$skripsis->judul}}</td>
                                         <td>{{$skripsis->penulis}}</td>
-                                        <td>{{ Str::limit($skripsis->abstrak, 20) }}</td>
                                         <td>{{$skripsis->dospem}}</td>
                                         <td>{{$skripsis->rilis}}</td>
                                         <td>{{$skripsis->halaman}}</td>

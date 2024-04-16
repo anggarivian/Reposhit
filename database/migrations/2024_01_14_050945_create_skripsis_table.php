@@ -21,11 +21,11 @@ class CreateSkripsisTable extends Migration
             $table->string('rilis');
             $table->string('halaman');
             $table->string('cover');
-            // $table->string('pengesahan');
-            // $table->string('abstrak');
-            // $table->string('daftarisi');
-            // $table->string('daftargambar');
-            // $table->string('daftarlampiran');
+            $table->string('pengesahan');
+            $table->string('abstrak');
+            $table->string('daftarisi');
+            $table->string('daftargambar');
+            $table->string('daftarlampiran');
             $table->string('bab1');
             $table->string('bab2');
             $table->string('bab3');

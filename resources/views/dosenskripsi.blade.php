@@ -39,6 +39,7 @@
                 <tbody>
                     @php $no=1; @endphp
                     @foreach($skripsi as $skripsis)
+                    @if($users->name == $skripsis->dospem)
                     <tr>
                         <td>{{$no++}}</td>
                         <td>{{$skripsis->judul}}</td>
@@ -48,7 +49,7 @@
                         <td>{{$skripsis->halaman}}</td>
                         <td>
                             <div class="form-group" role="group" aria-label="Basic example">
-                                <a href="/admin/skripsi/detail/{{$skripsis->id}}">
+                                <a href="/dosen/skripsi/detail/{{$skripsis->id}}">
                                     <button class="btn btn-sm btn-info">
                                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
                                     </button>
@@ -68,6 +69,7 @@
                             </div>
                         </td>
                     </tr>
+                    @endif
                     @endforeach
                 </tbody>
             </table>
@@ -85,7 +87,7 @@
                     <span aria-hidden="true">&times;</span>
                 </button>
                 </div>
-                <form method="post" action="{{ route('tambah.skripsi')}}" enctype="multipart/form-data">
+                <form method="post" action="{{ route('add.skripsi')}}" enctype="multipart/form-data">
                     @csrf
                     <div class="modal-body">
                         <div class="form-group">
@@ -198,7 +200,7 @@
                     <span aria-hidden="true">&times;</span>
                 </button>
                 </div>
-                <form method="post" action="{{ route('ubah.skripsi')}}" enctype="multipart/form-data">
+                <form method="post" action="{{ route('ubah1.skripsi')}}" enctype="multipart/form-data">
                     @csrf
                     @method ('PATCH')
                     <div class="modal-body">
@@ -338,7 +340,7 @@
 
                 $.ajax({
                     type: "get",
-                    url: "{{url('/admin/ajaxadmin/dataSkripsi')}}/"+id,
+                    url: "{{url('/dosen/ajaxdosen/dataSkripsi')}}/"+id,
                     dataType: 'json',
                     success: function(res){
                         $('#edit-judul').val(res.judul);
@@ -440,7 +442,7 @@
                     var CSRF_TOKEN = $('meta[name="csrf-token"]').attr('content');
                     $.ajax({
                         type: 'GET',
-                        url: "{{url('/admin/skripsi/hapus')}}/"+id,
+                        url: "{{url('/dosen/skripsi/delete')}}/"+id,
                         data: {_token: CSRF_TOKEN},
                         dataType: 'JSON',
                         success: function (results) {

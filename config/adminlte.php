@@ -313,6 +313,12 @@ return [
             'can'  => 'isMahasiswa',
         ],
         [
+            'text' => 'Data Skripsi',
+            'url'  => 'dosen/skripsi',
+            'icon' => 'fas fa-fw fa-book',
+            'can'  => 'isDosen',
+        ],
+        [
             'header' => 'KELOLA DATA PENGGUNA',
             'can'    => 'isAdmin',
         ],

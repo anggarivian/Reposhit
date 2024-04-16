@@ -21,7 +21,7 @@
         <!-- Navigation-->
         <nav class="navbar navbar-expand-lg bg-secondary text-uppercase fixed-top" id="mainNav">
             <div class="container">
-                <a class="navbar-brand" href="/welcome">Faster</a>
+                <a class="navbar-brand" href="/welcome">Fakultas Sains Terapan (FASTER)</a>
                 <button class="navbar-toggler text-uppercase font-weight-bold bg-primary text-white rounded" type="button" data-bs-toggle="collapse" data-bs-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
                     Menu
                     <i class="fas fa-bars"></i>
@@ -38,6 +38,9 @@
                         @else
                             <li class="nav-item mx-0 mx-lg-1">
                                 <a href="{{ route('login') }}" class="nav-link py-3 px-0 px-lg-3 rounded">Log in</a>
+                            </li>
+                            <li class="nav-item mx-0 mx-lg-1">
+                                <a href="{{ route('register') }}" class="nav-link py-3 px-0 px-lg-3 rounded">Register</a>
                             </li>
                             @endauth
                         @endif
@@ -162,7 +165,7 @@
                             @else
                                 {{-- Pengguna belum login, tampilkan pesan --}}
                                 <a href="/login" class="btn btn-info m-3">
-                                    Silahkan Login Untuk Melihat
+                                    Silahkan Login Untuk Melihat Skripsi
                                 </a>
                             @endif
                         </div>

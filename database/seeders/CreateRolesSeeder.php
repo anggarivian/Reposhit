@@ -22,6 +22,10 @@ class CreateRolesSeeder extends Seeder
             [
                 'id' => 2,
                 'name' => 'User'
+            ],
+            [
+                'id' => 3,
+                'name' => 'Dosen'
             ]
         ];
 

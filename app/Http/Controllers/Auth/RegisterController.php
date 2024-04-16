@@ -52,7 +52,6 @@ class RegisterController extends Controller
         return Validator::make($data, [
             'npm' => ['required', 'string', 'max:10', 'min:10', 'unique:users,npm'],
             'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'email', 'max:255', 'unique:users,email'],
             'tgl_lahir' => ['required', 'date'],
             'alamat' => ['required', 'string', 'max:255'],
             'angkatan' => ['required', 'string', 'max:4', 'min:4'],
@@ -72,7 +71,6 @@ class RegisterController extends Controller
         return User::create([
             'npm' => $data['npm'],
             'name' => $data['name'],
-            'email' => $data['email'],
             'status'=>0,
             'tgl_lahir' => $data['tgl_lahir'],
             'alamat' => $data['alamat'],

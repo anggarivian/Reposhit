@@ -52,7 +52,7 @@ class HomeController extends Controller
     public function welcome(Request $req){
 
         $query = Skripsi::query();
-        $query->select('id','judul','penulis','rilis', 'abstrak','dospem','halaman');
+        $query->select('id','judul','penulis','rilis','dospem','halaman');
         if(!empty($req->judul)){
             $query->where('judul', 'LIKE', '%' . $req->judul . '%');
         }
