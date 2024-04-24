@@ -216,27 +216,24 @@
             document.querySelectorAll('.showPdfButton').forEach(function(button) {
                 button.addEventListener('click', function() {
                     var targetAttribute = this.getAttribute('data-target');
-    
+
                     // Sembunyikan semua iframe dan header (nama atribut) terlebih dahulu
                     document.querySelectorAll('iframe').forEach(function(iframe) {
                         iframe.style.display = 'none';
                     });
-    
+
                     document.querySelectorAll('h2').forEach(function(header) {
                         header.style.display = 'none';
                     });
-    
+
                     // Tampilkan iframe dan header yang sesuai dengan tombol yang ditekan
                     var pdfFrame = document.getElementById(targetAttribute + 'Frame');
                     var pdfHeader = document.getElementById(targetAttribute + 'Header');
-    
+
                     pdfFrame.style.display = 'block';
                     pdfHeader.style.display = 'block';
                 });
             });
         </script>
-        {{-- <script>
-            
-        </script> --}}
     </body>
 </html>

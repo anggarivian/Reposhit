@@ -70,6 +70,7 @@ Route::middleware('is_mahasiswa')->group(function () {
 
     Route::get('/home/skripsi/detail/{id}', [SkripsiController::class, 'detailskripsi']);
     Route::get('/home/skripsi', [SkripsiController::class, 'mahasiswa'])->name('mahasiswa.skripsi');
+    Route::post('/home/skripsi/{id}/comment', [SkripsiController::class, 'addComment'])->name('skripsi.comment');
 
 });
 
@@ -83,5 +84,5 @@ Route::middleware('is_dosen')->group(function () {
     Route::get('/dosen/skripsi/delete/{id}', [SkripsiController::class, 'delete'])->name('delete.skripsi');
 
     Route::get('/dosen/skripsi/detail/{id}', [SkripsiController::class, 'tampilPdf'])->name('pdf.show');
-    // Route::get('/welcome/detail/{id}', [SkripsiController::class, 'welcomeskripsi']);
+
 });

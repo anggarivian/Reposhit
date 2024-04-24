@@ -107,23 +107,19 @@
                     </div>
                     <div class="d-flex">
                         <div class="form-group col-md-6">
-                            <label for="email">Email</label>
-                            <input type="email" class="form-control" name="email" id="email" required placeholder="Masukan Email">
-                        </div>
-                        <div class="form-group col-md-6">
                             <label for="password">Password</label>
                             <input type="text" class="form-control" name="password" id="password" required placeholder="Minimal 8 Karakter">
                         </div>
-                    </div>
-                    <div class="d-flex">
                         <div class="form-group col-md-6">
                             <label for="angkatan">Angkatan</label>
                             <input type="text" class="form-control" name="angkatan" id="angkatan" required placeholder="Harus 4 Angka">
                         </div>
-                        <div class="form-group col-md-6">
+                    </div>
+                    <div class="d-flex">
+                        <div class="form-group col-md-12">
                             <label for="prodi">Program Studi</label>
                             <select name="prodi" class="form-control" id="prodi" >
-                                <option disabled >Pilih</option>
+                                <option disabled selected >Pilih</option>
                                 <option value="Agribisnis">Agribisnis</option>
                                 <option value="Agroteknologi">Agroteknologi</option>
                                 <option value="Pemanfaatan Sumberdaya Perikanan">Pemanfaatan Sumberdaya Perikanan</option>
@@ -170,12 +166,6 @@
                         <div class="form-group col-md-6">
                             <label for="tgl_lahir">Tanggal Lahir</label>
                             <input type="date" class="form-control" name="tgl_lahir" id="edit-tgl_lahir" required>
-                        </div>
-                    </div>
-                    <div class="d-flex">
-                        <div class="form-group col-md-12">
-                            <label for="email">Email</label>
-                            <input type="email" class="form-control" name="email" id="edit-email" required placeholder="Masukan Email">
                         </div>
                     </div>
                     <div class="d-flex">

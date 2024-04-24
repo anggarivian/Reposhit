@@ -97,7 +97,7 @@
                             <div class="form-group col-md-12">
                                 <label for="program_studi">Program Studi</label>
                                 <select name="program_studi" class="form-control" id="program_studi" >
-                                    <option disabled >Pilih</option>
+                                    <option disabled selected>Pilih</option>
                                     <option value="Agribisnis">Agribisnis</option>
                                     <option value="Agroteknologi">Agroteknologi</option>
                                     <option value="Pemanfaatan Sumberdaya Perikanan">Pemanfaatan Sumberdaya Perikanan</option>
@@ -120,7 +120,7 @@
                         </div>
                         <div class="form-group col-md-12">
                             <label for="password">Password</label>
-                            <input type="text" class="form-control" name="password" id="password" required placeholder="Maksimal 255 Karakter">
+                            <input type="text" class="form-control" name="password" id="password" required placeholder="Maksimal 8 Karakter">
                         </div>
                     </div>
                     <div class="modal-footer">
@@ -165,7 +165,7 @@
                             <div class="form-group col-md-12">
                                 <label for="program_studi">Program Studi</label>
                                 <select name="program_studi" class="form-control" id="program_studi" >
-                                    <option disabled >Pilih</option>
+                                    <option disabled>Pilih</option>
                                     <option value="Agribisnis">Agribisnis</option>
                                     <option value="Agroteknologi">Agroteknologi</option>
                                     <option value="Pemanfaatan Sumberdaya Perikanan">Pemanfaatan Sumberdaya Perikanan</option>
@@ -188,7 +188,7 @@
                         </div>
                         <div class="form-group col-md-12">
                             <label for="password">Password</label>
-                            <input type="text" class="form-control" name="password" id="edit-password" required placeholder="Maksimal 255 Karakter">
+                            <input type="text" class="form-control" name="password" id="edit-password" required placeholder="Maksimal 8 Karakter">
                         </div>
                     </div>
                     <div class="modal-footer">

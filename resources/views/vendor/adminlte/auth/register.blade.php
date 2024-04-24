@@ -20,20 +20,21 @@
         {{-- Name field --}}
         <div class="input-group mb-3">
             <input type="text" name="npm" class="form-control @error('npm') is-invalid @enderror"
-                   value="{{ old('npm') }}" placeholder="{{ __('NPM atau NIM') }}" autofocus>
-        
+                   value="{{ old('npm') }}" placeholder="{{ __('NPM atau NIM') }}" autofocus required maxlength="255">
+
             <div class="input-group-append">
                 <div class="input-group-text">
-                    <span class="fas fa-user {{ config('adminlte.classes_auth_icon', '') }}"></span>
+                    <span class="fas fa-home {{ config('adminlte.classes_auth_icon', '') }}"></span>
                 </div>
             </div>
-        
-            @error('npm')
+
+                @error('npm')
                 <span class="invalid-feedback" role="alert">
                     <strong>{{ $message }}</strong>
                 </span>
             @enderror
         </div>
+
         <div class="input-group mb-3">
             <input type="text" name="name" class="form-control @error('name') is-invalid @enderror"
                    value="{{ old('name') }}" placeholder="{{ __('adminlte::adminlte.full_name') }}" autofocus>
@@ -54,7 +55,7 @@
             <div class="input-group mb-3">
                 <input type="text" name="alamat" class="form-control @error('alamat') is-invalid @enderror"
                        value="{{ old('alamat') }}" placeholder="{{ __('Alamat') }}" autofocus required maxlength="255">
-            
+
                 <div class="input-group-append">
                     <div class="input-group-text">
                         <span class="fas fa-home {{ config('adminlte.classes_auth_icon', '') }}"></span>
@@ -67,11 +68,11 @@
                     </span>
                 @enderror
             </div>
-            
+
             <div class="input-group mb-3">
                 <input type="text" name="angkatan" class="form-control @error('angkatan') is-invalid @enderror"
                        value="{{ old('angkatan') }}" placeholder="{{ __('Angkatan') }}" autofocus required maxlength="4">
-            
+
                 <div class="input-group-append">
                     <div class="input-group-text">
                         <span class="fas fa-graduation-cap {{ config('adminlte.classes_auth_icon', '') }}"></span>
@@ -88,7 +89,7 @@
             <div class="input-group mb-3">
                 <input type="date" name="tgl_lahir" class="form-control @error('tgl_lahir') is-invalid @enderror"
                        value="{{ old('tgl_lahir') }}" placeholder="{{ __('Tanggal Lahir') }}" autofocus required>
-            
+
                 {{-- <div class="input-group-append">
                     <div class="input-group-text">
                         <span class="fas fa-calendar {{ config('adminlte.classes_auth_icon', '') }}"></span>

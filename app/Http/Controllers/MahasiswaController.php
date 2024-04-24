@@ -23,7 +23,7 @@ class MahasiswaController extends Controller
         $req->validate([
             'name' => 'required|string|max:30',
             'npm' => 'required|string|max:10|min:10|unique:users,npm',
-            'email' => 'required|email|max:50|unique:users,email',
+            // 'email' => 'required|email|max:50|unique:users,email',
             'tgl_lahir' => 'required|date',
             'alamat' => 'required|string|max:255',
             'angkatan' => 'required|string|max:4|min:4',
@@ -36,7 +36,7 @@ class MahasiswaController extends Controller
 
         $mahasiswa->name = $req->get('name');
         $mahasiswa->npm = $req->get('npm');
-        $mahasiswa->email = $req->get('email');
+        // $mahasiswa->email = $req->get('email');
         $mahasiswa->tgl_lahir = $req->get('tgl_lahir');
         $mahasiswa->alamat = $req->get('alamat');
         $mahasiswa->angkatan = $req->get('angkatan');
@@ -65,7 +65,7 @@ class MahasiswaController extends Controller
         $req->validate([
             'name' => 'required|string|max:30',
             'npm' => 'required|string|max:10|min:10',
-            'email' => 'required|email|max:50',
+            // 'email' => 'required|email|max:50',
             'tgl_lahir' => 'required|date',
             'alamat' => 'required|string|max:255',
             'angkatan' => 'required|string|max:4|min:4',
@@ -77,7 +77,7 @@ class MahasiswaController extends Controller
 
         $mahasiswa->name = $req->get('name');
         $mahasiswa->npm = $req->get('npm');
-        $mahasiswa->email = $req->get('email');
+        // $mahasiswa->email = $req->get('email');
         $mahasiswa->tgl_lahir = $req->get('tgl_lahir');
         $mahasiswa->alamat = $req->get('alamat');
         $mahasiswa->angkatan = $req->get('angkatan');

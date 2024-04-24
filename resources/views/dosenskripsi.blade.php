@@ -14,9 +14,9 @@
             <div class="d-flex justify-content-between mb-3">
                 <div class="tombol">
                     <!-- Button trigger modal -->
-                    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal">
+                    {{-- <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal">
                         Tambah Data Skripsi
-                    </button>
+                    </button> --}}
                 </div>
                 {{-- <div class="tombol">
                     <button type="button" class="btn btn-info" >
@@ -66,6 +66,9 @@
                                         <path d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1ZM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118ZM2.5 3h11V2h-11v1Z"/>
                                     </svg>
                                 </button>
+                                {{-- <button type="button" class="btn btn-sm btn-info" onclick="verifikasiConfirmation('{{$skripsis->id}}' , '{{$skripsis->name}}' )">
+                                    Verifikasi
+                                </button> --}}
                             </div>
                         </td>
                     </tr>
@@ -77,7 +80,7 @@
     </div>
 </div>
 
-    <!-- Modal -->
+    {{-- <!-- Modal -->
     <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -188,7 +191,7 @@
                 </form>
             </div>
         </div>
-    </div>
+    </div> --}}
 
     <!-- Modal Edit -->
     <div class="modal fade" id="edit" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -209,7 +212,7 @@
                             <label for="judul">Judul</label>
                             <input type="text" class="form-control" name="judul" id="edit-judul" required placeholder="Masukkan Judul Skripsi">
                         </div>
-                        <div class="form-group">
+                        {{-- <div class="form-group">
                             <label for="penulis">Penulis</label>
                             <select name="penulis" class="form-control" id="edit-penulis">
                                 <option selected >Pilih</option>
@@ -226,7 +229,7 @@
                                     <option value="{{$nama->nama}}" >{{$nama->nama}}</option>
                                 @endforeach
                             </select>
-                        </div>
+                        </div> --}}
                         <div class="d-flex" style="margin: -7px">
                             <div class="form-group col-md-6">
                                 <label for="rilis">Rilis Pada Tahun</label>
@@ -463,5 +466,6 @@
                 return false;
             })
         }
+
 </script>
 @stop

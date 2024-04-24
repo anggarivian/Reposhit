@@ -1,6 +1,6 @@
 @extends('adminlte::page')
 
-@section('title', 'AdminLTE')
+@section('title', 'Detail Skripsi')
 
 @section('content_header')
 <h1 class="m-0 text-dark">Detail Skripsi</h1>
@@ -88,6 +88,33 @@
                 <!-- Sembunyikan iframe dengan ID sesuai dengan atribut -->
                 <iframe id="{{ $attribute }}Frame" src="data:application/pdf;base64,{{ $pdf }}#toolbar=0&navpanes=0&view=fitH" width="100%" height="600px" style="display: none;"></iframe>
             @endforeach
+
+            {{-- Bagian komentar
+            <hr>
+            <h2>Komentar</h2>
+            <!-- Form untuk menambahkan komentar -->
+            <form action="{{ route('skripsi.comment', ['id' => $skripsi->id]) }}" method="POST">
+                @csrf
+                <div class="form-group">
+                    <!-- Kolom input untuk menulis komentar -->
+                    <textarea name="comment" class="form-control" rows="3" placeholder="Tambahkan komentar"></textarea>
+                </div>
+                <!-- Tombol untuk mengirimkan komentar -->
+                <button type="submit" class="btn btn-primary">Kirim</button>
+            </form>
+            <!-- Daftar komentar yang sudah ada -->
+            @if(isset($skripsi->comments) && $skripsi->comments->count() > 0)
+            <hr>
+            <h5>Komentar Sebelumnya:</h5>
+            <ul class="list-unstyled">
+                @foreach($skripsi->comments as $comment)
+                    <li>
+                        <strong>{{ $comment->user->name }}</strong> - {{ $comment->created_at->diffForHumans() }}:
+                        {{ $comment->content }}
+                    </li>
+                @endforeach
+            </ul>
+            @endif --}}
             </div>
         </div>
     </div>
