@@ -3,122 +3,120 @@
 @section('title', 'Detail Skripsi')
 
 @section('content_header')
-<h1 class="m-0 text-dark">Detail Skripsi</h1>
+    <h1 class="m-0 text-dark">Detail Skripsi</h1>
 @stop
 
 @section('content')
-<div class="row">
-    <div class="col-12">
-        <div class="card">
-            <div class="card-body">
-                <table class="table table-borderless">
-                    <tr>
-                        <td style="width: 200px;">Judul Skripsi</td>
-                        <td style="width: 20px;">:</td>
-                        <td>{{$skripsi->judul}}</td>
-                    </tr>
-                    <tr>
-                        <td style="width: 200px;">Penulis</td>
-                        <td style="width: 20px;">:</td>
-                        <td>{{$skripsi->penulis}}</td>
-                    </tr>
-                    <tr>
-                        <td style="width: 200px;">Dosen Pembimbing</td>
-                        <td style="width: 20px;">:</td>
-                        <td>{{$skripsi->dospem}}</td>
-                    </tr>
-                    <tr>
-                        <td style="width: 200px;">Rilis Tahun</td>
-                        <td style="width: 20px;">:</td>
-                        <td>{{$skripsi->rilis}}</td>
-                    </tr>
-                    <tr>
-                        <td style="width: 200px;">Halaman</td>
-                        <td style="width: 20px;">:</td>
-                        <td>{{$skripsi->halaman}}</td>
-                    </tr>
-                </table>
-                <hr>
-                {{-- Tombol untuk menampilkan/menyembunyikan iframe --}}
-                @foreach($pdfs as $attribute => $pdf)
-                @php
-                    $label = $attribute == 'dapus'
-                        ? 'Daftar Pustaka'
-                        : (strpos($attribute, 'bab') === 0
-                            ? 'Bab ' . (
-                                $attribute == 'bab1' ? 'I' : (
-                                    $attribute == 'bab2' ? 'II' : (
-                                        $attribute == 'bab3' ? 'III' : (
-                                            $attribute == 'bab4' ? 'IV' : (
-                                                $attribute == 'bab5' ? 'V' : $attribute
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body">
+                    <table class="table table-borderless">
+                        <tr>
+                            <td style="width: 200px;">Judul Skripsi</td>
+                            <td style="width: 20px;">:</td>
+                            <td>{{$skripsi->judul}}</td>
+                        </tr>
+                        <tr>
+                            <td style="width: 200px;">Penulis</td>
+                            <td style="width: 20px;">:</td>
+                            <td>{{$skripsi->penulis}}</td>
+                        </tr>
+                        <tr>
+                            <td style="width: 200px;">Dosen Pembimbing</td>
+                            <td style="width: 20px;">:</td>
+                            <td>{{$skripsi->dospem}}</td>
+                        </tr>
+                        <tr>
+                            <td style="width: 200px;">Rilis Tahun</td>
+                            <td style="width: 20px;">:</td>
+                            <td>{{$skripsi->rilis}}</td>
+                        </tr>
+                        <tr>
+                            <td style="width: 200px;">Halaman</td>
+                            <td style="width: 20px;">:</td>
+                            <td>{{$skripsi->halaman}}</td>
+                        </tr>
+                    </table>
+                    <hr>
+                    {{-- Tombol untuk menampilkan/menyembunyikan iframe --}}
+                    @foreach($pdfs as $attribute => $pdf)
+                        @php
+                            $label = $attribute == 'dapus'
+                                ? 'Daftar Pustaka'
+                                : (strpos($attribute, 'bab') === 0
+                                    ? 'Bab ' . (
+                                        $attribute == 'bab1' ? 'I' : (
+                                            $attribute == 'bab2' ? 'II' : (
+                                                $attribute == 'bab3' ? 'III' : (
+                                                    $attribute == 'bab4' ? 'IV' : (
+                                                        $attribute == 'bab5' ? 'V' : $attribute
+                                                    )
+                                                )
                                             )
                                         )
                                     )
-                                )
-                            )
-                            : $attribute
-                        );
-                @endphp
-                <button class="btn btn-info m-3 showPdfButton" data-target="{{ $attribute }}">
-                    Lihat {{ ucfirst($label) }}
-                </button>
-            @endforeach
+                                    : $attribute
+                                );
+                        @endphp
+                        <button class="btn btn-info m-3 showPdfButton" data-target="{{ $attribute }}">
+                            Lihat {{ ucfirst($label) }}
+                        </button>
+                    @endforeach
 
-            {{-- Menampilkan semua PDF --}}
-            @foreach($pdfs as $attribute => $pdf)
-                @php
-                    $label = $attribute == 'dapus'
-                        ? 'Daftar Pustaka'
-                        : (strpos($attribute, 'bab') === 0
-                            ? 'Bab ' . (
-                                $attribute == 'bab1' ? 'I' : (
-                                    $attribute == 'bab2' ? 'II' : (
-                                        $attribute == 'bab3' ? 'III' : (
-                                            $attribute == 'bab4' ? 'IV' : (
-                                                $attribute == 'bab5' ? 'V' : $attribute
+                    {{-- Menampilkan semua PDF --}}
+                    @foreach($pdfs as $attribute => $pdf)
+                        @php
+                            $label = $attribute == 'dapus'
+                                ? 'Daftar Pustaka'
+                                : (strpos($attribute, 'bab') === 0
+                                    ? 'Bab ' . (
+                                        $attribute == 'bab1' ? 'I' : (
+                                            $attribute == 'bab2' ? 'II' : (
+                                                $attribute == 'bab3' ? 'III' : (
+                                                    $attribute == 'bab4' ? 'IV' : (
+                                                        $attribute == 'bab5' ? 'V' : $attribute
+                                                    )
+                                                )
                                             )
                                         )
                                     )
-                                )
-                            )
-                            : $attribute
-                        );
-                @endphp
-                <h2 id="{{ $attribute }}Header" style="display: none;">{{ ucfirst($label) }}</h2>
-                <!-- Sembunyikan iframe dengan ID sesuai dengan atribut -->
-                <iframe id="{{ $attribute }}Frame" src="data:application/pdf;base64,{{ $pdf }}#toolbar=0&navpanes=0&view=fitH" width="100%" height="600px" style="display: none;"></iframe>
-            @endforeach
+                                    : $attribute
+                                );
+                        @endphp
+                        <h2 id="{{ $attribute }}Header" style="display: none;">{{ ucfirst($label) }}</h2>
+                        <!-- Sembunyikan iframe dengan ID sesuai dengan atribut -->
+                        <iframe id="{{ $attribute }}Frame" src="data:application/pdf;base64,{{ $pdf }}#toolbar=0&navpanes=0&view=fitH" width="100%" height="600px" style="display: none;"></iframe>
+                    @endforeach
 
-            {{-- Bagian komentar
-            <hr>
-            <h2>Komentar</h2>
-            <!-- Form untuk menambahkan komentar -->
-            <form action="{{ route('skripsi.comment', ['id' => $skripsi->id]) }}" method="POST">
-                @csrf
-                <div class="form-group">
-                    <!-- Kolom input untuk menulis komentar -->
-                    <textarea name="comment" class="form-control" rows="3" placeholder="Tambahkan komentar"></textarea>
+                    {{-- Form untuk menambahkan komentar --}}
+                    <h2>Komentar</h2>
+                    <form action="{{ route('tambah.comment', ['skripsi' => $skripsi->id]) }}" method="POST">
+                        @csrf
+                        <div class="form-group">
+                            <!-- Kolom input untuk menulis komentar -->
+                            <textarea name="content" class="form-control" rows="3" placeholder="Tambahkan komentar"></textarea>
+                        </div>
+                        <!-- Tombol untuk mengirimkan komentar -->
+                        <button type="submit" class="btn btn-primary">Kirim</button>
+                    </form>
+
+                    {{-- @if($comments->count() > 0)
+                    <h2>Komentar</h2>
+                    <ul>
+                        @foreach($comments as $comment)
+                            <li>{{ $comment->content }}</li>
+                        @endforeach
+                    </ul>
+                @else
+                    <p>Tidak ada komentar untuk skripsi ini.</p>
+                @endif --}}
+
+
                 </div>
-                <!-- Tombol untuk mengirimkan komentar -->
-                <button type="submit" class="btn btn-primary">Kirim</button>
-            </form>
-            <!-- Daftar komentar yang sudah ada -->
-            @if(isset($skripsi->comments) && $skripsi->comments->count() > 0)
-            <hr>
-            <h5>Komentar Sebelumnya:</h5>
-            <ul class="list-unstyled">
-                @foreach($skripsi->comments as $comment)
-                    <li>
-                        <strong>{{ $comment->user->name }}</strong> - {{ $comment->created_at->diffForHumans() }}:
-                        {{ $comment->content }}
-                    </li>
-                @endforeach
-            </ul>
-            @endif --}}
             </div>
         </div>
     </div>
-</div>
 @stop
 
 @section('js')

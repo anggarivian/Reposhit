@@ -7,8 +7,9 @@ use Illuminate\Database\Eloquent\Model;
 
 class Comment extends Model
 {
+    protected $fillable = ['skripsi_id', 'content'];
     public function comments()
     {
-        return $this->hasMany(Comment::class);
+        return $this->belongsTo(Skripsi::class);
     }
 }

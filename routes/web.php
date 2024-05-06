@@ -5,7 +5,7 @@ use App\Http\Controllers\HomeController;
 use App\Http\Controllers\DosenController;
 use App\Http\Controllers\SkripsiController;
 use App\Http\Controllers\MahasiswaController;
-
+use App\Http\Controllers\CommentController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -70,7 +70,8 @@ Route::middleware('is_mahasiswa')->group(function () {
 
     Route::get('/home/skripsi/detail/{id}', [SkripsiController::class, 'detailskripsi']);
     Route::get('/home/skripsi', [SkripsiController::class, 'mahasiswa'])->name('mahasiswa.skripsi');
-    Route::post('/home/skripsi/{id}/comment', [SkripsiController::class, 'addComment'])->name('skripsi.comment');
+    // Definisikan rute untuk menyimpan komentar
+    Route::post('/home/skripsi/detail', [CommentController::class, 'store'])->name('tambah.comment');
 
 });
 

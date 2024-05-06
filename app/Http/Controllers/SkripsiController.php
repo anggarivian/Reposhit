@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use App\Models\Dosen;
 use App\Models\Skripsi;
-use App\Models\Comment;
+// use App\Models\Comment;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
@@ -618,25 +618,12 @@ class SkripsiController extends Controller
         return view('dosendetail', compact('pdfs', 'user', 'skripsi'));
     }
 
-    public function addComment(Request $request, $id)
-    {
-        $request->validate([
-            'comment' => 'required|string|max:255',
-        ]);
-
-        $skripsi = Skripsi::findOrFail($id);
-
-        $comment = new Comment();
-        $comment->content = $request->comment;
-        $comment->skripsi_id = $skripsi->id; // Sesuaikan dengan nama kolom foreign key pada tabel komentar
-        $comment->save();
-
-        return redirect()->back()->with('success', 'Komentar berhasil ditambahkan.');
-    }
-
+    // Fungsi untuk menampilkan skripsi beserta komentarnya
     public function show($id)
-{
-    $skripsi = Skripsi::findOrFail($id);
-    return view('detail', ['skripsi' => $skripsi]);
-}
+    {
+        $skripsi = Skripsi::findOrFail($id);
+        $comments = $skripsi->comments; // Mengambil komentar terkait dengan skripsi
+
+        return view('detail', compact('skripsi', 'comments'));
+    }
 }
