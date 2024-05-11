@@ -619,11 +619,8 @@ class SkripsiController extends Controller
     }
 
     // Fungsi untuk menampilkan skripsi beserta komentarnya
-    public function show($id)
-    {
-        $skripsi = Skripsi::findOrFail($id);
-        $comments = $skripsi->comments; // Mengambil komentar terkait dengan skripsi
 
-        return view('detail', compact('skripsi', 'comments'));
-    }
+    // public function postkomentar (Request $request){
+    //     dd($request->all());
+    // }
 }

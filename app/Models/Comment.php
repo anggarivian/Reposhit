@@ -1,15 +1,20 @@
 <?php
 
 namespace App\Models;
-
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Comment extends Model
 {
-    protected $fillable = ['skripsi_id', 'content'];
-    public function comments()
+
+    protected $fillable = ['user_id', 'content'];
+
+    public function user()
     {
-        return $this->belongsTo(Skripsi::class);
+        return $this->belongsTo(User::class);
     }
+
+    // public function forum(){
+    //     return $this->belongsTo(Forum::class);
+    // }
 }

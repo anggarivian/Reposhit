@@ -18,7 +18,10 @@ class CreateCommentsTable extends Migration
             $table->string('skripsi_id')->unique();
             $table->string('id_user');
             $table->text('content');
+            // $table->text('forum_id');
+            // $table->text('parent');
             $table->timestamps();
+            // $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
         });
     }
 

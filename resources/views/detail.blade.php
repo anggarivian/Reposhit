@@ -89,8 +89,42 @@
                         <iframe id="{{ $attribute }}Frame" src="data:application/pdf;base64,{{ $pdf }}#toolbar=0&navpanes=0&view=fitH" width="100%" height="600px" style="display: none;"></iframe>
                     @endforeach
 
+                    <hr>
+                    <div class="btn-group">
+                        <button class="btn btn-default" id="btn-suka-utama"> <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-check2" viewBox="0 0 16 16">
+                            <path d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0"/>
+                            </svg>
+                            <span class="ms-1">Suka</span>
+                        </button>
+                        <button class="btn btn-default" id="btn-komentar-utama"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-chat-square" viewBox="0 0 16 16">
+                            <path d="M14 1a1 1 0 0 1 1 1v8a1 1 0 0 1-1 1h-2.5a2 2 0 0 0-1.6.8L8 14.333 6.1 11.8a2 2 0 0 0-1.6-.8H2a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1zM2 0a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2.5a1 1 0 0 1 .8.4l1.9 2.533a1 1 0 0 0 1.6 0l1.9-2.533a1 1 0 0 1 .8-.4H14a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2z"/>
+                            </svg>
+                            <span class="ms-1">Komentar</span>
+                        </button>
+                    </div>
+                    <form action="{{ route('postkomentar') }}" style="margin-top: 8px; display: none;" id="komentar-utama" method="POST">
+                        @csrf
+                        <!-- Input tersembunyi untuk menyimpan ID skripsi -->
+                        {{-- <input type="hidden" name="skripsi_id" value="{{ $skripsi->id }}"> --}}
+                        <!-- Textarea untuk konten komentar -->
+                        <textarea name="content" class="form-control" id="komentar_utama" rows="4"></textarea>
+
+                        <!-- Tombol Kirim -->
+                        <input type="submit" class="btn btn-primary" value="Kirim" style="margin-top: 8px;">
+                        <br>
+                    </form>
+<hr>
+                    @if(isset($comments) && $comments->count() > 0)
+                    <ul>
+                        @foreach($comments as $comment)
+                            <li>{{ $comment->content }}</li>
+                        @endforeach
+                    </ul>
+                @else
+                    <p>Tidak ada komentar saat ini.</p>
+                @endif
                     {{-- Form untuk menambahkan komentar --}}
-                    <h2>Komentar</h2>
+                    {{-- <h2>Komentar</h2>
                     <form action="{{ route('tambah.comment', ['skripsi' => $skripsi->id]) }}" method="POST">
                         @csrf
                         <div class="form-group">
@@ -99,7 +133,7 @@
                         </div>
                         <!-- Tombol untuk mengirimkan komentar -->
                         <button type="submit" class="btn btn-primary">Kirim</button>
-                    </form>
+                    </form> --}}
 
                     {{-- @if($comments->count() > 0)
                     <h2>Komentar</h2>
@@ -142,5 +176,12 @@
                 pdfHeader.style.display = 'block';
             });
         });
+
+    $(document).ready(function(){
+        $('#btn-komentar-utama').click(function(){
+            console.log('Tombol Komentar Utama diklik'); // Log pesan ke konsol
+            $('#komentar-utama').toggle('slide');
+        });
+    });
     </script>
 @stop
