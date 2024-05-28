@@ -22,15 +22,15 @@ class CommentController extends Controller
             'content' => 'required',
         ]);
 
-        $comment = new Comment;
-        $comment->skripsi_id = auth()->skripsi()->id;
-        $comment->id_user = auth()->user()->id;
+        $comment = new Comment();
+        $comment->skripsi_id = auth()->user()->skripsi_id; // Pastikan user memiliki atribut skripsi_id atau relasi
+        $comment->id_user = auth()->id();
         $comment->content = $request->content;
         $comment->save();
 
         return redirect()->back()->with('success', 'Komentar berhasil ditambahkan');
     }
-
+}
 
     // public function store(Request $req)
     // {
@@ -57,4 +57,3 @@ class CommentController extends Controller
 
     //     return view('detail', compact('skripsi', 'comments'));
     // }
-}
