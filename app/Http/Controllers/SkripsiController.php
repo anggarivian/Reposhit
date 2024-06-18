@@ -9,6 +9,7 @@ use App\Models\Skripsi;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
+use App\Models\Comment;
 
 class SkripsiController extends Controller
 {
@@ -241,7 +242,10 @@ class SkripsiController extends Controller
         $user = Auth::user();
         $skripsi = Skripsi::find($id);
         $data = Skripsi::findOrFail($id);
-
+        $comment = Comment::where('skripsi_id', $id)
+            ->join('users', 'comments.id_user', '=', 'users.id')
+            ->select('comments.*', 'users.name as user_name') // select the required fields
+            ->get();
         // Menyusun path untuk setiap file PDF yang ingin diambil
         $pdfPaths = [
             'cover' => storage_path('app/public/cover_skripsi/' . $data->cover),
@@ -279,7 +283,7 @@ class SkripsiController extends Controller
         }
 
         // Mengirim data PDF, data user, dan data skripsi ke view 'detail'
-        return view('detail', compact('pdfs', 'user', 'skripsi'));
+        return view('detail', compact('pdfs', 'user', 'skripsi', 'comment'));
     }
 
     // Get Data Skripsi ----------------------------------------------------------------------------------------------

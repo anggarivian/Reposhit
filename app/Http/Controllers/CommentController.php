@@ -21,12 +21,13 @@ class CommentController extends Controller
         $request->validate([
             'content' => 'required',
         ]);
-
+        // dd($request->id_skripsi);
         $comment = new Comment();
-        $comment->skripsi_id = auth()->user()->skripsi_id; // Pastikan user memiliki atribut skripsi_id atau relasi
+        $comment->skripsi_id = $request->id_skripsi; // Pastikan user memiliki atribut skripsi_id atau relasi
         $comment->id_user = auth()->id();
         $comment->content = $request->content;
         $comment->save();
+
 
         return redirect()->back()->with('success', 'Komentar berhasil ditambahkan');
     }
