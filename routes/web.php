@@ -72,6 +72,8 @@ Route::middleware('is_mahasiswa')->group(function () {
     Route::get('/home/skripsi', [SkripsiController::class, 'mahasiswa'])->name('mahasiswa.skripsi');
     // Definisikan rute untuk menyimpan komentar
     Route::post('/home/comment/detail', [CommentController::class, 'postkomentar'])->name('postkomentar');
+
+    Route::delete('/home/comment/hapus/{id}', [CommentController::class, 'deletekomentar'])->name('deletekomentar');
 });
 
 // View File PDF -----------------------------------------------------------------------------------

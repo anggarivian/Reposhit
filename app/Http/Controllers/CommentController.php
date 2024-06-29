@@ -29,32 +29,23 @@ class CommentController extends Controller
         $comment->save();
 
 
+         // Ambil ulang daftar komentar yang terkait dengan skripsi ini, urutkan berdasarkan waktu pembuatan (terbaru ke terlama)
+        $comment = Comment::where('skripsi_id', $request->id_skripsi)
+                            ->orderBy('created_at', 'desc')
+                            ->get();
+
         return redirect()->back()->with('success', 'Komentar berhasil ditambahkan');
     }
+
+    public function deletekomentar($id)
+    {
+        $comment = Comment::find($id);
+
+        if ($comment) {
+            $comment->delete();
+            return redirect()->back()->with('success', 'Komentar berhasil dihapus');
+        } else {
+            return redirect()->back()->with('error', 'Komentar tidak ditemukan');
+        }
+    }
 }
-
-    // public function store(Request $req)
-    // {
-    //     // Validasi input
-    //     $req->validate([
-    //         'content' => 'required|string',
-    //     ]);
-
-    //     // Buat komentar baru
-    //     $comment = new comment ;
-    //         $comment->content = $req->get('content');
-
-    //         $comment->save();
-    //         $notification = array(
-    //             'message' =>'Komentar berhasil ditambahkan', 'alert-type' =>'success'
-    //     );
-    //     return redirect()->route('comment')->with($notification);
-    // }
-
-    // public function show($id)
-    // {
-    //     $skripsi = Skripsi::findOrFail($id);
-    //     $comments = $skripsi->comments; // Mengambil komentar terkait dengan skripsi
-
-    //     return view('detail', compact('skripsi', 'comments'));
-    // }

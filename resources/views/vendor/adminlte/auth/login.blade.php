@@ -44,7 +44,7 @@
         {{-- Password field --}}
         <div class="input-group mb-3">
             <input type="password" name="password" class="form-control @error('password') is-invalid @enderror"
-                placeholder="{{ __('adminlte::adminlte.password') }}">
+                placeholder="{{ __('password') }}">
 
             <div class="input-group-append">
                 <div class="input-group-text">
@@ -60,7 +60,7 @@
         </div>
 
         {{-- Login field --}}
-        <div class="row">
+        {{-- <div class="row">
             <div class="col-7">
                 <div class="icheck-primary" title="{{ __('adminlte::adminlte.remember_me_hint') }}">
                     <input type="checkbox" name="remember" id="remember" {{ old('remember') ? 'checked' : '' }}>
@@ -69,7 +69,7 @@
                         {{ __('adminlte::adminlte.remember_me') }}
                     </label>
                 </div>
-            </div>
+            </div> --}}
 
             <div class="col-5">
                 <button type=submit class="btn btn-block {{ config('adminlte.classes_auth_btn', 'btn-flat btn-primary') }}">

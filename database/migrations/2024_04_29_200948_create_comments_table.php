@@ -21,7 +21,6 @@ class CreateCommentsTable extends Migration
             // $table->text('forum_id');
             // $table->text('parent');
             $table->timestamps();
-            $table->string('parent_id');
             // $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
         });
     }
