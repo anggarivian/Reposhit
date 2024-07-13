@@ -74,6 +74,9 @@ Route::middleware('is_mahasiswa')->group(function () {
     Route::post('/home/comment/detail', [CommentController::class, 'postkomentar'])->name('postkomentar');
 
     Route::delete('/home/comment/hapus/{id}', [CommentController::class, 'deletekomentar'])->name('deletekomentar');
+
+    Route::post('home/comment/postbalaskomentar', [CommentController::class, 'postBalasan'])->name('postBalasan');
+
 });
 
 // View File PDF -----------------------------------------------------------------------------------

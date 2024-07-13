@@ -10,6 +10,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use App\Models\Comment;
+use Illuminate\Support\Collection;
 
 class SkripsiController extends Controller
 {
@@ -243,9 +244,35 @@ class SkripsiController extends Controller
         $skripsi = Skripsi::find($id);
         $data = Skripsi::findOrFail($id);
         $comment = Comment::where('skripsi_id', $id)
+            ->whereNull('parent_id')
             ->join('users', 'comments.id_user', '=', 'users.id')
             ->select('comments.*', 'users.name as user_name') // select the required fields
             ->get();
+
+        $childcomments = Comment::where('skripsi_id', $id)
+            ->join('users', 'comments.id_user', '=', 'users.id')
+            ->select('comments.*', 'users.name as user_name') // select the required fields
+            ->get();
+        $comments = collect();
+
+        foreach ($childcomments as $comment) {
+            if ($comment->parent_id === null) {
+                // This is a top-level comment
+                $comments->put($comment->id, [
+                    'comment' => $comment,
+                    'replies' => collect()  // Initialize replies as a collection
+                ]);
+            } else {
+                // This is a reply
+                if ($comments->has($comment->parent_id)) {
+                    // Add reply to its parent comment's 'replies' collection
+                    $comments->get($comment->parent_id)['replies']->push($comment);
+                }
+            }
+        }
+
+        // dd($comments);
+
         // Menyusun path untuk setiap file PDF yang ingin diambil
         $pdfPaths = [
             'cover' => storage_path('app/public/cover_skripsi/' . $data->cover),
@@ -283,7 +310,7 @@ class SkripsiController extends Controller
         }
 
         // Mengirim data PDF, data user, dan data skripsi ke view 'detail'
-        return view('detail', compact('pdfs', 'user', 'skripsi', 'comment'));
+        return view('detail', compact('pdfs', 'user', 'skripsi', 'comments'));
     }
 
     // Get Data Skripsi ----------------------------------------------------------------------------------------------

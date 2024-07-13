@@ -48,4 +48,21 @@ class CommentController extends Controller
             return redirect()->back()->with('error', 'Komentar tidak ditemukan');
         }
     }
+    public function postBalasan(Request $request){
+        // dd($request);
+    $request->validate([
+        'content' => 'required',
+        'id_skripsi' => 'required',
+        'parent_id' => 'required',
+    ]);
+
+    $balasan = new Comment();
+    $balasan->content = $request->input('content');
+    $balasan->skripsi_id = $request->input('id_skripsi');
+    $balasan->id_user = auth()->user()->id;
+    $balasan->parent_id = $request->input('parent_id');
+    $balasan->save();
+
+    return redirect()->back()->with('success', 'Balasan berhasil ditambahkan');
+}
 }

@@ -118,155 +118,123 @@
                             <input type="submit" class="btn btn-primary" value="Kirim" style="margin-top: 8px;">
                         </div>
                     </form>
+                    <div id="notification-container"></div> <!-- Container untuk notifikasi -->
+
                     <hr>
-                    @if(session('success'))
-                    <div class="alert alert-success" role="alert" id="success-alert">
-                        {{ session('success') }}
-                    </div>
-                    @endif
-                    @if(isset($comment) && $comment->count() > 0)
+                    @if(isset($comments) && $comments->count() > 0)
                     <div class="comment-section mt-3">
-                        @foreach($comment->reverse() as $item) <!-- Menggunakan reverse() untuk membalik urutan -->
+                        @foreach($comments->reverse() as $item) <!-- Menggunakan reverse() untuk membalik urutan -->
                         <div class="media mb-3 p-3 border rounded bg-light">
                             <div class="mr-3">
                                 <i class="bi bi-person-circle" style="font-size: 2rem;"></i>
                             </div>
                             <div class="media-body">
-                                <h5 class="mt-0 font-weight-bold">{{ $item->user_name }}</h5>
-                                <p>{{ $item->content }}</p>
-                                <small class="text-muted">Diposting pada {{ \Carbon\Carbon::parse($item->created_at)->locale('id_ID')->isoFormat('D MMMM YYYY HH:mm') }}</small>
+                                <h5 class="mt-0 font-weight-bold">{{ $item['comment']->user_name }}</h5>
+                                <p>{{ $item['comment']->content }}</p>
+                                <small class="text-muted">Diposting pada {{ \Carbon\Carbon::parse($item['comment']->created_at)->locale('id_ID')->isoFormat('D MMMM YYYY HH:mm') }}</small>
                                  <!-- Delete Button -->
-                                <form action="{{ route('deletekomentar', $item->id) }}" method="POST" style="display:inline;">
+                                <form action="{{ route('deletekomentar', $item['comment']->id) }}" method="POST" style="display:inline;">
                                     @csrf
                                     @method('DELETE')
                                     <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Apakah Anda yakin ingin menghapus komentar ini?')">Hapus</button>
                                 </form>
+                                <!-- Balas Komentar -->
+                                <button class="btn btn-secondary btn-sm ml-2" data-toggle="collapse" data-target="#balasanForm{{ $item['comment']->id }}">Balas</button>
+                                <div id="balasanForm{{ $item['comment']->id }}" class="collapse mt-3"> <!-- Tambahkan margin-top di sini -->
+                                    <form action="{{ route('postBalasan') }}" method="POST">
+                                        @csrf
+                                        <div class="form-group">
+                                            <textarea name="content" class="form-control @error('content') is-invalid @enderror" rows="3" placeholder="Tulis balasan Anda di sini..." required>{{ old('content') }}</textarea>
+                                            @error('content')
+                                                <div class="invalid-feedback">{{ $message }}</div>
+                                            @enderror
+                                            <input type="hidden" name="id_skripsi" value="{{ $skripsi->id }}">
+                                            <input type="hidden" name="parent_id" value="{{ $item['comment']->id }}">
+                                        </div>
+                                        <div class="form-group">
+                                            <input type="submit" class="btn btn-primary btn-sm" value="Kirim">
+                                        </div>
+                                    </form>
+                                </div>
+                                @if(isset($item['replies']))
+                                    @foreach($item['replies'] as $reply)
+                                    {{-- Ada reply --}}
+                                    <div class="media mb-3 p-3 border rounded bg-light mt-3"> <!-- Tambahkan margin-top di sini -->
+                                        <div class="mr-3">
+                                            <i class="bi bi-person-circle" style="font-size: 2rem;"></i>
+                                        </div>
+                                        <div class="media-body">
+                                            <h5 class="mt-0 font-weight-bold">{{ $reply->user_name }}</h5>
+                                            <p>{{ $reply->content }}</p>
+                                            <small class="text-muted">Diposting pada {{ \Carbon\Carbon::parse($reply->created_at)->locale('id_ID')->isoFormat('D MMMM YYYY HH:mm') }}</small>
+                                            <!-- Delete Button -->
+                                            <form action="{{ route('deletekomentar', $reply->id) }}" method="POST" style="display:inline;">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Apakah Anda yakin ingin menghapus komentar ini?')">Hapus</button>
+                                            </form>
+                                        </div>
+                                    </div>
+                                    @endforeach
+                                @endif
                             </div>
                         </div>
                         @endforeach
                     </div>
                     @else
-                    <p class="text-muted">Tidak ada komentar saat ini.</p>
+                    <p>Belum ada komentar untuk skripsi ini.</p>
                     @endif
                 </div>
             </div>
         </div>
     </div>
-@stop
 
-@section('css')
-    <style>
-        .btn-group button {
-            margin-right: 10px;
-        }
-
-        .comment-section {
-            background-color: #e4e4e4;
-            padding: 10px;
-            border-radius: 8px;
-        }
-
-        .media {
-            background-color: #f8f9fa;
-            border-radius: 5px;
-            padding: 10px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        }
-        .media-body {
-            margin-left: 10px;
-        }
-
-        .media .bi-person-circle {
-            font-size: 2rem;
-        }
-        table {
-            background-color: #fff;
-            border-radius: 8px;
-        }
-
-        th {
-            background-color: #f8f9fa;
-            font-weight: bold;
-        }
-
-        th, td {
-            padding: 15px;
-        }
-
-        .card-body {
-            padding: 2rem;
-        }
-        .table th, .table td {
-            vertical-align: middle;
-        }
-
-    </style>
 @stop
 
 @section('js')
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const selectPdf = document.getElementById('selectPdf');
-            const closePdfButton = document.getElementById('closePdfButton');
+        $(document).ready(function() {
+            // Function to show alert and hide after a specified time
+            function showAlert(message, alertType) {
+    var alertBox = $('<div class="alert alert-' + alertType + ' alert-dismissible fade show mt-3" role="alert">' + message +
+                     '</div>');
+    $('#notification-container').append(alertBox);
+    setTimeout(function() {
+        alertBox.alert('close');
+    }, 5000); // 5000 milliseconds = 5 seconds
+}
 
-            selectPdf.addEventListener('change', function() {
-                const targetAttribute = this.value;
+            // Example usage:
+            @if(session('success'))
+                showAlert("{{ session('success') }}", "success");
+            @endif
 
-                // Sembunyikan semua iframe dan header (nama atribut) terlebih dahulu
-                document.querySelectorAll('iframe').forEach(function(iframe) {
-                    iframe.style.display = 'none';
-                });
+            @if(session('error'))
+                showAlert("{{ session('error') }}", "danger");
+            @endif
 
-                document.querySelectorAll('h2').forEach(function(header) {
-                    header.style.display = 'none';
-                });
-
-                // Tampilkan iframe dan header yang sesuai dengan pilihan
-                if (targetAttribute) {
-                    const pdfFrame = document.getElementById(targetAttribute + 'Frame');
-                    const pdfHeader = document.getElementById(targetAttribute + 'Header');
-
-                    pdfFrame.style.display = 'block';
-                    pdfHeader.style.display = 'block';
-                    closePdfButton.style.display = 'inline-block';
-                } else {
-                    closePdfButton.style.display = 'none';
-                }
+            // Tampilkan/hide iframe sesuai dengan pilihan dropdown
+            $('#selectPdf').change(function() {
+                var selectedPdf = $(this).val();
+                $('iframe').hide();
+                $('h2').hide();
+                $('#' + selectedPdf + 'Frame').show();
+                $('#' + selectedPdf + 'Header').show();
+                $('#closePdfButton').show();
             });
 
-            closePdfButton.addEventListener('click', function() {
-                // Sembunyikan semua iframe dan header (nama atribut)
-                document.querySelectorAll('iframe').forEach(function(iframe) {
-                    iframe.style.display = 'none';
-                });
-
-                document.querySelectorAll('h2').forEach(function(header) {
-                    header.style.display = 'none';
-                });
-
-                closePdfButton.style.display = 'none';
-                selectPdf.value = '';
+            // Tombol tutup PDF
+            $('#closePdfButton').click(function() {
+                $('iframe').hide();
+                $('h2').hide();
+                $(this).hide();
+                $('#selectPdf').val('');
             });
 
-            var komentarButton = document.getElementById('btn-komentar-utama');
-            var komentarForm = document.getElementById('komentar-utama-form');
-
-            komentarButton.addEventListener('click', function() {
-                if (komentarForm.style.display === 'none' || komentarForm.style.display === '') {
-                    komentarForm.style.display = 'block';
-                } else {
-                    komentarForm.style.display = 'none';
-                }
+            // Toggle form komentar utama
+            $('#btn-komentar-utama').click(function() {
+                $('#komentar-utama-form').toggle();
             });
-
-            // Cek apakah notifikasi sukses ada
-            var successAlert = document.getElementById('success-alert');
-            if (successAlert) {
-                // Hilangkan notifikasi setelah 5 detik
-                setTimeout(function() {
-                    successAlert.style.display = 'none';
-                }, 5000);
-            }
         });
     </script>
 @stop
