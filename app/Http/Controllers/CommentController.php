@@ -50,12 +50,14 @@ class CommentController extends Controller
     }
     public function postBalasan(Request $request){
         // dd($request);
+    // Validasi input
     $request->validate([
         'content' => 'required',
         'id_skripsi' => 'required',
         'parent_id' => 'required',
     ]);
 
+    // Membuat objek baru untuk balasan komentar
     $balasan = new Comment();
     $balasan->content = $request->input('content');
     $balasan->skripsi_id = $request->input('id_skripsi');
@@ -63,6 +65,8 @@ class CommentController extends Controller
     $balasan->parent_id = $request->input('parent_id');
     $balasan->save();
 
+    // Redirect kembali ke halaman sebelumnya dengan notifikasi
     return redirect()->back()->with('success', 'Balasan berhasil ditambahkan');
 }
+
 }
