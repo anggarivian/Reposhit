@@ -3,7 +3,7 @@
 @section('title', 'Detail Skripsi')
 
 @section('content_header')
-    <h1 class="m-0 text-dark"> Skripsi Mahasiswa </h1>
+    <h1 class="m-0 text-dark">  Skripsi Mahasiswa (admin)</h1>
 @stop
 
 @section('content')
@@ -138,11 +138,11 @@
                                         <p>{{ $item['comment']->content }}</p>
                                         <small class="text-muted">Diposting pada {{ \Carbon\Carbon::parse($item['comment']->created_at)->locale('id_ID')->isoFormat('D MMMM YYYY HH:mm') }}</small>
                                         <!-- Delete Button -->
-                                        {{-- <form action="{{ route('deletekomentar', $item['comment']->id) }}" method="POST" style="display:inline;">
+                                        <form action="{{ route('deletekomentar', $item['comment']->id) }}" method="POST" style="display:inline;">
                                             @csrf
                                             @method('DELETE')
                                             <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Apakah Anda yakin ingin menghapus komentar ini?')">Hapus</button>
-                                        </form> --}}
+                                        </form>
                                         <!-- Balas Komentar -->
                                         <button class="btn btn-secondary btn-sm ml-2" data-toggle="collapse" data-target="#balasanForm{{ $item['comment']->id }}">Balas</button>
                                         <div id="balasanForm{{ $item['comment']->id }}" class="collapse mt-3">
@@ -172,11 +172,11 @@
                                                         <p>{{ $reply->content }}</p>
                                                         <small class="text-muted">Diposting pada {{ \Carbon\Carbon::parse($reply->created_at)->locale('id_ID')->isoFormat('D MMMM YYYY HH:mm') }}</small>
                                                         <!-- Delete Button -->
-                                                        {{-- <form action="{{ route('deletekomentar', $reply->id) }}" method="POST" style="display:inline;">
+                                                        <form action="{{ route('deletekomentar', $reply->id) }}" method="POST" style="display:inline;">
                                                             @csrf
                                                             @method('DELETE')
                                                             <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Apakah Anda yakin ingin menghapus komentar ini?')">Hapus</button>
-                                                        </form> --}}
+                                                        </form>
                                                     </div>
                                                 </div>
                                             @endforeach

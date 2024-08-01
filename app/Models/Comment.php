@@ -35,8 +35,13 @@ public function show($id)
 
     return view('detail', compact('skripsi', 'comments'));
 }
-public function childComments()
+
+public function skripsi()
     {
-        return $this->hasMany(Comment::class, 'parent_id');
+        return $this->belongsTo(Skripsi::class, 'skripsi_id');
     }
+// public function childComments()
+//     {
+//         return $this->hasMany(Comment::class, 'parent_id');
+//     }
 }

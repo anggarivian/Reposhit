@@ -29,6 +29,12 @@ class User extends Authenticatable
         return $this->orWhere('email', $username)->orWhere('npm', $username)->first();
     }
 
+    public function isAdmin()
+    {
+        return $this->role === 'admin'; // Sesuaikan dengan kolom dan nilai di database Anda
+    }
+
+
     /**
      * The attributes that should be hidden for serialization.
      *

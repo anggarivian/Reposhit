@@ -3,13 +3,13 @@
 @section('title', 'AdminLTE')
 
 @section('content_header')
-    <h1 class="m-0 text-dark">Kelola Skripsi</h1>
+    <h1 class="m-0 text-dark">Mahasiswa Skripsi</h1>
 @stop
 
 @section('content')
 <div class="container-fluid">
     <div class="card card-default">
-    <div class="card-header">{{__('Pengelolaan Skripsi')}}</div>
+    <div class="card-header">{{__(' Data Skripsi')}}</div>
         <div class="card-body">
             <div class="d-flex justify-content-between mb-3">
                 <div class="tombol">
@@ -48,7 +48,7 @@
                         <td>{{$skripsis->halaman}}</td>
                         <td>
                             <div class="form-group" role="group" aria-label="Basic example">
-                                <a href="/admin/skripsi/detail/{{$skripsis->id}}">
+                                <a href="/mahasiswa/skripsi/detail/{{$skripsis->id}}">
                                     <button class="btn btn-sm btn-info">
                                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
                                     </button>
@@ -338,7 +338,7 @@
 
                 $.ajax({
                     type: "get",
-                    url: "{{url('/admin/ajaxadmin/dataSkripsi')}}/"+id,
+                    url: "{{url('/mahasiswa/ajaxmahasiswa/dataSkripsi')}}/"+id,
                     dataType: 'json',
                     success: function(res){
                         $('#edit-judul').val(res.judul);
@@ -440,7 +440,7 @@
                     var CSRF_TOKEN = $('meta[name="csrf-token"]').attr('content');
                     $.ajax({
                         type: 'GET',
-                        url: "{{url('/admin/skripsi/hapus')}}/"+id,
+                        url: "{{url('/mahasiswa/skripsi/hapus')}}/"+id,
                         data: {_token: CSRF_TOKEN},
                         dataType: 'JSON',
                         success: function (results) {

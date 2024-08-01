@@ -307,16 +307,24 @@ return [
             'can'  => 'isAdmin',
         ],
         [
-            'text' => 'Data Skripsi',
-            'url'  => 'home/skripsi',
+            'header' => 'KELOLA DATA LAPORAN',
+            'can'    => 'isMahasiswa',
+        ],
+        [
+            'text' => 'Upload Skripsi',
+            'url'  => 'mahasiswa/skripsi',
             'icon' => 'fas fa-fw fa-book',
             'can'  => 'isMahasiswa',
         ],
         [
-            'text' => 'Data Skripsi',
-            'url'  => 'dosen/skripsi',
+            'header' => 'LAPORAN SKRIPSI',
+            'can'    => 'isMahasiswa',
+        ],
+        [
+            'text' => 'Daftar Skripsi',
+            'url'  => 'home/skripsi',
             'icon' => 'fas fa-fw fa-book',
-            'can'  => 'isDosen',
+            'can'  => 'isMahasiswa',
         ],
         [
             'header' => 'KELOLA DATA PENGGUNA',

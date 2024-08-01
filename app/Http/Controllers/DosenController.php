@@ -24,40 +24,40 @@ class DosenController extends Controller
         $req->validate([
             'nama' => 'required|string|max:30',
             'nip' => 'required|string|max:18|min:18|unique:dosens,nip',
-            'jabatan' => 'required|string|max:15',
+            // 'jabatan' => 'required|string|max:15',
             'kontak' => 'required|string|max:12',
-            'alamat' => 'required|string|max:255',
+            // 'alamat' => 'required|string|max:255',
             'tgl_lahir' => 'required|date',
             'program_studi' => 'required|string|max:25',
-            'password' => 'required|string|min:8|max:255',
+            // 'password' => 'required|string|min:8|max:255',
         ]);
 
         // dd($req);
 
-        $user = new User;
+        // $user = new User;
 
-        $user->name = $req->get('nama');
-        $user->npm = $req->get('nip');
-        $user->status = 1;
-        $user->tgl_lahir = $req->get('tgl_lahir');
-        $user->alamat = $req->get('alamat');
-        $user->angkatan = '2020';
-        $user->prodi = $req->get('program_studi');
-        $user->password = Hash::make($req->get('password'));
-        $user->roles_id = 3;
-        $user->save();
+        // $user->name = $req->get('nama');
+        // $user->npm = $req->get('nip');
+        // $user->status = 1;
+        // $user->tgl_lahir = $req->get('tgl_lahir');
+        // $user->alamat = $req->get('alamat');
+        // $user->angkatan = '2020';
+        // $user->prodi = $req->get('program_studi');
+        // $user->password = Hash::make($req->get('password'));
+        // $user->roles_id = 3;
+        // $user->save();
 
         // Create Data Dosen ------------------------------------------------------------------
         $dosen = new Dosen;
 
         $dosen->nama = $req->get('nama');
         $dosen->nip = $req->get('nip');
-        $dosen->jabatan = $req->get('jabatan');
+        // $dosen->jabatan = $req->get('jabatan');
         $dosen->kontak = $req->get('kontak');
-        $dosen->alamat = $req->get('alamat');
+        // $dosen->alamat = $req->get('alamat');
         $dosen->tgl_lahir = $req->get('tgl_lahir');
         $dosen->program_studi = $req->get('program_studi');
-        $dosen->password = Hash::make($req->get('password'));
+        // $dosen->password = Hash::make($req->get('password'));
 
         $dosen->save();
 
@@ -80,10 +80,10 @@ class DosenController extends Controller
         $req->validate([
             'nama' => 'required|string|max:30',
             'nip' => 'required|string|max:18|min:18',
-            'email' => 'required|email|max:50',
-            'jabatan' => 'required|string|max:15',
+            // 'email' => 'required|email|max:50',
+            // 'jabatan' => 'required|string|max:15',
             'kontak' => 'required|string|max:12',
-            'alamat' => 'required|string|max:255',
+            // 'alamat' => 'required|string|max:255',
             'tgl_lahir' => 'required|date',
             'program_studi' => 'required|string|max:25',
         ]);
@@ -93,10 +93,10 @@ class DosenController extends Controller
 
         $dosen->nama = $req->get('nama');
         $dosen->nip = $req->get('nip');
-        $dosen->email = $req->get('email');
-        $dosen->jabatan = $req->get('jabatan');
+        // $dosen->email = $req->get('email');
+        // $dosen->jabatan = $req->get('jabatan');
         $dosen->kontak = $req->get('kontak');
-        $dosen->alamat = $req->get('alamat');
+        // $dosen->alamat = $req->get('alamat');
         $dosen->tgl_lahir = $req->get('tgl_lahir');
         $dosen->program_studi = $req->get('program_studi');
 

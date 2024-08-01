@@ -16,6 +16,17 @@ class CommentController extends Controller
         return view('comment', compact('comments','comment','id_user','skripsi_id'));
     }
 
+    // public function showDetail($id, $viewType = 'detail') {
+    //     $skripsi = Skripsi::find($id);
+    //     $comments = Comment::where('skripsi_id', $id)->with('replies')->get();
+    //     $id_user = User::all();
+
+    //     if ($viewType == 'detailskripsimahasiswa') {
+    //         return view('detailskripsimahasiswa', compact('comments','comment','id_user','skripsi_id'));
+    //     }
+
+    //     return view('detail', compact('comments','comment','id_user','skripsi_id'));
+    // }
     public function postkomentar(Request $request)
     {
         $request->validate([
@@ -67,6 +78,27 @@ class CommentController extends Controller
 
     // Redirect kembali ke halaman sebelumnya dengan notifikasi
     return redirect()->back()->with('success', 'Balasan berhasil ditambahkan');
-}
+    }
 
+    // ADMIN KOMENTAR
+    public function postkomentar1(Request $request)
+    {
+        $request->validate([
+            'content' => 'required',
+        ]);
+        // dd($request->id_skripsi);
+        $comment = new Comment();
+        $comment->skripsi_id = $request->id_skripsi; // Pastikan user memiliki atribut skripsi_id atau relasi
+        $comment->id_user = auth()->id();
+        $comment->content = $request->content;
+        $comment->save();
+
+
+         // Ambil ulang daftar komentar yang terkait dengan skripsi ini, urutkan berdasarkan waktu pembuatan (terbaru ke terlama)
+        $comment = Comment::where('skripsi_id', $request->id_skripsi)
+                            ->orderBy('created_at', 'desc')
+                            ->get();
+
+        return redirect()->back()->with('success', 'Komentar berhasil ditambahkan');
+    }
 }

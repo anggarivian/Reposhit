@@ -16,6 +16,56 @@
         <!-- Core theme CSS (includes Bootstrap)-->
         <link href="{{ asset('css/styles.css') }}" rel="stylesheet" />
         <link rel="stylesheet" href="{{ asset('vendor/sweetalert2/sweetalert2.min.css') }}">
+        <style>
+            .page-section-heading {
+                font-size: 2.5rem;
+                margin-bottom: 2rem;
+                color: #2c3e50;
+            }
+
+            .divider-custom {
+                margin: 1.5rem 0;
+            }
+
+            .divider-custom-line {
+                width: 100%;
+                height: 1px;
+                background-color: #2c3e50;
+            }
+
+            .divider-custom-icon {
+                color: #2c3e50;
+                font-size: 2rem;
+            }
+
+            .table-borderless td {
+                padding: 10px 0;
+            }
+
+            .table-borderless td:first-child {
+                font-weight: bold;
+            }
+
+            .showPdfButton {
+                background-color: #3498db;
+                border: none;
+                color: white;
+                padding: 10px 20px;
+                text-align: center;
+                text-decoration: none;
+                display: inline-block;
+                font-size: 16px;
+                margin: 4px 2px;
+                cursor: pointer;
+                transition-duration: 0.4s;
+            }
+
+            .showPdfButton:hover {
+                background-color: white;
+                color: black;
+                border: 2px solid #3498db;
+            }
+        </style>
     </head>
     <body id="page-top">
         <!-- Navigation-->
@@ -81,32 +131,32 @@
                         <div class="p-6">
                             <table class="table table-borderless">
                                 <tr>
-                                    <td style="width: 200px;">Judul Skripsi</td>
+                                    <td style="width: 200px; font-weight: bold;">Judul Skripsi</td>
                                     <td>:</td>
                                     <td>{{$skripsi->judul}}</td>
                                 </tr>
                                 <tr>
-                                    <td style="width: 200px;">Penulis</td>
+                                    <td style="width: 200px; font-weight: bold;">Penulis</td>
                                     <td>:</td>
                                     <td>{{$skripsi->penulis}}</td>
                                 </tr>
                                 <tr>
-                                    <td style="width: 200px;">Abstrak</td>
+                                    <td style="width: 200px; font-weight: bold;">Abstrak</td>
                                     <td>:</td>
                                     <td>{{$skripsi->abstrak}}</td>
                                 </tr>
                                 <tr>
-                                    <td style="width: 200px;">Dosen Pembimbing</td>
+                                    <td style="width: 200px; font-weight: bold;">Dosen Pembimbing</td>
                                     <td>:</td>
                                     <td>{{$skripsi->dospem}}</td>
                                 </tr>
                                 <tr>
-                                    <td style="width: 200px;">Rilis Tahun</td>
+                                    <td style="width: 200px; font-weight: bold;">Rilis Tahun</td>
                                     <td>:</td>
                                     <td>{{$skripsi->rilis}}</td>
                                 </tr>
                                 <tr>
-                                    <td style="width: 200px;">Halaman</td>
+                                    <td style="width: 200px; font-weight: bold;">Halaman</td>
                                     <td>:</td>
                                     <td>{{$skripsi->halaman}}</td>
                                 </tr>
@@ -114,54 +164,54 @@
                             <hr>
                             @if(auth()->check())
                             {{-- Tombol untuk menampilkan/menyembunyikan iframe --}}
-                @foreach($pdfs as $attribute => $pdf)
-                @php
-                    $label = $attribute == 'dapus'
-                        ? 'Daftar Pustaka'
-                        : (strpos($attribute, 'bab') === 0
-                            ? 'Bab ' . (
-                                $attribute == 'bab1' ? 'I' : (
-                                    $attribute == 'bab2' ? 'II' : (
-                                        $attribute == 'bab3' ? 'III' : (
-                                            $attribute == 'bab4' ? 'IV' : (
-                                                $attribute == 'bab5' ? 'V' : $attribute
+                            @foreach($pdfs as $attribute => $pdf)
+                            @php
+                                $label = $attribute == 'dapus'
+                                    ? 'Daftar Pustaka'
+                                    : (strpos($attribute, 'bab') === 0
+                                        ? 'Bab ' . (
+                                            $attribute == 'bab1' ? 'I' : (
+                                                $attribute == 'bab2' ? 'II' : (
+                                                    $attribute == 'bab3' ? 'III' : (
+                                                        $attribute == 'bab4' ? 'IV' : (
+                                                            $attribute == 'bab5' ? 'V' : $attribute
+                                                        )
+                                                    )
+                                                )
                                             )
                                         )
-                                    )
-                                )
-                            )
-                            : $attribute
-                        );
-                @endphp
-                <button class="btn btn-info m-3 showPdfButton" data-target="{{ $attribute }}">
-                    Lihat {{ ucfirst($label) }}
-                </button>
-            @endforeach
+                                        : $attribute
+                                    );
+                            @endphp
+                            <button class="btn btn-info m-3 showPdfButton" data-target="{{ $attribute }}">
+                                Lihat {{ ucfirst($label) }}
+                            </button>
+                            @endforeach
 
-            {{-- Menampilkan semua PDF --}}
-            @foreach($pdfs as $attribute => $pdf)
-                @php
-                    $label = $attribute == 'dapus'
-                        ? 'Daftar Pustaka'
-                        : (strpos($attribute, 'bab') === 0
-                            ? 'Bab ' . (
-                                $attribute == 'bab1' ? 'I' : (
-                                    $attribute == 'bab2' ? 'II' : (
-                                        $attribute == 'bab3' ? 'III' : (
-                                            $attribute == 'bab4' ? 'IV' : (
-                                                $attribute == 'bab5' ? 'V' : $attribute
+                            {{-- Menampilkan semua PDF --}}
+                            @foreach($pdfs as $attribute => $pdf)
+                            @php
+                                $label = $attribute == 'dapus'
+                                    ? 'Daftar Pustaka'
+                                    : (strpos($attribute, 'bab') === 0
+                                        ? 'Bab ' . (
+                                            $attribute == 'bab1' ? 'I' : (
+                                                $attribute == 'bab2' ? 'II' : (
+                                                    $attribute == 'bab3' ? 'III' : (
+                                                        $attribute == 'bab4' ? 'IV' : (
+                                                            $attribute == 'bab5' ? 'V' : $attribute
+                                                        )
+                                                    )
+                                                )
                                             )
                                         )
-                                    )
-                                )
-                            )
-                            : $attribute
-                        );
-                @endphp
-                <h2 id="{{ $attribute }}Header" style="display: none;">{{ ucfirst($label) }}</h2>
-                <!-- Sembunyikan iframe dengan ID sesuai dengan atribut -->
-                <iframe id="{{ $attribute }}Frame" src="data:application/pdf;base64,{{ $pdf }}#toolbar=0&navpanes=0&view=fitH" width="100%" height="600px" style="display: none;"></iframe>
-            @endforeach
+                                        : $attribute
+                                    );
+                            @endphp
+                            <h2 id="{{ $attribute }}Header" style="display: none;">{{ ucfirst($label) }}</h2>
+                            <!-- Sembunyikan iframe dengan ID sesuai dengan atribut -->
+                            <iframe id="{{ $attribute }}Frame" src="data:application/pdf;base64,{{ $pdf }}#toolbar=0&navpanes=0&view=fitH" width="100%" height="600px" style="display: none;"></iframe>
+                            @endforeach
                             @else
                                 {{-- Pengguna belum login, tampilkan pesan --}}
                                 <a href="/login" class="btn btn-info m-3">

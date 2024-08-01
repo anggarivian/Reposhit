@@ -17,13 +17,13 @@ class CreateDosensTable extends Migration
             $table->id();
             $table->string('nama');
             $table->string('nip')->unique();
-            $table->string('alamat');
+            // $table->string('alamat');
             // $table->string('email');
             $table->string('tgl_lahir');
             $table->string('kontak');
             $table->string('program_studi');
-            $table->string('jabatan');
-            $table->string('password');
+            // $table->string('jabatan');
+            // $table->string('password');
             $table->timestamps();
         });
     }
