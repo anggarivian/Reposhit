@@ -127,26 +127,27 @@ class CommentController extends Controller
         return redirect()->back()->with('message', 'Status favorit berhasil diubah.');
     }
 
-    public function update(Request $request, $id)
-    {
-        // Validasi input
-        $request->validate([
-            'content' => 'required|string|max:1000',
-        ]);
 
-        // Temukan komentar berdasarkan ID
-        $comment = Comment::findOrFail($id);
+public function update1(Request $request, $id)
+{
+    // Validasi input
+    $request->validate([
+        'content' => 'required|string|max:1000',
+    ]);
 
-        // Cek apakah user yang login adalah pemilik komentar
-        if (auth()->user()->id != $comment->id_user) {
-            return redirect()->back()->with('error', 'Anda tidak diizinkan untuk mengedit komentar ini.');
-        }
+    // Temukan komentar berdasarkan ID
+    $comment = Comment::findOrFail($id);
 
-        // Update komentar
-        $comment->content = $request->input('content');
-        $comment->save();
+    // Cek apakah user yang login adalah pemilik komentar
+    if (auth()->user()->id != $comment->id_user) {
+        return redirect()->back()->with('error', 'Anda tidak diizinkan untuk mengedit komentar ini.');
+    }
 
-        // Redirect dengan pesan sukses
-        return redirect()->back()->with('success', 'Komentar berhasil diperbarui.');
+    // Update komentar
+    $comment->content = $request->input('content');
+    $comment->save();
+
+    // Redirect dengan pesan sukses
+    return redirect()->back()->with('success', 'Komentar berhasil diperbarui.');
     }
 }
