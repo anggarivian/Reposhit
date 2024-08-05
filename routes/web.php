@@ -57,8 +57,10 @@ Route::middleware('is_admin')->group(function () {
     Route::get('/admin/skripsi/hapus/{id}', [SkripsiController::class, 'hapus1'])->name('hapus.skripsi');
     Route::get('/admin/skripsi/detail/{id}', [SkripsiController::class, 'showPdf'])->name('pdf.show');
 
+    // Route Komentar ------------------------------------------------------------------------------
     Route::post('admin/home/comment/detail', [CommentController::class, 'postkomentar1'])->name('postkomentar1');
     Route::delete('admin/home/comment/hapus/{id}', [CommentController::class, 'deletekomentar'])->name('deletekomentar');
+
     // Route Import -------------------------------------------------------------------------------
     Route::post('/admin/mahasiswa/import', [MahasiswaController::class,'import'])->name('mahasiswa.import');
     Route::post('/admin/dosen/import', [DosenController::class,'import'])->name('dosen.import');
@@ -79,7 +81,9 @@ Route::middleware('is_mahasiswa')->group(function () {
     // Route::delete('/home/comment/hapus/{id}', [CommentController::class, 'deletekomentar'])->name('deletekomentar');
 
     Route::post('home/comment/postbalaskomentar', [CommentController::class, 'postBalasan'])->name('postBalasan');
-
+    Route::put('home/comment/{id}/toggleFavorite', [CommentController::class, 'toggleFavorite'])->name('toggleFavorite');
+    Route::get('home/comment/favorites', [CommentController::class, 'showFavoriteSkripsi'])->name('favorites');
+     Route::put('home/comment/updatekomentar/{id}', [CommentController::class, 'update'])->name('updatekomentar');
      // Route Skripsi ------------------------------------------------------------------------------
      Route::get('/mahasiswa/skripsi', [SkripsiController::class, 'index'])->name('skripsi');
      Route::post('/mahasiswa/skripsi', [SkripsiController::class, 'tambah'])->name('tambah.skripsi');

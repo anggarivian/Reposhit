@@ -5,6 +5,7 @@ use App\Models\Comment;
 use App\Models\User;
 use App\Models\Skripsi;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class CommentController extends Controller
 {
@@ -16,17 +17,6 @@ class CommentController extends Controller
         return view('comment', compact('comments','comment','id_user','skripsi_id'));
     }
 
-    // public function showDetail($id, $viewType = 'detail') {
-    //     $skripsi = Skripsi::find($id);
-    //     $comments = Comment::where('skripsi_id', $id)->with('replies')->get();
-    //     $id_user = User::all();
-
-    //     if ($viewType == 'detailskripsimahasiswa') {
-    //         return view('detailskripsimahasiswa', compact('comments','comment','id_user','skripsi_id'));
-    //     }
-
-    //     return view('detail', compact('comments','comment','id_user','skripsi_id'));
-    // }
     public function postkomentar(Request $request)
     {
         $request->validate([
@@ -79,6 +69,26 @@ class CommentController extends Controller
     // Redirect kembali ke halaman sebelumnya dengan notifikasi
     return redirect()->back()->with('success', 'Balasan berhasil ditambahkan');
     }
+    public function postBalasan1(Request $request){
+        // dd($request);
+    // Validasi input
+    $request->validate([
+        'content' => 'required',
+        'id_skripsi' => 'required',
+        'parent_id' => 'required',
+    ]);
+
+    // Membuat objek baru untuk balasan komentar
+    $balasan = new Comment();
+    $balasan->content = $request->input('content');
+    $balasan->skripsi_id = $request->input('id_skripsi');
+    $balasan->id_user = auth()->user()->id;
+    $balasan->parent_id = $request->input('parent_id');
+    $balasan->save();
+
+    // Redirect kembali ke halaman sebelumnya dengan notifikasi
+    return redirect()->back()->with('success', 'Balasan berhasil ditambahkan');
+    }
 
     // ADMIN KOMENTAR
     public function postkomentar1(Request $request)
@@ -100,5 +110,43 @@ class CommentController extends Controller
                             ->get();
 
         return redirect()->back()->with('success', 'Komentar berhasil ditambahkan');
+    }
+
+    public function toggleFavorite($id)
+    {
+        $comment = Comment::findOrFail($id);
+
+        if ($comment->favorite === 'yes') {
+            $comment->favorite = 'no';
+        } else {
+            $comment->favorite = 'yes';
+        }
+
+        $comment->save();
+
+        return redirect()->back()->with('message', 'Status favorit berhasil diubah.');
+    }
+
+    public function update(Request $request, $id)
+    {
+        // Validasi input
+        $request->validate([
+            'content' => 'required|string|max:1000',
+        ]);
+
+        // Temukan komentar berdasarkan ID
+        $comment = Comment::findOrFail($id);
+
+        // Cek apakah user yang login adalah pemilik komentar
+        if (auth()->user()->id != $comment->id_user) {
+            return redirect()->back()->with('error', 'Anda tidak diizinkan untuk mengedit komentar ini.');
+        }
+
+        // Update komentar
+        $comment->content = $request->input('content');
+        $comment->save();
+
+        // Redirect dengan pesan sukses
+        return redirect()->back()->with('success', 'Komentar berhasil diperbarui.');
     }
 }

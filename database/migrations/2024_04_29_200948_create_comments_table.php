@@ -19,6 +19,7 @@ class CreateCommentsTable extends Migration
             $table->string('id_user');
             $table->text('content');
             $table->string('parent_id')->nullable();
+            $table->string('favorite')->default('no');
             $table->timestamps();
 
         });

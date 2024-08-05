@@ -108,7 +108,7 @@
                     </div>
 
                     {{-- Form komentar utama --}}
-                    <form action="{{ route('postkomentar') }}" style="margin-top: 8px; display: none;" id="komentar-utama-form" method="POST">
+                    <form action="{{ route('postkomentar') }}" id="komentar-utama-form" method="POST" style="display: none; margin-top: 8px;">
                         @csrf
                         <div class="form-group">
                             <label for="komentar_utama">Tulis komentar Anda</label>
@@ -117,6 +117,7 @@
                         </div>
                         <div class="form-group">
                             <input type="submit" class="btn btn-primary" value="Kirim" style="margin-top: 8px;">
+                            <button type="button" class="btn btn-secondary" id="btn-batal-komentar">Batal</button>
                         </div>
                     </form>
 
@@ -137,22 +138,35 @@
                                         <h5 class="mt-0 font-weight-bold">{{ $item['comment']->user_name }}</h5>
                                         <p>{{ $item['comment']->content }}</p>
                                         <small class="text-muted">Diposting pada {{ \Carbon\Carbon::parse($item['comment']->created_at)->locale('id_ID')->isoFormat('D MMMM YYYY HH:mm') }}</small>
-                                        <!-- Delete Button -->
-                                        {{-- <form action="{{ route('deletekomentar', $item['comment']->id) }}" method="POST" style="display:inline;">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Apakah Anda yakin ingin menghapus komentar ini?')">Hapus</button>
-                                        </form> --}}
-                                        <!-- Balas Komentar -->
-                                        <button class="btn btn-secondary btn-sm ml-2" data-toggle="collapse" data-target="#balasanForm{{ $item['comment']->id }}">Balas</button>
-                                        <div id="balasanForm{{ $item['comment']->id }}" class="collapse mt-3">
+
+                                        <!-- Check if the logged-in user is the owner of the comment -->
+                                        @if(auth()->user() && auth()->user()->id == $item['comment']->id_user)
+                                            <!-- Edit Button -->
+                                            <button class="btn btn-warning btn-sm mt-2" data-toggle="collapse" data-target="#editCommentForm{{ $item['comment']->id }}">Edit</button>
+                                            <div id="editCommentForm{{ $item['comment']->id }}" class="collapse mt-3">
+                                                <form action="{{ route('updatekomentar', $item['comment']->id) }}" method="POST">
+                                                    @csrf
+                                                    @method('PUT')
+                                                    <div class="form-group">
+                                                        <textarea name="content" class="form-control @error('content') is-invalid @enderror" rows="3" placeholder="Edit komentar Anda di sini..." required>{{ $item['comment']->content }}</textarea>
+                                                        @error('content')
+                                                            <div class="invalid-feedback">{{ $message }}</div>
+                                                        @enderror
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <input type="submit" class="btn btn-primary btn-sm" value="Update">
+                                                    </div>
+                                                </form>
+                                            </div>
+                                        @endif
+
+                                        <!-- Form untuk balasan komentar -->
+                                        <button class="btn btn-info btn-sm mt-2" data-toggle="collapse" data-target="#replyForm{{ $item['comment']->id }}">Balas</button>
+                                        <div id="replyForm{{ $item['comment']->id }}" class="collapse mt-3">
                                             <form action="{{ route('postBalasan') }}" method="POST">
                                                 @csrf
                                                 <div class="form-group">
-                                                    <textarea name="content" class="form-control @error('content') is-invalid @enderror" rows="3" placeholder="Tulis balasan Anda di sini..." required>{{ old('content') }}</textarea>
-                                                    @error('content')
-                                                        <div class="invalid-feedback">{{ $message }}</div>
-                                                    @enderror
+                                                    <textarea name="content" class="form-control" rows="3" placeholder="Tulis balasan di sini..." required></textarea>
                                                     <input type="hidden" name="id_skripsi" value="{{ $skripsi->id }}">
                                                     <input type="hidden" name="parent_id" value="{{ $item['comment']->id }}">
                                                 </div>
@@ -161,32 +175,53 @@
                                                 </div>
                                             </form>
                                         </div>
-                                        @if(isset($item['replies']))
-                                            @foreach($item['replies'] as $reply)
-                                                <div class="media mb-3 p-3 border rounded bg-light mt-3 ml-5">
-                                                    <div class="mr-3">
-                                                        <i class="bi bi-person-circle" style="font-size: 2rem;"></i>
+
+                                        <!-- Tampilkan balasan komentar -->
+                                            @if(isset($item['replies']))
+                                                @foreach($item['replies'] as $reply)
+                                                    <div class="media mt-3 p-3 border rounded bg-white ml-4">
+                                                        <div class="mr-3">
+                                                            <i class="bi bi-person-circle" style="font-size: 2rem;"></i>
+                                                        </div>
+                                                        <div class="media-body">
+                                                            <!-- Tanda bahwa ini adalah balasan -->
+                                                            <small class="text-muted">Membalas komentar dari {{ $item['comment']->user_name }}</small>
+                                                            <h6 class="mt-2 font-weight-bold">{{ $reply->user_name }}</h6>
+                                                            <p>{{ $reply->content }}</p>
+                                                            <small class="text-muted">Diposting pada {{ \Carbon\Carbon::parse($reply->created_at)->locale('id_ID')->isoFormat('D MMMM YYYY HH:mm') }}</small>
+
+                                                            @if(auth()->user()->id == $reply->id_user)
+                                                                <!-- Tombol Edit Balasan -->
+                                                                <button class="btn btn-warning btn-sm ml-2" onclick="toggleEditForm({{ $reply->id }})">Edit</button>
+
+                                                                <!-- Form Edit Balasan -->
+                                                                <div id="editForm{{ $reply->id }}" class="mt-3" style="display:none;">
+                                                                    <form action="{{ route('updatekomentar', $reply->id) }}" method="POST">
+                                                                        @csrf
+                                                                        @method('PUT')
+                                                                        <div class="form-group">
+                                                                            <textarea name="content" class="form-control @error('content') is-invalid @enderror" rows="3" required>{{ old('content', $reply->content) }}</textarea>
+                                                                            @error('content')
+                                                                                <div class="invalid-feedback">{{ $message }}</div>
+                                                                            @enderror
+                                                                        </div>
+                                                                        <div class="form-group">
+                                                                            <input type="submit" class="btn btn-primary btn-sm" value="Update">
+                                                                            <button type="button" class="btn btn-secondary btn-sm" onclick="toggleEditForm({{ $reply->id }})">Batal</button>
+                                                                        </div>
+                                                                    </form>
+                                                                </div>
+                                                            @endif
+                                                        </div>
                                                     </div>
-                                                    <div class="media-body">
-                                                        <h5 class="mt-0 font-weight-bold">{{ $reply->user_name }}</h5>
-                                                        <p>{{ $reply->content }}</p>
-                                                        <small class="text-muted">Diposting pada {{ \Carbon\Carbon::parse($reply->created_at)->locale('id_ID')->isoFormat('D MMMM YYYY HH:mm') }}</small>
-                                                        <!-- Delete Button -->
-                                                        {{-- <form action="{{ route('deletekomentar', $reply->id) }}" method="POST" style="display:inline;">
-                                                            @csrf
-                                                            @method('DELETE')
-                                                            <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Apakah Anda yakin ingin menghapus komentar ini?')">Hapus</button>
-                                                        </form> --}}
-                                                    </div>
-                                                </div>
-                                            @endforeach
-                                        @endif
-                                    </div>
+                                                @endforeach
+                                            @endif
+                                        </div>
                                 </div>
-                            @endforeach
-                        </div>
+                        @endforeach
+                    </div>
                     @else
-                        <p>Belum ada komentar untuk skripsi ini.</p>
+                        <p class="text-muted">Belum ada komentar.</p>
                     @endif
                 </div>
             </div>
@@ -196,48 +231,63 @@
 
 @section('js')
     <script>
-        $(document).ready(function() {
-            // Function to show alert and hide after a specified time
-            function showAlert(message, alertType) {
-                var alertBox = $('<div class="alert alert-' + alertType + ' alert-dismissible fade show mt-3" role="alert">' + message +
-                                 '</div>');
-                $('#notification-container').append(alertBox);
-                setTimeout(function() {
-                    alertBox.alert('close');
-                }, 5000); // 5000 milliseconds = 5 seconds
+        document.getElementById('selectPdf').addEventListener('change', function() {
+            const selectedValue = this.value;
+            document.querySelectorAll('iframe').forEach(frame => frame.style.display = 'none');
+            document.querySelectorAll('h2').forEach(header => header.style.display = 'none');
+            document.getElementById('closePdfButton').style.display = 'none';
+
+            if (selectedValue) {
+                document.getElementById(`${selectedValue}Frame`).style.display = 'block';
+                document.getElementById(`${selectedValue}Header`).style.display = 'block';
+                document.getElementById('closePdfButton').style.display = 'block';
             }
-
-            // Example usage:
-            @if(session('success'))
-                showAlert("{{ session('success') }}", "success");
-            @endif
-
-            @if(session('error'))
-                showAlert("{{ session('error') }}", "danger");
-            @endif
-
-            // Tampilkan/hide iframe sesuai dengan pilihan dropdown
-            $('#selectPdf').change(function() {
-                var selectedPdf = $(this).val();
-                $('iframe').hide();
-                $('h2').hide();
-                $('#' + selectedPdf + 'Frame').show();
-                $('#' + selectedPdf + 'Header').show();
-                $('#closePdfButton').show();
-            });
-
-            // Tombol tutup PDF
-            $('#closePdfButton').click(function() {
-                $('iframe').hide();
-                $('h2').hide();
-                $(this).hide();
-                $('#selectPdf').val('');
-            });
-
-            // Toggle form komentar utama
-            $('#btn-komentar-utama').click(function() {
-                $('#komentar-utama-form').toggle();
-            });
         });
+
+        document.getElementById('closePdfButton').addEventListener('click', function() {
+            document.querySelectorAll('iframe').forEach(frame => frame.style.display = 'none');
+            document.querySelectorAll('h2').forEach(header => header.style.display = 'none');
+            this.style.display = 'none';
+            document.getElementById('selectPdf').value = '';
+        });
+
+        // Manage the comment and reply forms
+        document.getElementById('btn-komentar-utama').addEventListener('click', function() {
+            document.getElementById('komentar-utama-form').style.display = 'block';
+            this.style.display = 'none';
+        });
+
+        document.querySelectorAll('.btn-warning').forEach(button => {
+            button.addEventListener('click', function() {
+                const target = document.querySelector(this.dataset.target);
+                target.classList.toggle('collapse');
+            });
+            document.getElementById('btn-komentar-utama').addEventListener('click', function() {
+    const form = document.getElementById('komentar-utama-form');
+    const isFormVisible = form.style.display === 'block';
+
+    // Toggle form visibility
+    form.style.display = isFormVisible ? 'none' : 'block';
+    this.style.display = isFormVisible ? 'block' : 'none'; // Hide button when form is visible
+});
+
+document.getElementById('btn-batal-komentar').addEventListener('click', function() {
+    document.getElementById('komentar-utama-form').style.display = 'none';
+    document.getElementById('btn-komentar-utama').style.display = 'block'; // Show button again
+});
+    });
+
+        // Optional: Auto-hide notification after 5 seconds
+        document.querySelectorAll('.notification').forEach(notification => {
+            setTimeout(() => notification.remove(), 5000);
+        });
+        function toggleEditForm(replyId) {
+    const editForm = document.getElementById('editForm' + replyId);
+    editForm.style.display = editForm.style.display === 'none' ? 'block' : 'none';}
+
+    function hideCommentForm() {
+    document.getElementById('komentar-utama-form').style.display = 'none';
+    document.getElementById('btn-komentar-utama').style.display = 'block';
+}
     </script>
 @stop
