@@ -138,15 +138,10 @@
                                         <h5 class="mt-0 font-weight-bold">{{ $item['comment']->user_name }}</h5>
                                         <p>{{ $item['comment']->content }}</p>
                                         <small class="text-muted">Diposting pada {{ \Carbon\Carbon::parse($item['comment']->created_at)->locale('id_ID')->isoFormat('D MMMM YYYY HH:mm') }}</small>
-                                         <!-- Delete Button -->
-                                         <form action="{{ route('deletekomentar', $item['comment']->id) }}" method="POST" style="display:inline;">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button type="submit" class="btn btn-danger btn-sm mt-2" onclick="return confirm('Apakah Anda yakin ingin menghapus komentar ini?')">Hapus</button>
-                                        </form>
                                         <!-- Check if the logged-in user is the owner of the comment -->
-                                        @if(auth()->user() && auth()->user()->id == $item['comment']->id_user)
-                                            <!-- Edit Button -->
+                                    @if(auth()->user())
+                                        <!-- Edit Button: Only for the user who posted the comment -->
+                                        @if(auth()->user()->id == $item['comment']->id_user)
                                             <button class="btn btn-warning btn-sm mt-2" data-toggle="collapse" data-target="#editCommentForm{{ $item['comment']->id }}">Edit</button>
                                             <div id="editCommentForm{{ $item['comment']->id }}" class="collapse mt-3">
                                                 <form action="{{ route('updatekomentar1', $item['comment']->id) }}" method="POST">
@@ -165,10 +160,20 @@
                                             </div>
                                         @endif
 
+                                        <!-- Delete Button: Admin can delete all comments, users can delete their own -->
+                                        @if(auth()->user()->id == $item['comment']->id_user || auth()->user()->role == 'admin')
+                                            <form action="{{ route('deletekomentar1', $item['comment']->id) }}" method="POST" style="display:inline;">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit" class="btn btn-danger btn-sm mt-2" onclick="return confirm('Apakah Anda yakin ingin menghapus komentar ini?')">Hapus</button>
+                                            </form>
+                                        @endif
+                                    @endif
+
                                         <!-- Form untuk balasan komentar -->
                                         <button class="btn btn-info btn-sm mt-2" data-toggle="collapse" data-target="#replyForm{{ $item['comment']->id }}">Balas</button>
                                         <div id="replyForm{{ $item['comment']->id }}" class="collapse mt-3">
-                                            <form action="{{ route('postBalasan') }}" method="POST">
+                                            <form action="{{ route('postBalasan1') }}" method="POST">
                                                 @csrf
                                                 <div class="form-group">
                                                     <textarea name="content" class="form-control" rows="3" placeholder="Tulis balasan di sini..." required></textarea>
@@ -193,13 +198,22 @@
                                                             <small class="text-muted">Membalas komentar dari {{ $item['comment']->user_name }}</small>
                                                             <h6 class="mt-2 font-weight-bold">{{ $reply->user_name }}</h6>
                                                             <p>{{ $reply->content }}</p>
-                                                            <small class="text-muted">Diposting pada {{ \Carbon\Carbon::parse($reply->created_at)->locale('id_ID')->isoFormat('D MMMM YYYY HH:mm') }}</small>
+                                                            <small class="text-muted">Diposting pada {{ \Carbon\Carbon::parse($reply->created_at)->timezone('Asia/Jakarta')->locale('id_ID')->isoFormat('D MMMM YYYY HH:mm') }}</small>
 
                                                             @if(auth()->user()->id == $reply->id_user)
-                                                                <!-- Tombol Edit Balasan -->
+                                                            <!-- Tombol Edit Balasan -->
                                                                 <button class="btn btn-warning btn-sm ml-2" onclick="toggleEditForm({{ $reply->id }})">Edit</button>
 
-                                                                <!-- Form Edit Balasan -->
+                                                            <!-- Tombol Hapus Balasan -->
+                                                                @if(auth()->user()->id == $reply->id_user || auth()->user()->role == 'is_admin')
+                                                                    <form action="{{ route('deletekomentar1', $reply->id) }}" method="POST" style="display:inline;">
+                                                                        @csrf
+                                                                        @method('DELETE')
+                                                                        <button type="submit" class="btn btn-danger btn-sm mt-2" onclick="return confirm('Apakah Anda yakin ingin menghapus balasan ini?')">Hapus</button>
+                                                                    </form>
+                                                                @endif
+
+                                                            <!-- Form Edit Balasan -->
                                                                 <div id="editForm{{ $reply->id }}" class="mt-3" style="display:none;">
                                                                     <form action="{{ route('updatekomentar1', $reply->id) }}" method="POST">
                                                                         @csrf
@@ -214,11 +228,6 @@
                                                                             <input type="submit" class="btn btn-primary btn-sm" value="Update">
                                                                             <button type="button" class="btn btn-secondary btn-sm" onclick="toggleEditForm({{ $reply->id }})">Batal</button>
                                                                         </div>
-                                                                    </form>
-                                                                        <form action="{{ route('deletekomentar', $reply->id) }}" method="POST" style="display:inline;">
-                                                                        @csrf
-                                                                        @method('DELETE')
-                                                                        <button type="submit" class="btn btn-danger btn-sm mt-2" onclick="return confirm('Apakah Anda yakin ingin menghapus balasan ini?')">Hapus</button>
                                                                     </form>
                                                                 </div>
                                                             @endif
@@ -287,17 +296,33 @@ document.getElementById('btn-batal-komentar').addEventListener('click', function
 });
     });
 
-        // Optional: Auto-hide notification after 5 seconds
-        document.querySelectorAll('.notification').forEach(notification => {
-            setTimeout(() => notification.remove(), 5000);
-        });
-        function toggleEditForm(replyId) {
-    const editForm = document.getElementById('editForm' + replyId);
-    editForm.style.display = editForm.style.display === 'none' ? 'block' : 'none';}
+//         // Optional: Auto-hide notification after 5 seconds
+//         document.querySelectorAll('.notification').forEach(notification => {
+//             setTimeout(() => notification.remove(), 5000);
+//         });
+//         function toggleEditForm(replyId) {
+//     const editForm = document.getElementById('editForm' + replyId);
+//     editForm.style.display = editForm.style.display === 'none' ? 'block' : 'none';}
 
-    function hideCommentForm() {
-    document.getElementById('komentar-utama-form').style.display = 'none';
-    document.getElementById('btn-komentar-utama').style.display = 'block';
-}
+//     function hideCommentForm() {
+//     document.getElementById('komentar-utama-form').style.display = 'none';
+//     document.getElementById('btn-komentar-utama').style.display = 'block';
+// }
+
+document.getElementById('btn-komentar-utama').addEventListener('click', function() {
+    const form = document.getElementById('komentar-utama-form');
+    const isFormVisible = form.style.display === 'block';
+
+    // Toggle form visibility
+    form.style.display = isFormVisible ? 'none' : 'block';
+    this.style.display = isFormVisible ? 'block' : 'none'; // Hide button when form is visible
+});
+
+// Hide the main comment form on cancel
+document.getElementById('btn-batal-komentar').addEventListener('click', function() {
+    const form = document.getElementById('komentar-utama-form');
+    form.style.display = 'none';
+    document.getElementById('btn-komentar-utama').style.display = 'block'; // Show button again
+});
     </script>
 @stop

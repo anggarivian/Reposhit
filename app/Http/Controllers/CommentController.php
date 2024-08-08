@@ -38,17 +38,55 @@ class CommentController extends Controller
         return redirect()->back()->with('success', 'Komentar berhasil ditambahkan');
     }
 
-    public function deletekomentar($id)
-    {
-        $comment = Comment::find($id);
+    public function delete($id)
+{
+    // Temukan komentar berdasarkan ID
+    $comment = Comment::find($id);
 
-        if ($comment) {
-            $comment->delete();
-            return redirect()->back()->with('success', 'Komentar berhasil dihapus');
-        } else {
-            return redirect()->back()->with('error', 'Komentar tidak ditemukan');
-        }
+    if ($comment) {
+        // Hapus semua balasan yang terkait dengan komentar ini
+        $comment->replies()->delete();
+
+        // Hapus komentar itu sendiri
+        $comment->delete();
+
+        return redirect()->back()->with('success', 'Komentar dan balasan berhasil dihapus');
+    } else {
+        return redirect()->back()->with('error', 'Komentar tidak ditemukan');
     }
+}
+    public function deletekomentar($id)
+{
+    $reply = Comment::find($id);
+
+    if (!$reply) {
+        return redirect()->back()->with('error', 'Balasan tidak ditemukan');
+    }
+
+    // Periksa apakah pengguna yang login adalah admin atau pemilik balasan
+    if (auth()->user()->role == 'is_admin' || auth()->user()->id == $reply->id_user) {
+        $reply->delete();
+        return redirect()->back()->with('success', 'Balasan berhasil dihapus');
+    } else {
+        return redirect()->back()->with('error', 'Anda tidak memiliki izin untuk menghapus balasan ini');
+    }
+}
+    public function deletekomentar1($id)
+{
+    $reply = Comment::find($id);
+
+    if (!$reply) {
+        return redirect()->back()->with('error', 'Balasan tidak ditemukan');
+    }
+
+    // Periksa apakah pengguna yang login adalah admin atau pemilik balasan
+    if (auth()->user()->role == 'is_admin' || auth()->user()->id == $reply->id_user) {
+        $reply->delete();
+        return redirect()->back()->with('success', 'Balasan berhasil dihapus');
+    } else {
+        return redirect()->back()->with('error', 'Anda tidak memiliki izin untuk menghapus balasan ini');
+    }
+}
     public function postBalasan(Request $request){
         // dd($request);
     // Validasi input
@@ -129,6 +167,28 @@ class CommentController extends Controller
 
 
 public function update1(Request $request, $id)
+{
+    // Validasi input
+    $request->validate([
+        'content' => 'required|string|max:1000',
+    ]);
+
+    // Temukan komentar berdasarkan ID
+    $comment = Comment::findOrFail($id);
+
+    // Cek apakah user yang login adalah pemilik komentar
+    if (auth()->user()->id != $comment->id_user) {
+        return redirect()->back()->with('error', 'Anda tidak diizinkan untuk mengedit komentar ini.');
+    }
+
+    // Update komentar
+    $comment->content = $request->input('content');
+    $comment->save();
+
+    // Redirect dengan pesan sukses
+    return redirect()->back()->with('success', 'Komentar berhasil diperbarui.');
+    }
+public function update(Request $request, $id)
 {
     // Validasi input
     $request->validate([

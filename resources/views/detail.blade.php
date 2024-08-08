@@ -138,10 +138,10 @@
                                         <h5 class="mt-0 font-weight-bold">{{ $item['comment']->user_name }}</h5>
                                         <p>{{ $item['comment']->content }}</p>
                                         <small class="text-muted">Diposting pada {{ \Carbon\Carbon::parse($item['comment']->created_at)->locale('id_ID')->isoFormat('D MMMM YYYY HH:mm') }}</small>
-
                                         <!-- Check if the logged-in user is the owner of the comment -->
-                                        @if(auth()->user() && auth()->user()->id == $item['comment']->id_user)
-                                            <!-- Edit Button -->
+                                    @if(auth()->user())
+                                        <!-- Edit Button: Only for the user who posted the comment -->
+                                        @if(auth()->user()->id == $item['comment']->id_user)
                                             <button class="btn btn-warning btn-sm mt-2" data-toggle="collapse" data-target="#editCommentForm{{ $item['comment']->id }}">Edit</button>
                                             <div id="editCommentForm{{ $item['comment']->id }}" class="collapse mt-3">
                                                 <form action="{{ route('updatekomentar', $item['comment']->id) }}" method="POST">
@@ -159,6 +159,16 @@
                                                 </form>
                                             </div>
                                         @endif
+
+                                        <!-- Delete Button: Admin can delete all comments, users can delete their own -->
+                                        @if(auth()->user()->id == $item['comment']->id_user || auth()->user()->role == 'admin')
+                                            <form action="{{ route('deletekomentar', $item['comment']->id) }}" method="POST" style="display:inline;">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit" class="btn btn-danger btn-sm mt-2" onclick="return confirm('Apakah Anda yakin ingin menghapus komentar ini?')">Hapus</button>
+                                            </form>
+                                        @endif
+                                    @endif
 
                                         <!-- Form untuk balasan komentar -->
                                         <button class="btn btn-info btn-sm mt-2" data-toggle="collapse" data-target="#replyForm{{ $item['comment']->id }}">Balas</button>
@@ -188,13 +198,22 @@
                                                             <small class="text-muted">Membalas komentar dari {{ $item['comment']->user_name }}</small>
                                                             <h6 class="mt-2 font-weight-bold">{{ $reply->user_name }}</h6>
                                                             <p>{{ $reply->content }}</p>
-                                                            <small class="text-muted">Diposting pada {{ \Carbon\Carbon::parse($reply->created_at)->locale('id_ID')->isoFormat('D MMMM YYYY HH:mm') }}</small>
+                                                            <small class="text-muted">Diposting pada {{ \Carbon\Carbon::parse($reply->created_at)->timezone('Asia/Jakarta')->locale('id_ID')->isoFormat('D MMMM YYYY HH:mm') }}</small>
 
                                                             @if(auth()->user()->id == $reply->id_user)
-                                                                <!-- Tombol Edit Balasan -->
+                                                            <!-- Tombol Edit Balasan -->
                                                                 <button class="btn btn-warning btn-sm ml-2" onclick="toggleEditForm({{ $reply->id }})">Edit</button>
 
-                                                                <!-- Form Edit Balasan -->
+                                                            <!-- Tombol Hapus Balasan -->
+                                                                @if(auth()->user()->id == $reply->id_user || auth()->user()->role == 'is_admin')
+                                                                    <form action="{{ route('deletekomentar', $reply->id) }}" method="POST" style="display:inline;">
+                                                                        @csrf
+                                                                        @method('DELETE')
+                                                                        <button type="submit" class="btn btn-danger btn-sm mt-2" onclick="return confirm('Apakah Anda yakin ingin menghapus balasan ini?')">Hapus</button>
+                                                                    </form>
+                                                                @endif
+
+                                                            <!-- Form Edit Balasan -->
                                                                 <div id="editForm{{ $reply->id }}" class="mt-3" style="display:none;">
                                                                     <form action="{{ route('updatekomentar', $reply->id) }}" method="POST">
                                                                         @csrf
@@ -289,5 +308,21 @@ document.getElementById('btn-batal-komentar').addEventListener('click', function
     document.getElementById('komentar-utama-form').style.display = 'none';
     document.getElementById('btn-komentar-utama').style.display = 'block';
 }
+
+document.getElementById('btn-komentar-utama').addEventListener('click', function() {
+    const form = document.getElementById('komentar-utama-form');
+    const isFormVisible = form.style.display === 'block';
+
+    // Toggle form visibility
+    form.style.display = isFormVisible ? 'none' : 'block';
+    this.style.display = isFormVisible ? 'block' : 'none'; // Hide button when form is visible
+});
+
+// Hide the main comment form on cancel
+document.getElementById('btn-batal-komentar').addEventListener('click', function() {
+    const form = document.getElementById('komentar-utama-form');
+    form.style.display = 'none';
+    document.getElementById('btn-komentar-utama').style.display = 'block'; // Show button again
+});
     </script>
 @stop
