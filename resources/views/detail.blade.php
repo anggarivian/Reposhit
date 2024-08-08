@@ -309,20 +309,19 @@ document.getElementById('btn-batal-komentar').addEventListener('click', function
     document.getElementById('btn-komentar-utama').style.display = 'block';
 }
 
-document.getElementById('btn-komentar-utama').addEventListener('click', function() {
-    const form = document.getElementById('komentar-utama-form');
-    const isFormVisible = form.style.display === 'block';
+// Pastikan DOM sudah siap sebelum menjalankan JavaScript
+document.addEventListener('DOMContentLoaded', function() {
+    // Event listener untuk tombol "Komentar"
+    document.getElementById('btn-komentar-utama').addEventListener('click', function() {
+        document.getElementById('komentar-utama-form').style.display = 'block';  // Menampilkan form komentar
+        this.style.display = 'none';  // Menyembunyikan tombol "Komentar"
+    });
 
-    // Toggle form visibility
-    form.style.display = isFormVisible ? 'none' : 'block';
-    this.style.display = isFormVisible ? 'block' : 'none'; // Hide button when form is visible
-});
-
-// Hide the main comment form on cancel
-document.getElementById('btn-batal-komentar').addEventListener('click', function() {
-    const form = document.getElementById('komentar-utama-form');
-    form.style.display = 'none';
-    document.getElementById('btn-komentar-utama').style.display = 'block'; // Show button again
+    // Event listener untuk tombol "Batal"
+    document.getElementById('btn-batal-komentar').addEventListener('click', function() {
+        document.getElementById('komentar-utama-form').style.display = 'none';  // Menyembunyikan form komentar
+        document.getElementById('btn-komentar-utama').style.display = 'inline-block';  // Menampilkan kembali tombol "Komentar"
+    });
 });
     </script>
 @stop

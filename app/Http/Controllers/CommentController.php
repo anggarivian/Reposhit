@@ -72,21 +72,20 @@ class CommentController extends Controller
     }
 }
     public function deletekomentar1($id)
-{
-    $reply = Comment::find($id);
+    {
+        $comment = Comment::findOrFail($id);
 
-    if (!$reply) {
-        return redirect()->back()->with('error', 'Balasan tidak ditemukan');
-    }
+        // Jika komentar ini memiliki balasan, hapus juga semua balasan terkait
+        $replies = Comment::where('parent_id', $comment->id)->get();
+        foreach ($replies as $reply) {
+            $reply->delete();
+        }
 
-    // Periksa apakah pengguna yang login adalah admin atau pemilik balasan
-    if (auth()->user()->role == 'is_admin' || auth()->user()->id == $reply->id_user) {
-        $reply->delete();
-        return redirect()->back()->with('success', 'Balasan berhasil dihapus');
-    } else {
-        return redirect()->back()->with('error', 'Anda tidak memiliki izin untuk menghapus balasan ini');
+        // Hapus komentar utama
+        $comment->delete();
+
+        return redirect()->back()->with('success', 'Komentar berhasil dihapus.');
     }
-}
     public function postBalasan(Request $request){
         // dd($request);
     // Validasi input
