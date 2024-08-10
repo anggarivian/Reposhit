@@ -165,27 +165,21 @@ class CommentController extends Controller
     }
 
 
-public function update1(Request $request, $id)
-{
-    // Validasi input
-    $request->validate([
-        'content' => 'required|string|max:1000',
-    ]);
+    public function update1(Request $request, $id)
+    {
+        $request->validate([
+            'content' => 'required|string',
+        ]);
 
-    // Temukan komentar berdasarkan ID
-    $comment = Comment::findOrFail($id);
+        $comment = comment::find($id);
+        if ($comment) {
+            $comment->content = $request->input('content');
+            $comment->save();
 
-    // Cek apakah user yang login adalah pemilik komentar
-    if (auth()->user()->id != $comment->id_user) {
-        return redirect()->back()->with('error', 'Anda tidak diizinkan untuk mengedit komentar ini.');
-    }
+            return redirect()->back()->with('success', 'Balasan berhasil diperbarui!');
+        }
 
-    // Update komentar
-    $comment->content = $request->input('content');
-    $comment->save();
-
-    // Redirect dengan pesan sukses
-    return redirect()->back()->with('success', 'Komentar berhasil diperbarui.');
+        return redirect()->back()->with('error', 'Balasan tidak ditemukan!');
     }
 public function update(Request $request, $id)
 {
