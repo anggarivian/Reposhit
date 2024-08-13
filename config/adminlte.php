@@ -317,6 +317,12 @@ return [
             'can'  => 'isMahasiswa',
         ],
         [
+            'text' => 'Skripsi Favorite',
+            'url'  => 'home/favorite',
+            'icon' => 'fas fa-fw fa-book',
+            'can'  => 'isMahasiswa',
+        ],
+        [
             'header' => 'LAPORAN SKRIPSI',
             'can'    => 'isMahasiswa',
         ],

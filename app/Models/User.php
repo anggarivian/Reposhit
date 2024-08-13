@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use App\Models\favorite;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 
@@ -33,6 +34,12 @@ class User extends Authenticatable
     {
         return $this->role === 'admin'; // Sesuaikan dengan kolom dan nilai di database Anda
     }
+
+    public function favorites()
+    {
+        return $this->belongsToMany(Skripsi::class, 'favorites', 'id_user', 'id_skripsi')->withTimestamps();
+    }
+
 
 
     /**

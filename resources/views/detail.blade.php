@@ -78,7 +78,7 @@
                         @foreach($pdfs as $attribute => $pdf)
                             @php
                                 $label = $attribute == 'dapus'
-                                    ? 'Daftar Pustaka'
+                                    ? ''
                                     : (strpos($attribute, 'bab') === 0
                                         ? 'Bab ' . [
                                             'bab1' => 'I',
@@ -105,13 +105,29 @@
                 <hr>
 
                 <div class="btn-group">
-                    <button class="btn btn-primary mr-2 btn-custom" id="btn-suka-utama">
-                        <i class="bi bi-hand-thumbs-up"></i> <span>Suka</span>
-                    </button>
+                    @if(auth()->user()->favorites()->where('id_skripsi', $skripsi->id)->exists())
+                        <!-- Button untuk menghapus favorite -->
+                        <form action="{{ route('removeFavorite1', $skripsi->id) }}" method="POST" style="display:inline;">
+                            @csrf
+                            @method('DELETE')
+                            <button type="submit" class="btn btn-danger mr-2 btn-custom">
+                                <i class="bi bi-star-fill"></i> <span>Hapus dari Favorite</span>
+                            </button>
+                        </form>
+                    @else
+                        <!-- Button untuk menambahkan ke favorite -->
+                        <form action="{{ route('addFavorite', $skripsi->id) }}" method="POST" style="display:inline;">
+                            @csrf
+                            <button type="submit" class="btn btn-warning mr-2 btn-custom">
+                                <i class="bi bi-star"></i> <span>Tambah ke Favorite</span>
+                            </button>
+                        </form>
+                    @endif
                     <button class="btn btn-info btn-custom" id="btn-komentar-utama">
                         <i class="bi bi-chat-square-text"></i> <span>Komentar</span>
                     </button>
                 </div>
+
 
                 {{-- Form komentar utama --}}
                 <form action="{{ route('postkomentar') }}" id="komentar-utama-form" method="POST" style="display: none; margin-top: 10px;">
@@ -241,46 +257,52 @@ document.addEventListener('DOMContentLoaded', function () {
     const alerts = document.querySelectorAll('.alert');
     alerts.forEach(alert => {
         setTimeout(() => {
-            alert.style.opacity = '0';
-        }, 5000); // Notifikasi menghilang setelah 5 detik
-        setTimeout(() => {
-            alert.remove();
-        }, 5500); // Menghapus elemen setelah 5.5 detik untuk memberi waktu transisi
+            alert.style.display = 'none';
+        }, 5000); // Menutup notifikasi setelah 5 detik
     });
 
-    // Script combo box untuk menampilkan/menyembunyikan iframe PDF
-    document.getElementById('selectPdf').addEventListener('change', function () {
-        const selectedValue = this.value;
-        const iframes = document.querySelectorAll('iframe[id$="Frame"]');
-        const headers = document.querySelectorAll('h2[id$="Header"]');
+    // Script untuk menampilkan/mengatur tampilan PDF
+    const selectPdf = document.getElementById('selectPdf');
+    const closePdfButton = document.getElementById('closePdfButton');
 
-        // Sembunyikan semua iframe dan header
-        iframes.forEach(iframe => iframe.style.display = 'none');
-        headers.forEach(header => header.style.display = 'none');
+    selectPdf.addEventListener('change', function () {
+        const selectedValue = selectPdf.value;
 
-        // Tampilkan iframe dan header yang sesuai dengan pilihan pengguna
+        // Sembunyikan semua iframe dan header terlebih dahulu
+        document.querySelectorAll('iframe').forEach(iframe => iframe.style.display = 'none');
+        document.querySelectorAll('h2[id$="Header"]').forEach(header => header.style.display = 'none');
+
+        // Jika ada nilai yang dipilih, tampilkan iframe dan header yang sesuai
         if (selectedValue) {
-            document.getElementById(selectedValue + 'Frame').style.display = 'block';
-            document.getElementById(selectedValue + 'Header').style.display = 'block';
+            document.getElementById(`${selectedValue}Frame`).style.display = 'block';
+            document.getElementById(`${selectedValue}Header`).style.display = 'block';
+            closePdfButton.style.display = 'inline-block';
+        } else {
+            closePdfButton.style.display = 'none';
         }
     });
 
-    // Script untuk menampilkan/menyembunyikan form komentar utama
+    // Script untuk menutup PDF
+    closePdfButton.addEventListener('click', function () {
+        document.querySelectorAll('iframe').forEach(iframe => iframe.style.display = 'none');
+        document.querySelectorAll('h2[id$="Header"]').forEach(header => header.style.display = 'none');
+        closePdfButton.style.display = 'none';
+        selectPdf.value = ''; // Reset pilihan pada combo box
+    });
+
+    // Script untuk menampilkan form komentar utama
     const btnKomentarUtama = document.getElementById('btn-komentar-utama');
-    const formKomentarUtama = document.getElementById('komentar-utama-form');
+    const komentarUtamaForm = document.getElementById('komentar-utama-form');
     const btnBatalKomentar = document.getElementById('btn-batal-komentar');
 
-    btnKomentarUtama.addEventListener('click', function() {
-        if (formKomentarUtama.style.display === 'none' || formKomentarUtama.style.display === '') {
-            formKomentarUtama.style.display = 'block';
-        } else {
-            formKomentarUtama.style.display = 'none';
-        }
+    btnKomentarUtama.addEventListener('click', function () {
+        komentarUtamaForm.style.display = 'block';
+        btnKomentarUtama.style.display = 'none';
     });
 
-    // Script untuk menyembunyikan form komentar utama saat tombol "Batal" diklik
-    btnBatalKomentar.addEventListener('click', function() {
-        formKomentarUtama.style.display = 'none';
+    btnBatalKomentar.addEventListener('click', function () {
+        komentarUtamaForm.style.display = 'none';
+        btnKomentarUtama.style.display = 'inline-block';
     });
 });
     </script>

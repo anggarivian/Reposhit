@@ -78,7 +78,7 @@
                         @foreach($pdfs as $attribute => $pdf)
                             @php
                                 $label = $attribute == 'dapus'
-                                    ? 'Daftar Pustaka'
+                                    ? ''
                                     : (strpos($attribute, 'bab') === 0
                                         ? 'Bab ' . [
                                             'bab1' => 'I',
@@ -105,13 +105,11 @@
                 <hr>
 
                 <div class="btn-group">
-                    <button class="btn btn-primary mr-2 btn-custom" id="btn-suka-utama">
-                        <i class="bi bi-hand-thumbs-up"></i> <span>Suka</span>
-                    </button>
                     <button class="btn btn-info btn-custom" id="btn-komentar-utama">
                         <i class="bi bi-chat-square-text"></i> <span>Komentar</span>
                     </button>
                 </div>
+
 
                 {{-- Form komentar utama --}}
                 <form action="{{ route('postkomentar1') }}" id="komentar-utama-form" method="POST" style="display: none; margin-top: 10px;">
@@ -164,7 +162,7 @@
 
                                     <button class="btn btn-info btn-sm mt-2" data-toggle="collapse" data-target="#replyForm{{ $item['comment']->id }}">Balas</button>
                                     <div id="replyForm{{ $item['comment']->id }}" class="collapse mt-3">
-                                        <form action="{{ route('postBalasan') }}" method="POST">
+                                        <form action="{{ route('postBalasan1') }}" method="POST">
                                             @csrf
                                             <div class="form-group">
                                                 <textarea name="content" class="form-control" rows="3" placeholder="Tulis balasan Anda di sini..." required></textarea>
@@ -181,32 +179,32 @@
                                         @foreach($item['replies'] as $reply)
                                         <div class="media mt-3 p-3 border rounded bg-white ml-4 shadow-sm">
                                             <i class="bi bi-person-circle mr-3" style="font-size: 2rem;"></i>
-                                            <div class="media-body">
-                                                <small class="text-muted">Membalas komentar dari {{ $item['comment']->user_name }}</small>
-                                                    <h6 class="mt-0 font-weight-bold">{{ $reply->user_name }}</h6>
-                                                    <p>{{ $reply->content }}</p>
-                                                    <small class="text-muted">Diposting pada {{ \Carbon\Carbon::parse($reply->created_at)->locale('id_ID')->isoFormat('D MMMM YYYY HH:mm') }}</small>
-                                                        <button class="btn btn-warning btn-sm mt-2" data-toggle="collapse" data-target="#editReplyForm{{ $reply->id }}">Edit</button>
-                                                        <div id="editReplyForm{{ $reply->id }}" class="collapse mt-3">
-                                                            <form action="{{ route('updatekomentar1', $reply->id) }}" method="POST">
-                                                                @csrf
-                                                                @method('PUT')
-                                                                <div class="form-group">
-                                                                    <textarea name="content" class="form-control @error('content') is-invalid @enderror" rows="2" required>{{ $reply->content }}</textarea>
-                                                                    @error('content')
-                                                                        <div class="invalid-feedback">{{ $message }}</div>
-                                                                    @enderror
-                                                                </div>
-                                                                <div class="form-group">
-                                                                    <input type="submit" class="btn btn-primary btn-sm" value="Update">
-                                                                </div>
-                                                            </form>
-                                                        </div>
-                                                        <form action="{{ route('deletekomentar1', $reply->id) }}" method="POST" style="display:inline;">
-                                                            @csrf
-                                                            @method('DELETE')
-                                                            <button type="submit" class="btn btn-danger btn-sm mt-2" onclick="return confirm('Apakah Anda yakin ingin menghapus balasan ini?')">Hapus</button>
-                                                        </form>
+                                                <div class="media-body">
+                                                    <small class="text-muted">Membalas komentar dari {{ $item['comment']->user_name }}</small>
+                                                        <h6 class="mt-0 font-weight-bold">{{ $reply->user_name }}</h6>
+                                                        <p>{{ $reply->content }}</p>
+                                                        <small class="text-muted">Diposting pada {{ \Carbon\Carbon::parse($reply->created_at)->locale('id_ID')->isoFormat('D MMMM YYYY HH:mm') }}</small>
+                                                            <button class="btn btn-warning btn-sm mt-2" data-toggle="collapse" data-target="#editReplyForm{{ $reply->id }}">Edit</button>
+                                                            <div id="editReplyForm{{ $reply->id }}" class="collapse mt-3">
+                                                                <form action="{{ route('updatekomentar1', $reply->id) }}" method="POST">
+                                                                    @csrf
+                                                                    @method('PUT')
+                                                                    <div class="form-group">
+                                                                        <textarea name="content" class="form-control @error('content') is-invalid @enderror" rows="2" required>{{ $reply->content }}</textarea>
+                                                                        @error('content')
+                                                                            <div class="invalid-feedback">{{ $message }}</div>
+                                                                        @enderror
+                                                                    </div>
+                                                                    <div class="form-group">
+                                                                        <input type="submit" class="btn btn-primary btn-sm" value="Update">
+                                                                    </div>
+                                                                </form>
+                                                            </div>
+                                                    <form action="{{ route('deletekomentar1', $reply->id) }}" method="POST" style="display:inline;">
+                                                        @csrf
+                                                        @method('DELETE')
+                                                        <button type="submit" class="btn btn-danger btn-sm mt-2" onclick="return confirm('Apakah Anda yakin ingin menghapus balasan ini?')">Hapus</button>
+                                                   </form>
                                                 </div>
                                             </div>
                                         @endforeach
@@ -231,46 +229,52 @@ document.addEventListener('DOMContentLoaded', function () {
     const alerts = document.querySelectorAll('.alert');
     alerts.forEach(alert => {
         setTimeout(() => {
-            alert.style.opacity = '0';
-        }, 5000); // Notifikasi menghilang setelah 5 detik
-        setTimeout(() => {
-            alert.remove();
-        }, 5500); // Menghapus elemen setelah 5.5 detik untuk memberi waktu transisi
+            alert.style.display = 'none';
+        }, 5000); // Menutup notifikasi setelah 5 detik
     });
 
-    // Script combo box untuk menampilkan/menyembunyikan iframe PDF
-    document.getElementById('selectPdf').addEventListener('change', function () {
-        const selectedValue = this.value;
-        const iframes = document.querySelectorAll('iframe[id$="Frame"]');
-        const headers = document.querySelectorAll('h2[id$="Header"]');
+    // Script untuk menampilkan/mengatur tampilan PDF
+    const selectPdf = document.getElementById('selectPdf');
+    const closePdfButton = document.getElementById('closePdfButton');
 
-        // Sembunyikan semua iframe dan header
-        iframes.forEach(iframe => iframe.style.display = 'none');
-        headers.forEach(header => header.style.display = 'none');
+    selectPdf.addEventListener('change', function () {
+        const selectedValue = selectPdf.value;
 
-        // Tampilkan iframe dan header yang sesuai dengan pilihan pengguna
+        // Sembunyikan semua iframe dan header terlebih dahulu
+        document.querySelectorAll('iframe').forEach(iframe => iframe.style.display = 'none');
+        document.querySelectorAll('h2[id$="Header"]').forEach(header => header.style.display = 'none');
+
+        // Jika ada nilai yang dipilih, tampilkan iframe dan header yang sesuai
         if (selectedValue) {
-            document.getElementById(selectedValue + 'Frame').style.display = 'block';
-            document.getElementById(selectedValue + 'Header').style.display = 'block';
+            document.getElementById(`${selectedValue}Frame`).style.display = 'block';
+            document.getElementById(`${selectedValue}Header`).style.display = 'block';
+            closePdfButton.style.display = 'inline-block';
+        } else {
+            closePdfButton.style.display = 'none';
         }
     });
 
-    // Script untuk menampilkan/menyembunyikan form komentar utama
+    // Script untuk menutup PDF
+    closePdfButton.addEventListener('click', function () {
+        document.querySelectorAll('iframe').forEach(iframe => iframe.style.display = 'none');
+        document.querySelectorAll('h2[id$="Header"]').forEach(header => header.style.display = 'none');
+        closePdfButton.style.display = 'none';
+        selectPdf.value = ''; // Reset pilihan pada combo box
+    });
+
+    // Script untuk menampilkan form komentar utama
     const btnKomentarUtama = document.getElementById('btn-komentar-utama');
-    const formKomentarUtama = document.getElementById('komentar-utama-form');
+    const komentarUtamaForm = document.getElementById('komentar-utama-form');
     const btnBatalKomentar = document.getElementById('btn-batal-komentar');
 
-    btnKomentarUtama.addEventListener('click', function() {
-        if (formKomentarUtama.style.display === 'none' || formKomentarUtama.style.display === '') {
-            formKomentarUtama.style.display = 'block';
-        } else {
-            formKomentarUtama.style.display = 'none';
-        }
+    btnKomentarUtama.addEventListener('click', function () {
+        komentarUtamaForm.style.display = 'block';
+        btnKomentarUtama.style.display = 'none';
     });
 
-    // Script untuk menyembunyikan form komentar utama saat tombol "Batal" diklik
-    btnBatalKomentar.addEventListener('click', function() {
-        formKomentarUtama.style.display = 'none';
+    btnBatalKomentar.addEventListener('click', function () {
+        komentarUtamaForm.style.display = 'none';
+        btnKomentarUtama.style.display = 'inline-block';
     });
 });
     </script>

@@ -149,22 +149,6 @@ class CommentController extends Controller
         return redirect()->back()->with('success', 'Komentar berhasil ditambahkan');
     }
 
-    public function toggleFavorite($id)
-    {
-        $comment = Comment::findOrFail($id);
-
-        if ($comment->favorite === 'yes') {
-            $comment->favorite = 'no';
-        } else {
-            $comment->favorite = 'yes';
-        }
-
-        $comment->save();
-
-        return redirect()->back()->with('message', 'Status favorit berhasil diubah.');
-    }
-
-
     public function update1(Request $request, $id)
     {
         $request->validate([

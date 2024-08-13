@@ -34,8 +34,8 @@
                         <td>{{$skripsis->rilis}}</td>
                         <td>{{$skripsis->halaman}}</td>
                         <td>
-                            <a type="button" id="btn-edit-skripsi" class="btn btn-sm btn-success" href="/home/skripsi/detail/{{$skripsis->id}}">
-                                Lihat Detail Skripsi
+                            <a type="button" id="btn-edit-skripsi" class="btn btn-sm btn-info" href="/home/skripsi/detail/{{$skripsis->id}}">
+                                <i class="fas fa-eye"></i> <!-- Ikon untuk Lihat Detail Skripsi -->
                             </a>
                         </td>
                     </tr>

@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\FavoriteController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\DosenController;
@@ -76,17 +77,18 @@ Route::middleware('is_mahasiswa')->group(function () {
 
     Route::get('/home/skripsi/detail/{id}', [SkripsiController::class, 'detailskripsi']);
     Route::get('/home/skripsi', [SkripsiController::class, 'mahasiswa'])->name('mahasiswa.skripsi');
-    // Definisikan rute untuk menyimpan komentar
 
+    // Route Komentar ---------------------------------------------------------------------------
     Route::post('/home/comment/detail', [CommentController::class, 'postkomentar'])->name('postkomentar');
-
-    // Route::delete('/home/comment/hapus/{id}', [CommentController::class, 'deletekomentar'])->name('deletekomentar');
-
-    Route::post('home/comment/postbalaskomentar', [CommentController::class, 'postBalasan'])->name('postBalasan');
-    Route::put('home/comment/{id}/toggleFavorite', [CommentController::class, 'toggleFavorite'])->name('toggleFavorite');
-    Route::get('home/comment/favorites', [CommentController::class, 'showFavoriteSkripsi'])->name('favorites');
-    Route::put('home/comment/updatekomentar/{id}', [CommentController::class, 'update'])->name('updatekomentar');
-    Route::delete('/home/comment/hapus/{id}', [CommentController::class, 'deletekomentar'])->name('deletekomentar');
+    Route::post('home/skripsi/detail/comment/postbalaskomentar', [CommentController::class, 'postBalasan'])->name('postBalasan');
+    Route::put('home/skripsi/detail/comment/{id}/toggleFavorite', [CommentController::class, 'toggleFavorite'])->name('toggleFavorite');
+    Route::put('home/skripsi/detail/comment/updatekomentar/{id}', [CommentController::class, 'update'])->name('updatekomentar');
+    Route::delete('/home/skripsi/detail/comment/hapus/{id}', [CommentController::class, 'deletekomentar'])->name('deletekomentar');
+// Route favorite  ---------------------------------------------------------------------------
+    Route::post('/home/skripsi/{id}/add-favorite', [FavoriteController::class, 'addFavorite'])->name('addFavorite');
+    Route::get('/home/favorite', [FavoriteController::class, 'showFavorites'])->name('favorites');
+    Route::delete('/home/favorites/{id}', [FavoriteController::class, 'removeFavorite'])->name('removeFavorite');
+    Route::delete('home/skripsi/detail/favorites/remove/{id}', [FavoriteController::class, 'removeFavorite1'])->name('removeFavorite1');
      // Route Skripsi ------------------------------------------------------------------------------
      Route::get('/mahasiswa/skripsi', [SkripsiController::class, 'index'])->name('skripsi');
      Route::post('/mahasiswa/skripsi', [SkripsiController::class, 'tambah'])->name('tambah.skripsi');

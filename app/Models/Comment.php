@@ -16,32 +16,13 @@ class Comment extends Model
     }
     // Relasi ke komentar induk
     public function replies()
-{
-    return $this->hasMany(Comment::class, 'parent_id');
-}
-
-public function parent()
-{
-    return $this->belongsTo(Comment::class, 'parent_id');
-}
-
-public function show($id)
-{
-    $skripsi = Skripsi::findOrFail($id);
-    $comments = Comment::where('skripsi_id', $id)
-                        ->whereNull('parent_id') // Load only parent comments
-                        ->with(['user', 'replies.user']) // Load user for comments and replies
-                        ->get();
-
-    return view('detail', compact('skripsi', 'comments'));
-}
-
-public function skripsi()
     {
-        return $this->belongsTo(Skripsi::class, 'skripsi_id');
+        return $this->hasMany(Comment::class, 'parent_id');
     }
-// public function childComments()
-//     {
-//         return $this->hasMany(Comment::class, 'parent_id');
-//     }
+
+    public function parent()
+    {
+        return $this->belongsTo(Comment::class, 'parent_id');
+}
+
 }
