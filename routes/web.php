@@ -57,6 +57,7 @@ Route::middleware('is_admin')->group(function () {
     Route::get('admin/ajaxadmin/dataSkripsi/{id}', [SkripsiController::class, 'getDataSkripsi']);
     Route::get('/admin/skripsi/hapus/{id}', [SkripsiController::class, 'hapus1'])->name('hapus.skripsi');
     Route::get('/admin/skripsi/detail/{id}', [SkripsiController::class, 'showPdf'])->name('pdf.show');
+    Route::get('/admin/skripsi/verifikasi/{id}', [SkripsiController::class,'verifikasi'])->name('verifikasi');
 
     // Route Komentar ------------------------------------------------------------------------------
     Route::post('admin//comment/detail', [CommentController::class, 'postkomentar1'])->name('postkomentar1');

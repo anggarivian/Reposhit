@@ -88,12 +88,7 @@
                         </div>
                         <div class="form-group">
                             <label for="penulis">Penulis</label>
-                            <select name="penulis" class="form-control" id="penulis">
-                                <option selected >Pilih</option>
-                                @foreach ($namaPenulis as $nama)
-                                    <option value="{{$nama->name}}" >{{$nama->name}}</option>
-                                @endforeach
-                            </select>
+                            <input type="text" class="form-control" name="penulis" id="penulis" value="{{ Auth::user()->name }}" readonly>
                         </div>
                         <div class="form-group">
                             <label for="dospem">Dosen Pembimbing</label>
@@ -203,12 +198,7 @@
                         </div>
                         <div class="form-group">
                             <label for="penulis">Penulis</label>
-                            <select name="penulis" class="form-control" id="edit-penulis">
-                                <option selected >Pilih</option>
-                                @foreach ($namaPenulis as $nama)
-                                    <option value="{{$nama->name}}" >{{$nama->name}}</option>
-                                @endforeach
-                            </select>
+                            <input type="text" class="form-control" name="penulis" id="penulis" value="{{ Auth::user()->name }}" readonly>
                         </div>
                         <div class="form-group">
                             <label for="dospem">Dosen Pembimbing</label>

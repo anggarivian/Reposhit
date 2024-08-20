@@ -24,8 +24,6 @@
                                                     Anda Login Sebagai Admin
                                                 @elseif($user->roles_id == 2)
                                                     Selamat Datang <h4 class="font-weight-bold">{{$user->name}}</h4>
-                                                @elseif($user->roles_id == 3)
-                                                    Selamat Datang <h4 class="font-weight-bold">{{$user->name}}</h4>
                                                 @endif
                                             </div>
                                         </div>

@@ -83,7 +83,7 @@ class SkripsiController extends Controller
         // Create Data Skripsi ------------------------------------------------------------------
         $skripsi = new Skripsi;
 
-        $skripsi->judul = $req->get('judul');
+        $skripsi->judul =  Auth::user()->name;;
         $skripsi->penulis = $req->get('penulis');
         $skripsi->dospem = $req->get('dospem');
         $skripsi->rilis = $req->get('rilis');
@@ -822,4 +822,20 @@ class SkripsiController extends Controller
     // public function postkomentar (Request $request){
     //     dd($request->all());
     // }
+
+    public function verifikasi($id){
+        $mahasiswa = User::find($id);
+
+        $mahasiswa->status = 1;
+
+        $mahasiswa->save();
+
+        $success = true;
+        $message = "Skripsi berhasil diverifikasi";
+
+        return response()->json([
+            'success' => $success,
+            'message' => $message,
+        ]);
+    }
 }

@@ -15,6 +15,7 @@ class CreateSkripsisTable extends Migration
     {
         Schema::create('skripsis', function (Blueprint $table) {
             $table->id();
+            // $table->string('id_user');
             $table->string('judul');
             $table->string('penulis');
             $table->string('dospem');
@@ -32,6 +33,7 @@ class CreateSkripsisTable extends Migration
             $table->string('bab4');
             $table->string('bab5');
             $table->string('dapus');
+            $table->boolean('status')->nullable();
             // $table->string('lampiran');
             $table->timestamps();
         });

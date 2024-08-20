@@ -72,7 +72,7 @@
                                     </svg>
                                 </button>
                                 <button type="button" class="btn btn-sm btn-info" onclick="verifikasiConfirmation('{{$mahasiswas->id}}' , '{{$mahasiswas->name}}' )">
-                                    Verifikasi
+                                    <i class="fas fa-check-circle"></i>
                                 </button>
                             </div>
                         </td>
