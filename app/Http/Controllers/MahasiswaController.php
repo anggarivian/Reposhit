@@ -119,19 +119,26 @@ class MahasiswaController extends Controller
         return redirect()->route('mahasiswa')->with($notification);
     }
 
-    public function verifikasi($id){
+    public function toggleVerifikasi($id) {
         $mahasiswa = User::find($id);
 
-        $mahasiswa->status = 1;
+        // Toggle status verifikasi
+        if ($mahasiswa->status == 0) {
+            $mahasiswa->status = 1;
+            $message = "Data Mahasiswa berhasil diverifikasi";
+        } else {
+            $mahasiswa->status = 0;
+            $message = "Data Mahasiswa berhasil dibatalkan verifikasinya";
+        }
 
         $mahasiswa->save();
 
         $success = true;
-        $message = "Data Mahasiswa berhasil diverifikasi";
 
         return response()->json([
             'success' => $success,
             'message' => $message,
         ]);
     }
+
 }

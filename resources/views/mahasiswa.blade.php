@@ -71,8 +71,10 @@
                                         <path d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1ZM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118ZM2.5 3h11V2h-11v1Z"/>
                                     </svg>
                                 </button>
-                                <button type="button" class="btn btn-sm btn-info" onclick="verifikasiConfirmation('{{$mahasiswas->id}}' , '{{$mahasiswas->name}}' )">
-                                    <i class="fas fa-check-circle"></i>
+                                <button class="btn {{ $mahasiswas->status == 0 ? 'btn-success' : 'btn-danger' }}"
+                                    onclick="toggleVerifikasiConfirmation({{ $mahasiswas->id }}, '{{ $mahasiswas->name }}')"
+                                    title="{{ $mahasiswas->status == 0 ? 'Verifikasi' : 'Batalkan Verifikasi' }}">
+                                    <i class="fa {{ $mahasiswas->status == 0 ? 'fa-check-circle' : 'fa-times-circle' }}"></i>
                                 </button>
                             </div>
                         </td>
@@ -294,40 +296,40 @@
                 return false;
             })
         }
-        function verifikasiConfirmation(id,name) {
-            swal.fire({
-                title: "Verifikasi akun mahasiswa?",
-                type: 'warning',
-                text: "Apakah anda ingin memverifikasi akun tersebut " +name+"?!",
-                showCancelButton: !0,
-                confirmButtonText: "Ya, lakukan!",
-                cancelButtonText: "Tidak, batalkan!",
-
-            }).then (function (e) {
-                if (e.value === true) {
-                    var CSRF_TOKEN = $('meta[name="csrf-token"]').attr('content');
-                    $.ajax({
-                        type: 'GET',
-                        url: "{{url('/admin/mahasiswa/verifikasi')}}/"+id,
-                        data: {_token: CSRF_TOKEN},
-                        dataType: 'JSON',
-                        success: function (results) {
-                            if (results.success === true) {
-                                swal.fire("Done!", results.message, "success");
-                                setTimeout(function(){
-                                    location.reload();
-                                },1000);
-                            } else {
-                                swal.fire("Error!", results.message, "error");
-                            }
-                        }
-                    });
-                } else {
-                    e.dismiss;
+        function toggleVerifikasiConfirmation(id, name) {
+    swal.fire({
+        title: "Tindakan verifikasi akun mahasiswa?",
+        type: 'warning',
+        text: "Apakah anda ingin " + (name.status == 0 ? 'memverifikasi' : 'membatalkan verifikasi') + " akun mahasiswa atas nama " + name + "?",
+        showCancelButton: true,
+        confirmButtonText: name.status == 0 ? "Ya, verifikasi!" : "Ya, batalkan!",
+        cancelButtonText: "Tidak, kembali!",
+    }).then(function (e) {
+        if (e.value === true) {
+            var CSRF_TOKEN = $('meta[name="csrf-token"]').attr('content');
+            $.ajax({
+                type: 'GET',
+                url: "{{url('/admin/mahasiswa/toggle-verifikasi')}}/" + id,
+                data: { _token: CSRF_TOKEN },
+                dataType: 'JSON',
+                success: function (results) {
+                    if (results.success === true) {
+                        swal.fire("Berhasil!", results.message, "success");
+                        setTimeout(function(){
+                            location.reload();
+                        }, 1000);
+                    } else {
+                        swal.fire("Gagal!", results.message, "error");
+                    }
                 }
-            }, function (dismiss) {
-                return false;
-            })
+            });
+        } else {
+            e.dismiss;
         }
+    }, function (dismiss) {
+        return false;
+    });
+}
+
 </script>
 @stop

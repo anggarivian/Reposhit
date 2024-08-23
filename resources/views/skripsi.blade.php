@@ -30,6 +30,7 @@
                         <th>No</th>
                         <th>Judul</th>
                         <th>Penulis</th>
+                        <th>Abstrak</th>
                         <th>Dosen Pembimbing</th>
                         <th>Rilis</th>
                         <th>Halaman</th>
@@ -43,6 +44,7 @@
                         <td>{{$no++}}</td>
                         <td>{{$skripsis->judul}}</td>
                         <td>{{$skripsis->penulis}}</td>
+                        <td>{{ Str::limit($skripsis->abstrak, 20) }}</td>
                         <td>{{$skripsis->dospem}}</td>
                         <td>{{$skripsis->rilis}}</td>
                         <td>{{$skripsis->halaman}}</td>
@@ -91,6 +93,10 @@
                             <input type="text" class="form-control" name="penulis" id="penulis" value="{{ Auth::user()->name }}" readonly>
                         </div>
                         <div class="form-group">
+                            <label for="abstrak">Abstrak</label>
+                            <input type="text" class="form-control" name="abstrak" id="abstrak" required placeholder="Masukkan Abstrak">
+                        </div>
+                        <div class="form-group">
                             <label for="dospem">Dosen Pembimbing</label>
                             <select name="dospem" class="form-control" id="dospem">
                                 <option selected >Pilih</option>
@@ -119,16 +125,10 @@
                                 <input type="file" class="form-control" style="padding-bottom: 37px" name="pengesahan" id="pengesahan" required>
                             </div>
                         </div>
-                        <div class="d-flex" style="margin: -7px">
-                            <div class="form-group col-md-6">
-                                <label for="abstrak">Pilih Abstrak (Maks. 2 MB) :</label>
-                                <input type="file" class="form-control" style="padding-bottom: 37px" name="abstrak" id="abstrak" required>
-                            </div>
-                            <div class="form-group col-md-6">
+                            <div class="form-group">
                                 <label for="daftarisi">Pilih Daftar Isi (Maks. 2 MB) :</label>
                                 <input type="file" class="form-control" style="padding-bottom: 37px" name="daftarisi" id="daftarisi" required>
                             </div>
-                        </div>
                         <div class="d-flex" style="margin: -7px">
                             <div class="form-group col-md-6">
                                 <label for="daftargambar">Pilih Daftar Gambar (Maks. 2 MB) :</label>
@@ -201,6 +201,10 @@
                             <input type="text" class="form-control" name="penulis" id="penulis" value="{{ Auth::user()->name }}" readonly>
                         </div>
                         <div class="form-group">
+                            <label for="abstrak">Abstrak</label>
+                            <input type="text" class="form-control" name="abstrak" id="abstrak" required placeholder="Masukkan Abstrak">
+                        </div>
+                        <div class="form-group">
                             <label for="dospem">Dosen Pembimbing</label>
                             <select name="dospem" class="form-control" id="edit-dospem">
                                 <option selected >Pilih</option>
@@ -231,13 +235,7 @@
                                 <div class="form-group" id="pengesahan-area"></div>
                             </div>
                         </div>
-                        <div class="d-flex" style="margin: -7px">
-                            <div class="form-group col-md-6">
-                                <label for="abstrak">Pilih Abstrak (Maks. 2 MB) :</label>
-                                <input type="file" class="form-control" style="padding-bottom: 37px" name="abstrak" id="edit-abstrak">
-                                <div class="form-group" id="abstrak-area"></div>
-                            </div>
-                            <div class="form-group col-md-6">
+                            <div class="form-group">
                                 <label for="daftarisi">Pilih Daftar Isi (Maks. 2 MB) :</label>
                                 <input type="file" class="form-control" style="padding-bottom: 37px" name="daftarisi" id="edit-daftarisi">
                                 <div class="form-group" id="daftarisi-area"></div>
@@ -293,7 +291,6 @@
                     <div class="modal-footer">
                         <input type="text" name="old_cover" id="edit-old-cover" hidden/>
                         <input type="text" name="old_pengesahan" id="edit-old-pengesahan" hidden/>
-                        <input type="text" name="old_abstrak" id="edit-old-abstrak" hidden/>
                         <input type="text" name="old_daftarisi" id="edit-old-daftarisi" hidden/>
                         <input type="text" name="old_daftargambar" id="edit-old-daftargambar" hidden/>
                         <input type="text" name="old_daftarlampiran" id="edit-old-daftarlampiran" hidden/>
@@ -334,7 +331,6 @@
                         $('#edit-halaman').val(res.halaman);
                         $('#old-cover').val(res.cover);
                         $('#old-pengesahan').val(res.pengesahan);
-                        $('#old-abstrak').val(res.abstrak);
                         $('#old-daftarisi').val(res.daftarisi);
                         $('#old-daftargambar').val(res.daftargambar);
                         $('#old-daftarlampiran').val(res.daftarlampiran);
@@ -354,11 +350,6 @@
                             $('#pengesahan-area').append('[Pengesahan tersedia]');
                         } else {
                             $('#pengesahan-area').append('[Pengesahan tidak tersedia]');
-                        }
-                        if (res.abstrak !== null) {
-                            $('#abstrak-area').append('[Abstrak tersedia]');
-                        } else {
-                            $('#abstrak-area').append('[Abstrak tidak tersedia]');
                         }
                         if (res.daftarisi !== null) {
                             $('#daftarisi-area').append('[Daftarisi tersedia]');

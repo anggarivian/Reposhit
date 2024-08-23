@@ -58,12 +58,86 @@
                 margin: 4px 2px;
                 cursor: pointer;
                 transition-duration: 0.4s;
+                border-radius: 5px;
             }
 
             .showPdfButton:hover {
                 background-color: white;
                 color: black;
                 border: 2px solid #3498db;
+            }
+
+            .custom-table {
+                width: 100%;
+                max-width: 600px;
+                margin: auto;
+                border-collapse: collapse;
+                background: #ffffff;
+                box-shadow: 0px 8px 24px rgba(0, 0, 0, 0.1);
+                border-radius: 12px;
+                overflow: hidden;
+            }
+
+            .custom-table tr {
+                border-bottom: 1px solid #f2f2f2;
+            }
+
+            .custom-table td {
+                padding: 15px 20px;
+                vertical-align: top;
+                color: #555555;
+                font-family: 'Lato', sans-serif;
+            }
+
+            .custom-table td:first-child {
+                font-weight: bold;
+                width: 200px;
+                color: #2c3e50;
+            }
+
+            .detail-container {
+                margin-top: 3rem;
+                padding: 2rem;
+                background-color: #f9f9f9;
+                border-radius: 12px;
+                box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+                font-family: 'Lato', sans-serif;
+            }
+
+            .detail-title {
+                font-size: 1.8rem;
+                margin-bottom: 1rem;
+                text-align: center;
+                color: #3498db;
+                font-weight: 700;
+            }
+
+            .button-container {
+                text-align: center;
+                margin-top: 2rem;
+            }
+
+            .pdf-viewer {
+                display: none;
+                margin-top: 1.5rem;
+                border: 1px solid #ccc;
+                border-radius: 8px;
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+                overflow: hidden;
+            }
+
+            .pdf-title {
+                text-align: center;
+                font-size: 1.4rem;
+                color: #2c3e50;
+                margin-bottom: 0.5rem;
+                font-weight: 600;
+            }
+
+            .pdf-frame {
+                width: 100%;
+                height: 600px;
+                border: none;
             }
         </style>
     </head>
@@ -79,7 +153,7 @@
                 <div class="collapse navbar-collapse" id="navbarResponsive">
                     <ul class="navbar-nav ms-auto">
                         <li class="nav-item mx-0 mx-lg-1"><a class="nav-link py-3 px-0 px-lg-3 rounded" href="/welcome#portfolio">PENCARIAN</a></li>
-                        <li class="nav-item mx-0 mx-lg-1"><a class="nav-link py-3 px-0 px-lg-3 rounded" href="/welcome">About</a></li>
+                        <li class="nav-item mx-0 mx-lg-1"><a class="nav-link py-3 px-0 px-lg-3 rounded" href="/welcome#about">About</a></li>
                         @if (Route::has('login'))
                             @auth
                                 <li class="nav-item mx-0 mx-lg-1">
@@ -101,7 +175,6 @@
         <!-- Masthead-->
         <header class="masthead bg-primary text-white text-center">
             <div class="container d-flex align-items-center flex-column">
-                <!-- Masthead Avatar Image-->
                 <!-- Masthead Heading-->
                 <h1 class="masthead-heading text-uppercase mb-0">E-Repository</h1>
                 <!-- Icon Divider-->
@@ -126,162 +199,110 @@
                     <div class="divider-custom-line"></div>
                 </div>
 
-                <div class="max-w-6xl mx-auto sm:px-6 lg:px-8">
-                    <div class="grid grid-cols-1 md:grid-cols-1">
-                        <div class="p-6">
-                            <table class="table table-borderless">
-                                <tr>
-                                    <td style="width: 200px; font-weight: bold;">Judul Skripsi</td>
-                                    <td>:</td>
-                                    <td>{{$skripsi->judul}}</td>
-                                </tr>
-                                <tr>
-                                    <td style="width: 200px; font-weight: bold;">Penulis</td>
-                                    <td>:</td>
-                                    <td>{{$skripsi->penulis}}</td>
-                                </tr>
-                                <tr>
-                                    <td style="width: 200px; font-weight: bold;">Abstrak</td>
-                                    <td>:</td>
-                                    <td>{{$skripsi->abstrak}}</td>
-                                </tr>
-                                <tr>
-                                    <td style="width: 200px; font-weight: bold;">Dosen Pembimbing</td>
-                                    <td>:</td>
-                                    <td>{{$skripsi->dospem}}</td>
-                                </tr>
-                                <tr>
-                                    <td style="width: 200px; font-weight: bold;">Rilis Tahun</td>
-                                    <td>:</td>
-                                    <td>{{$skripsi->rilis}}</td>
-                                </tr>
-                                <tr>
-                                    <td style="width: 200px; font-weight: bold;">Halaman</td>
-                                    <td>:</td>
-                                    <td>{{$skripsi->halaman}}</td>
-                                </tr>
-                            </table>
-                            <hr>
-                            @if(auth()->check())
-                            {{-- Tombol untuk menampilkan/menyembunyikan iframe --}}
-                            @foreach($pdfs as $attribute => $pdf)
-                            @php
-                                $label = $attribute == 'dapus'
-                                    ? 'Daftar Pustaka'
-                                    : (strpos($attribute, 'bab') === 0
-                                        ? 'Bab ' . (
-                                            $attribute == 'bab1' ? 'I' : (
-                                                $attribute == 'bab2' ? 'II' : (
-                                                    $attribute == 'bab3' ? 'III' : (
-                                                        $attribute == 'bab4' ? 'IV' : (
-                                                            $attribute == 'bab5' ? 'V' : $attribute
-                                                        )
-                                                    )
-                                                )
-                                            )
-                                        )
-                                        : $attribute
-                                    );
-                            @endphp
-                            <button class="btn btn-info m-3 showPdfButton" data-target="{{ $attribute }}">
-                                Lihat {{ ucfirst($label) }}
-                            </button>
-                            @endforeach
+                <div class="detail-container">
+                    <h3 class="detail-title">Detail Skripsi</h3>
+                    <table class="custom-table">
+                        <tr>
+                            <td>Judul Skripsi</td>
+                            <td>:</td>
+                            <td>{{$skripsi->judul}}</td>
+                        </tr>
+                        <tr>
+                            <td>Penulis</td>
+                            <td>:</td>
+                            <td>{{$skripsi->penulis}}</td>
+                        </tr>
+                        <tr>
+                            <td>Abstrak</td>
+                            <td>:</td>
+                            <td>{{$skripsi->abstrak}}</td>
+                        </tr>
+                        <tr>
+                            <td>Dosen Pembimbing</td>
+                            <td>:</td>
+                            <td>{{$skripsi->dospem}}</td>
+                        </tr>
+                        <tr>
+                            <td>Rilis Tahun</td>
+                            <td>:</td>
+                            <td>{{$skripsi->rilis}}</td>
+                        </tr>
+                        <tr>
+                            <td>Halaman</td>
+                            <td>:</td>
+                            <td>{{$skripsi->halaman}}</td>
+                        </tr>
+                    </table>
 
-                            {{-- Menampilkan semua PDF --}}
-                            @foreach($pdfs as $attribute => $pdf)
-                            @php
-                                $label = $attribute == 'dapus'
-                                    ? 'Daftar Pustaka'
-                                    : (strpos($attribute, 'bab') === 0
-                                        ? 'Bab ' . (
-                                            $attribute == 'bab1' ? 'I' : (
-                                                $attribute == 'bab2' ? 'II' : (
-                                                    $attribute == 'bab3' ? 'III' : (
-                                                        $attribute == 'bab4' ? 'IV' : (
-                                                            $attribute == 'bab5' ? 'V' : $attribute
-                                                        )
-                                                    )
-                                                )
-                                            )
-                                        )
-                                        : $attribute
-                                    );
-                            @endphp
-                            <h2 id="{{ $attribute }}Header" style="display: none;">{{ ucfirst($label) }}</h2>
-                            <!-- Sembunyikan iframe dengan ID sesuai dengan atribut -->
-                            <iframe id="{{ $attribute }}Frame" src="data:application/pdf;base64,{{ $pdf }}#toolbar=0&navpanes=0&view=fitH" width="100%" height="600px" style="display: none;"></iframe>
+                    <div class="button-container">
+                        @if (Route::has('login'))
+                            @auth
+                            @foreach ($skripsi->pdfs as $attribute => $pdf)
+                            <button class="showPdfButton" data-target="{{ $attribute }}">Lihat {{ ucfirst($label) }}</button>
+                            <div id="{{ $attribute }}-pdf" class="pdf-viewer">
+                                <h4 class="pdf-title">{{ ucfirst($label) }}</h4>
+                                <iframe src="{{ asset('storage/' . $pdf) }}" class="pdf-frame"></iframe>
+                            </div>
                             @endforeach
                             @else
-                                {{-- Pengguna belum login, tampilkan pesan --}}
-                                <a href="/login" class="btn btn-info m-3">
-                                    Silahkan Login Untuk Melihat Skripsi
-                                </a>
+                            <p>Silakan <a href="{{ route('login') }}">login</a> untuk melihat detail skripsi.</p>
                             @endif
-                        </div>
+                        @endif
                     </div>
                 </div>
+            </div>
         </section>
+
         <!-- Footer-->
         <footer class="footer text-center">
             <div class="container">
                 <div class="row">
                     <!-- Footer Location-->
-                    <div class="col-lg-6 mb-5 mb-lg-0">
-                        <h4 class="text-uppercase mb-6">Location</h4>
-                        <p class="lead mb-0">
-                            Jl. Pasirgede Raya, Muka
-                            <br />
-                            Kec, Cianjur, Kabupaten Cianjur
-                        </p>
-                    </div>
-                    <!-- Footer About Text-->
-                    <div class="col-lg-6 mb-5 mb-lg-0">
-                        <h4 class="text-uppercase mb-6">About Faster</h4>
+                    <div class="col-lg-4 mb-5 mb-lg-0">
+                        <h4 class="text-uppercase mb-4">Location</h4>
                         <p class="lead mb-0">
                             Universitas Suryakancana
-                            <br />Fakultas - Sains Terapan
+                            <br />
+                            Fakultas Sains Terapan
+                        </p>
+                    </div>
+                    <!-- Footer Social Icons-->
+                    <div class="col-lg-4 mb-5 mb-lg-0">
+                        <h4 class="text-uppercase mb-4">Around the Web</h4>
+                        <a class="btn btn-outline-light btn-social mx-1" href="#!"><i class="fab fa-fw fa-facebook-f"></i></a>
+                        <a class="btn btn-outline-light btn-social mx-1" href="#!"><i class="fab fa-fw fa-twitter"></i></a>
+                        <a class="btn btn-outline-light btn-social mx-1" href="#!"><i class="fab fa-fw fa-linkedin-in"></i></a>
+                        <a class="btn btn-outline-light btn-social mx-1" href="#!"><i class="fab fa-fw fa-dribbble"></i></a>
+                    </div>
+                    <!-- Footer About Text-->
+                    <div class="col-lg-4">
+                        <h4 class="text-uppercase mb-4">About Faster</h4>
+                        <p class="lead mb-0">
+                            FASTER adalah sebuah repositori skripsi yang membantu mahasiswa mengakses karya ilmiah
                         </p>
                     </div>
                 </div>
             </div>
         </footer>
         <!-- Copyright Section-->
-        <div class="copyright py-4 text-center text-white">
-            <div class="container"><small>Copyright &copy; Your Website 2024</small></div>
-        </div>
+        <section class="copyright py-4 text-center text-white">
+            <div class="container"><small>Copyright &copy; FASTER 2023</small></div>
+        </section>
         <!-- Bootstrap core JS-->
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
         <!-- Core theme JS-->
         <script src="{{ asset('js/scripts.js') }}"></script>
-        <!-- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *-->
-        <!-- * *                               SB Forms JS                               * *-->
-        <!-- * * Activate your form at https://startbootstrap.com/solution/contact-forms * *-->
-        <!-- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *-->
-        <script src="https://cdn.startbootstrap.com/sb-forms-latest.js"></script>
-        <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
         <script src="{{ asset('vendor/sweetalert2/sweetalert2.min.js') }}"></script>
         <script>
-            document.querySelectorAll('.showPdfButton').forEach(function(button) {
+            document.querySelectorAll('.showPdfButton').forEach(button => {
                 button.addEventListener('click', function() {
-                    var targetAttribute = this.getAttribute('data-target');
-
-                    // Sembunyikan semua iframe dan header (nama atribut) terlebih dahulu
-                    document.querySelectorAll('iframe').forEach(function(iframe) {
-                        iframe.style.display = 'none';
-                    });
-
-                    document.querySelectorAll('h2').forEach(function(header) {
-                        header.style.display = 'none';
-                    });
-
-                    // Tampilkan iframe dan header yang sesuai dengan tombol yang ditekan
-                    var pdfFrame = document.getElementById(targetAttribute + 'Frame');
-                    var pdfHeader = document.getElementById(targetAttribute + 'Header');
-
-                    pdfFrame.style.display = 'block';
-                    pdfHeader.style.display = 'block';
+                    const target = this.getAttribute('data-target');
+                    const pdfDiv = document.getElementById(target + '-pdf');
+                    if (pdfDiv.style.display === 'none') {
+                        pdfDiv.style.display = 'block';
+                    } else {
+                        pdfDiv.style.display = 'none';
+                    }
                 });
             });
         </script>

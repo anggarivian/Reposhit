@@ -48,7 +48,7 @@ Route::middleware('is_admin')->group(function () {
     Route::patch('/admin/mahasiswa/ubah', [MahasiswaController::class, 'ubah'])->name('ubah.mahasiswa');
     Route::get('admin/ajaxadmin/dataMahasiswa/{id}', [MahasiswaController::class, 'getDataMahasiswa']);
     Route::get('/admin/mahasiswa/hapus/{id}', [MahasiswaController::class,'hapus'])->name('hapus.mahasiswa');
-    Route::get('/admin/mahasiswa/verifikasi/{id}', [MahasiswaController::class,'verifikasi'])->name('verifikasi.mahasiswa');
+    Route::get('/admin/mahasiswa/toggle-verifikasi/{id}', [MahasiswaController::class, 'toggleVerifikasi'])->name('toggle.verifikasi');
 
     // Route Skripsi ------------------------------------------------------------------------------
     Route::get('/admin/skripsi', [SkripsiController::class, 'index1'])->name('skripsiadmin');

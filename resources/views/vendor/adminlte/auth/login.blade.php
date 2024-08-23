@@ -26,7 +26,7 @@
 
         {{-- Email field --}}
         <div class="input-group mb-3">
-            <input type="text" name="email" class="form-control " value="{{ old('email') }}" placeholder="{{ __('NIDN / NPM') }}" autofocus>
+            <input type="text" name="email" class="form-control " value="{{ old('email') }}" placeholder="{{ __('NPM') }}" autofocus>
 
             <div class="input-group-append">
                 <div class="input-group-text">

@@ -23,7 +23,7 @@ class CreateSkripsisTable extends Migration
             $table->string('halaman');
             $table->string('cover');
             $table->string('pengesahan');
-            $table->string('abstrak');
+            $table->longtext('abstrak');
             $table->string('daftarisi');
             $table->string('daftargambar');
             $table->string('daftarlampiran');

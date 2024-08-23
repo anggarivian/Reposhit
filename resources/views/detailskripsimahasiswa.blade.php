@@ -3,7 +3,7 @@
 @section('title', 'Detail Skripsi')
 
 @section('content_header')
-    <h1 class="m-0 text-dark">Detail Skripsi Mahasiswa</h1>
+    <h1 class="m-0 text-dark">Detail Skripsi Mahasiswa (Admin)</h1>
 @stop
 
 @section('content')
@@ -54,6 +54,10 @@
                     <tr>
                         <th>Penulis</th>
                         <td>{{ $skripsi->penulis }}</td>
+                    </tr>
+                    <tr>
+                        <th>Abstrak</th>
+                        <td>{{ $skripsi->abstrak }}</td>
                     </tr>
                     <tr>
                         <th>Dosen Pembimbing</th>
