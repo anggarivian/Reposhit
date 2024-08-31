@@ -13,4 +13,9 @@ class Skripsi extends Model
     {
         return $this->belongsToMany(User::class, 'favorites', 'id_skripsi', 'id_skripsi')->withTimestamps();
     }
+
+    public function user()
+{
+    return $this->belongsTo(User::class, 'user_id');
+}
 }

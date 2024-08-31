@@ -29,8 +29,8 @@
                     <tr class="text-center">
                         <th>No</th>
                         <th>Judul</th>
-                        <th>Penulis</th>
                         <th>Abstrak</th>
+                        <th>Penulis</th>
                         <th>Dosen Pembimbing</th>
                         <th>Rilis</th>
                         <th>Halaman</th>
@@ -42,9 +42,9 @@
                     @foreach($skripsi as $skripsis)
                     <tr>
                         <td>{{$no++}}</td>
-                        <td>{{$skripsis->judul}}</td>
-                        <td>{{$skripsis->penulis}}</td>
+                        <td>{{ Str::limit($skripsis->judul, 20) }}</td>
                         <td>{{ Str::limit($skripsis->abstrak, 20) }}</td>
+                        <td>{{$skripsis->penulis}}</td>
                         <td>{{$skripsis->dospem}}</td>
                         <td>{{$skripsis->rilis}}</td>
                         <td>{{$skripsis->halaman}}</td>
@@ -52,14 +52,14 @@
                             <div class="form-group" role="group" aria-label="Basic example">
                                 <a href="/mahasiswa/skripsi/detail/{{$skripsis->id}}">
                                     <button class="btn btn-sm btn-info">
-                                        <i class="fas fa-eye"></i> <!-- Ikon untuk Lihat Detail Skripsi -->
+                                        <i class="fas fa-eye">Lihat Skripsi</i> <!-- Ikon untuk Lihat Detail Skripsi -->
                                     </button>
                                 </a>
                                 <button type="button" id="btn-edit-skripsi" class="btn btn-sm btn-success" data-toggle="modal" data-target="#edit" data-id="{{ $skripsis->id }}">
-                                    <i class="fas fa-edit"></i> <!-- Ikon untuk Edit -->
+                                    <i class="fas fa-edit">Edit Skripsi</i> <!-- Ikon untuk Edit -->
                                 </button>
                                 <button type="button" class="btn btn-sm btn-danger" onclick="deleteConfirmation('{{$skripsis->id}}' , '{{$skripsis->judul}}' )">
-                                    <i class="fas fa-trash-alt"></i> <!-- Ikon untuk Hapus Favorite -->
+                                    <i class="fas fa-trash-alt"> Hapus Skripsi</i> <!-- Ikon untuk Hapus Favorite -->
                                 </button>
                             </div>
                         </td>
@@ -73,7 +73,7 @@
 
     <!-- Modal -->
     <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
+        <div class="modal-dialog modal-xl">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="exampleModalLabel">Tambah Data Skripsi</h5>
@@ -89,83 +89,83 @@
                             <input type="text" class="form-control" name="judul" id="judul" required placeholder="Masukkan Judul Skripsi">
                         </div>
                         <div class="form-group">
-                            <label for="penulis">Penulis</label>
-                            <input type="text" class="form-control" name="penulis" id="penulis" value="{{ Auth::user()->name }}" readonly>
-                        </div>
-                        <div class="form-group">
                             <label for="abstrak">Abstrak</label>
                             <input type="text" class="form-control" name="abstrak" id="abstrak" required placeholder="Masukkan Abstrak">
                         </div>
-                        <div class="form-group">
-                            <label for="dospem">Dosen Pembimbing</label>
-                            <select name="dospem" class="form-control" id="dospem">
-                                <option selected >Pilih</option>
-                                @foreach ($namaDospem as $nama)
-                                    <option value="{{$nama->nama}}" >{{$nama->nama}}</option>
-                                @endforeach
-                            </select>
-                        </div>
-                        <div class="d-flex" style="margin: -7px">
-                            <div class="form-group col-md-6">
+                        <div class="d-flex" style="margin:-7px">
+                            <div class="form-group col-md-3">
+                                <label for="penulis">Penulis</label>
+                                <input type="text" class="form-control" name="penulis" id="penulis" value="{{ Auth::user()->name }}" readonly>
+                            </div>
+                            <div class="form-group col-md-3">
+                                <label for="dospem">Dosen Pembimbing</label>
+                                <select name="dospem" class="form-control" id="dospem">
+                                    <option selected >Pilih</option>
+                                    @foreach ($namaDospem as $nama)
+                                        <option value="{{$nama->nama}}" >{{$nama->nama}}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <div class="form-group col-md-3">
                                 <label for="rilis">Rilis Pada Tahun</label>
                                 <input type="text" class="form-control" name="rilis" id="rilis" required placeholder="Harus 4 Angka">
                             </div>
-                            <div class="form-group col-md-6">
+                            <div class="form-group col-md-3">
                                 <label for="halaman">Halaman</label>
                                 <input type="text" class="form-control" name="halaman" id="halaman" required placeholder="Masukkan Jumlah Halaman">
                             </div>
                         </div>
                         <div class="d-flex" style="margin: -7px">
-                            <div class="form-group col-md-6">
+                            <div class="form-group col-md-4">
                                 <label for="cover">Pilih Cover (Maks. 2 MB) :</label>
                                 <input type="file" class="form-control" style="padding-bottom: 37px" name="cover" id="cover" required>
                             </div>
-                            <div class="form-group col-md-6">
+                            <div class="form-group col-md-4">
                                 <label for="pengesahan">Pilih Pengesahan (Maks. 2 MB) :</label>
                                 <input type="file" class="form-control" style="padding-bottom: 37px" name="pengesahan" id="pengesahan" required>
                             </div>
-                        </div>
-                            <div class="form-group">
+                            <div class="form-group col-md-4">
                                 <label for="daftarisi">Pilih Daftar Isi (Maks. 2 MB) :</label>
                                 <input type="file" class="form-control" style="padding-bottom: 37px" name="daftarisi" id="daftarisi" required>
                             </div>
+                        </div>
                         <div class="d-flex" style="margin: -7px">
-                            <div class="form-group col-md-6">
+                            <div class="form-group col-md-4">
                                 <label for="daftargambar">Pilih Daftar Gambar (Maks. 2 MB) :</label>
                                 <input type="file" class="form-control" style="padding-bottom: 37px" name="daftargambar" id="daftargambar" required>
                             </div>
-                            <div class="form-group col-md-6">
+                            <div class="form-group col-md-4">
                                 <label for="daftarlampiran">Pilih Daftar Lampiran (Maks. 2 MB) :</label>
                                 <input type="file" class="form-control" style="padding-bottom: 37px" name="daftarlampiran" id="daftarlampiran" required>
                             </div>
-                        </div>
-                        <div class="d-flex" style="margin: -7px">
-                            <div class="form-group col-md-6">
+                            <div class="form-group col-md-4">
                                 <label for="bab1">Pilih BAB 1 (Maks. 2 MB) :</label>
                                 <input type="file" class="form-control" style="padding-bottom: 37px" name="bab1" id="bab1" required>
                             </div>
-                            <div class="form-group col-md-6">
+                        </div>
+                        <div class="d-flex" style="margin: -7px">
+                            <div class="form-group col-md-4">
                                 <label for="bab2">Pilih BAB 2 (Maks. 2 MB) :</label>
                                 <input type="file" class="form-control" style="padding-bottom: 37px" name="bab2" id="bab2" required>
                             </div>
-                        </div>
-                        <div class="d-flex" style="margin: -7px">
-                            <div class="form-group col-md-6">
+                            <div class="form-group col-md-4">
                                 <label for="bab3">Pilih BAB 3 (Maks. 2 MB) :</label>
                                 <input type="file" class="form-control" style="padding-bottom: 37px" name="bab3" id="bab3" required>
                             </div>
-                            <div class="form-group col-md-6">
+                            <div class="form-group col-md-4">
                                 <label for="bab4">Pilih BAB 4 (Maks. 2 MB) :</label>
                                 <input type="file" class="form-control" style="padding-bottom: 37px" name="bab4" id="bab4" required>
                             </div>
                         </div>
-                        <div class="form-group">
-                            <label for="bab5">Pilih Bab 5 (Maks. 2 MB) :</label>
-                            <input type="file" class="form-control" style="padding-bottom: 37px" name="bab5" id="bab5" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="dapus">Pilih Daftar Pustaka (Maks. 2 MB) :</label>
-                            <input type="file" class="form-control" style="padding-bottom: 37px" name="dapus" id="dapus" required>
+                        <div class="d-flex" style="margin: -7px">
+                            <div class="form-group col-md-6">
+                                <label for="bab5">Pilih Bab 5 (Maks. 2 MB) :</label>
+                                <input type="file" class="form-control" style="padding-bottom: 37px" name="bab5" id="bab5" required>
+                            </div>
+                            <div class="form-group col-md-6">
+                                <label for="dapus">Pilih Daftar Pustaka (Maks. 2 MB) :</label>
+                                <input type="file" class="form-control" style="padding-bottom: 37px" name="dapus" id="dapus" required>
+                            </div>
                         </div>
                     </div>
                     <div class="modal-footer">
@@ -179,7 +179,7 @@
 
     <!-- Modal Edit -->
     <div class="modal fade" id="edit" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
+        <div class="modal-dialog modal-xl">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="exampleModalLabel">Edit Data Skripsi</h5>
@@ -197,96 +197,94 @@
                             <input type="text" class="form-control" name="judul" id="edit-judul" required placeholder="Masukkan Judul Skripsi">
                         </div>
                         <div class="form-group">
-                            <label for="penulis">Penulis</label>
-                            <input type="text" class="form-control" name="penulis" id="penulis" value="{{ Auth::user()->name }}" readonly>
-                        </div>
-                        <div class="form-group">
                             <label for="abstrak">Abstrak</label>
-                            <input type="text" class="form-control" name="abstrak" id="abstrak" required placeholder="Masukkan Abstrak">
-                        </div>
-                        <div class="form-group">
-                            <label for="dospem">Dosen Pembimbing</label>
-                            <select name="dospem" class="form-control" id="edit-dospem">
-                                <option selected >Pilih</option>
-                                @foreach ($namaDospem as $nama)
-                                    <option value="{{$nama->nama}}" >{{$nama->nama}}</option>
-                                @endforeach
-                            </select>
+                            <input type="text" class="form-control" name="abstrak" id="edit-abstrak" required placeholder="Masukkan Abstrak">
                         </div>
                         <div class="d-flex" style="margin: -7px">
-                            <div class="form-group col-md-6">
+                            <div class="form-group col-md-3">
+                                <label for="penulis">Penulis</label>
+                                <input type="text" class="form-control" name="penulis" id="penulis" value="{{ Auth::user()->name }}" readonly>
+                            </div>
+                            <div class="form-group col-md-3">
+                                <label for="dospem">Dosen Pembimbing</label>
+                                <select name="dospem" class="form-control" id="edit-dospem">
+                                    <option selected >Pilih</option>
+                                    @foreach ($namaDospem as $nama)
+                                        <option value="{{$nama->nama}}" >{{$nama->nama}}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <div class="form-group col-md-3">
                                 <label for="rilis">Rilis Pada Tahun</label>
                                 <input type="text" class="form-control" name="rilis" id="edit-rilis" required placeholder="Harus 4 Angka">
                             </div>
-                            <div class="form-group col-md-6">
+                            <div class="form-group col-md-3">
                                 <label for="halaman">Halaman</label>
                                 <input type="text" class="form-control" name="halaman" id="edit-halaman" required placeholder="Masukkan Jumlah Halaman">
                             </div>
                         </div>
                         <div class="d-flex" style="margin: -7px">
-                            <div class="form-group col-md-6">
+                            <div class="form-group col-md-4">
                                 <label for="cover">Pilih Cover (Maks. 2 MB) :</label>
                                 <input type="file" class="form-control" style="padding-bottom: 37px" name="cover" id="edit-cover">
                                 <div class="form-group" id="cover-area"></div>
                             </div>
-                            <div class="form-group col-md-6">
+                            <div class="form-group col-md-4">
                                 <label for="pengesahan">Pilih Pengesahan (Maks. 2 MB) :</label>
                                 <input type="file" class="form-control" style="padding-bottom: 37px" name="pengesahan" id="edit-pengesahan">
                                 <div class="form-group" id="pengesahan-area"></div>
                             </div>
-                        </div>
-                            <div class="form-group">
+                            <div class="form-group col-md-4">
                                 <label for="daftarisi">Pilih Daftar Isi (Maks. 2 MB) :</label>
                                 <input type="file" class="form-control" style="padding-bottom: 37px" name="daftarisi" id="edit-daftarisi">
                                 <div class="form-group" id="daftarisi-area"></div>
                             </div>
                         </div>
                         <div class="d-flex" style="margin: -7px">
-                            <div class="form-group col-md-6">
+                            <div class="form-group col-md-4">
                                 <label for="daftargambar">Pilih Daftar Gambar (Maks. 2 MB) :</label>
                                 <input type="file" class="form-control" style="padding-bottom: 37px" name="daftargambar" id="edit-daftargambar">
                                 <div class="form-group" id="daftargambar-area"></div>
                             </div>
-                            <div class="form-group col-md-6">
+                            <div class="form-group col-md-4">
                                 <label for="daftarlampiran">Pilih Lampiran (Maks. 2 MB) :</label>
                                 <input type="file" class="form-control" style="padding-bottom: 37px" name="daftarlampiran" id="edit-daftarlampiran">
                                 <div class="form-group" id="daftarlampiran-area"></div>
                             </div>
-                        </div>
-                        <div class="d-flex" style="margin: -7px">
-                            <div class="form-group col-md-6">
+                            <div class="form-group col-md-4">
                                 <label for="bab1">Pilih BAB 1 (Maks. 2 MB) :</label>
                                 <input type="file" class="form-control" style="padding-bottom: 37px" name="bab1" id="edit-bab1">
                                 <div class="form-group" id="bab1-area"></div>
                             </div>
-                            <div class="form-group col-md-6">
+                        </div>
+                        <div class="d-flex" style="margin: -7px">
+                            <div class="form-group col-md-4">
                                 <label for="bab2">Pilih BAB 2 (Maks. 2 MB) :</label>
                                 <input type="file" class="form-control" style="padding-bottom: 37px" name="bab2" id="edit-bab2">
                                 <div class="form-group" id="bab2-area"></div>
                             </div>
-                        </div>
-                        <div class="d-flex" style="margin: -7px">
-                            <div class="form-group col-md-6">
+                            <div class="form-group col-md-4">
                                 <label for="bab3">Pilih Bab 3 (Maks. 2 MB) :</label>
                                 <input type="file" class="form-control" style="padding-bottom: 37px" name="bab3" id="edit-bab3">
                                 <div class="form-group" id="bab3-area"></div>
                             </div>
-                            <div class="form-group col-md-6">
+                            <div class="form-group col-md-4">
                                 <label for="bab4">Pilih bab 4 (Maks. 2 MB) :</label>
                                 <input type="file" class="form-control" style="padding-bottom: 37px" name="bab4" id="edit-bab4">
                                 <div class="form-group" id="bab4-area"></div>
                             </div>
                         </div>
-                        <div class="form-group">
-                            <label for="bab5">Pilih Bab5 (Maks. 2 MB) :</label>
-                            <input type="file" class="form-control" style="padding-bottom: 37px" name="bab5" id="edit-bab5">
-                            <div class="form-group" id="bab5-area"></div>
-                        </div>
-                        <div class="form-group">
-                            <label for="dapus">Pilih Daftar Pustaka (Maks. 2 MB) :</label>
-                            <input type="file" class="form-control" style="padding-bottom: 37px" name="dapus" id="edit-dapus">
-                            <div class="form-group" id="dapus-area"></div>
-                        </div>
+                        <div class="d-flex" style="margin: -7px">
+                            <div class="form-group col-md-6">
+                                <label for="bab5">Pilih Bab5 (Maks. 2 MB) :</label>
+                                <input type="file" class="form-control" style="padding-bottom: 37px" name="bab5" id="edit-bab5">
+                                <div class="form-group" id="bab5-area"></div>
+                            </div>
+                            <div class="form-group col-md-6">
+                                <label for="dapus">Pilih Daftar Pustaka (Maks. 2 MB) :</label>
+                                <input type="file" class="form-control" style="padding-bottom: 37px" name="dapus" id="edit-dapus">
+                                <div class="form-group" id="dapus-area"></div>
+                            </div>
                     </div>
                     <div class="modal-footer">
                         <input type="text" name="old_cover" id="edit-old-cover" hidden/>
@@ -325,6 +323,7 @@
                         $('#edit-judul').val(res.judul);
                         $('#edit-penulis').val(res.penulis);
                         $('#edit-id').val(res.id);
+                        $('#edit-abstrak').val(res.abstrak);
                         $('#edit-dospem').val(res.dospem);
                         $('#edit-rilis').val(res.rilis);
                         $('#edit-volume').val(res.volume);

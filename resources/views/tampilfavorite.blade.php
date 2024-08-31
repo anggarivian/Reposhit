@@ -7,58 +7,66 @@
 @stop
 
 @section('content')
-    @if(session('success'))
-        <div class="alert alert-success">
-            {{ session('success') }}
-        </div>
-    @endif
 <div class="container-fluid">
     <div class="card card-default">
-        <div class="card-header">{{__('Skripsi Favorite')}}</div>
+        <div class="card-header">{{ __('Skripsi Favorite') }}</div>
         <div class="card-body">
-            @if($favoriteSkripsi->isEmpty())
+            @if(session('success'))
+                <div class="alert alert-success">
+                    {{ session('success') }}
+                </div>
+            @endif
+
+            @if($skripsifavorite->isEmpty())
                 <p>Belum ada skripsi yang ditambahkan ke favorite.</p>
             @else
-                <table id="table-data" class="table table-striped text-center">
-                    <thead>
-                        <tr class="text-center">
-                            <th>No</th>
-                            <th>Judul</th>
-                            <th>Penulis</th>
-                            <th>Dosen Pembimbing</th>
-                            <th>Rilis</th>
-                            <th>Halaman</th>
-                            <th>Opsi</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @php $no = 1; @endphp
-                        @foreach($favoriteSkripsi as $skripsi)
-                        <tr>
-                            <td>{{$no++}}</td>
-                            <td>{{$skripsi->judul}}</td>
-                            <td>{{$skripsi->penulis}}</td>
-                            <td>{{$skripsi->dospem}}</td>
-                            <td>{{$skripsi->rilis}}</td>
-                            <td>{{$skripsi->halaman}}</td>
-                            <td>
-                                <a type="button" class="btn btn-sm btn-info" href="/home/skripsi/detail/{{$skripsi->id}}">
-                                    <i class="fas fa-eye"></i> <!-- Ikon untuk Lihat Detail Skripsi -->
+                @foreach($skripsifavorite as $skripsi)
+                    <div class="row mb-3 p-3 border rounded" style="border-color: #e3e3e3;">
+                        <div class="col-md-11">
+                            <h4><a href="/home/skripsi/detail/{{ $skripsi->id }}">{{ $skripsi->judul }}</a></h4>
+                            <h5>Pengarang : {{ $skripsi->penulis }}, <span class="font-weight-light">author</span></h5>
+                            <p class="text-muted">
+                               Tahun : {{ $skripsi->rilis }}, {{ $skripsi->prodi }}, {{ 'Universitas Suryakancana' }}<br>
+                            </p>
+                            <div class="d-flex justify-content-start">
+                                <!-- Button untuk Lihat Detail -->
+                                <a type="button" class="btn btn-outline-primary btn-sm mr-2" href="/home/skripsi/detail/{{ $skripsi->id }}">
+                                    <i class="fas fa-eye"></i> Lihat Detail
                                 </a>
+                                <!-- Button untuk Hapus dari Favorite -->
                                 <form action="{{ route('removeFavorite', $skripsi->id) }}" method="POST" style="display:inline;">
                                     @csrf
                                     @method('DELETE')
-                                    <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Apakah Anda yakin ingin menghapus skripsi ini dari favorite?')">
-                                        <i class="fas fa-trash-alt"></i> <!-- Ikon untuk Hapus Favorite -->
+                                    <button type="submit" class="btn btn-outline-danger btn-sm" onclick="confirmRemoveFavorite(event, '{{ $skripsi->id }}', '{{ $skripsi->judul }}')">
+                                        <i class="fas fa-trash-alt"></i> Hapus dari Favorite
                                     </button>
                                 </form>
-                            </td>
-                        </tr>
-                        @endforeach
-                    </tbody>
-                </table>
+                            </div>
+                        </div>
+                    </div>
+                @endforeach
             @endif
         </div>
     </div>
 </div>
+@stop
+
+@section('js')
+<script>
+    function confirmRemoveFavorite(event, skripsiId, skripsiTitle) {
+    event.preventDefault(); // Mencegah form submit default
+    Swal.fire({
+        title: "Hapus dari Favorit?",
+        text: "Apakah Anda yakin ingin menghapus skripsi berjudul \"" + skripsiTitle + "\" dari daftar favorit?",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: "Ya, hapus!",
+        cancelButtonText: "Tidak, kembali!",
+    }).then(function (result) {
+        if (result.isConfirmed) {
+            event.target.closest('form').submit(); // Lanjutkan form submit jika dikonfirmasi
+        }
+    });
+}
+</script>
 @stop

@@ -164,7 +164,7 @@
                     <input type="text" class="form-control" name="id" id="edit-id" hidden required>
                     <div class="form-group col-md-12">
                         <label for="name">Nama Lengkap</label>
-                        <input type="text" class="form-control" name="name" id="edit-name" required placeholder="Masukan Nama Mahasiswa">
+                        <input type="text" class="form-control" name="name" id="edit-name" required placeholder="Masukan Nama Mahasiswa"readonly>
                     </div>
                     <div class="d-flex">
                         <div class="form-group col-md-6">

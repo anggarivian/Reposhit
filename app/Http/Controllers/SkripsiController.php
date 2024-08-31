@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use App\Models\Comment;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\DB;
 
 class SkripsiController extends Controller
 {
@@ -29,7 +30,10 @@ class SkripsiController extends Controller
     }
 
     public function mahasiswa() {
-        $skripsi = Skripsi::All();
+        $skripsi = DB::table('skripsis')
+                    ->join('users', 'skripsis.penulis', '=', 'users.name')
+                    ->select('skripsis.*', 'users.prodi')
+                    ->get();
         return view('skripsi2', compact('skripsi'));
     }
 
@@ -119,68 +123,68 @@ class SkripsiController extends Controller
         return redirect()->route('skripsi')->with($notification);
     }
     // Tambah Data Skripsi ----------------------------------------------------------------------------------------------
-    public function tambah1(Request $req){
+    // public function tambah1(Request $req){
 
-        // Validasi Data Skripsi ----------------------------------------------------------------
-        $req->validate([
-            'judul' => 'required|string|max:200',
-            'penulis' => 'required|string|max:30',
-            'abstrak' => 'required|string',
-            'dospem' => 'required|string|max:30',
-            'rilis' => 'required|max:4|min:4',
-            'halaman' => 'required|min:1',
-            'cover' => 'nullable|mimes:pdf|max:2048',
-            'pengesahan' => 'nullable|mimes:pdf|max:2048',
-            'daftarisi' => 'nullable|mimes:pdf|max:2048',
-            'daftargambar' => 'nullable|mimes:pdf|max:2048',
-            'daftarlampiran' => 'nullable|mimes:pdf|max:2048',
-            'bab1' => 'nullable|mimes:pdf|max:2048',
-            'bab2' => 'nullable|mimes:pdf|max:2048',
-            'bab3' => 'nullable|mimes:pdf|max:2048',
-            'bab4' => 'nullable|mimes:pdf|max:2048',
-            'bab5' => 'nullable|mimes:pdf|max:2048',
-            'dapus' => 'nullable|mimes:pdf|max:2048',
-            // 'lampiran' => 'nullable|mimes:pdf|max:2048',
-        ]);
+    //     // Validasi Data Skripsi ----------------------------------------------------------------
+    //     $req->validate([
+    //         'judul' => 'required|string|max:200',
+    //         'penulis' => 'required|string|max:30',
+    //         'abstrak' => 'required|string',
+    //         'dospem' => 'required|string|max:30',
+    //         'rilis' => 'required|max:4|min:4',
+    //         'halaman' => 'required|min:1',
+    //         'cover' => 'nullable|mimes:pdf|max:2048',
+    //         'pengesahan' => 'nullable|mimes:pdf|max:2048',
+    //         'daftarisi' => 'nullable|mimes:pdf|max:2048',
+    //         'daftargambar' => 'nullable|mimes:pdf|max:2048',
+    //         'daftarlampiran' => 'nullable|mimes:pdf|max:2048',
+    //         'bab1' => 'nullable|mimes:pdf|max:2048',
+    //         'bab2' => 'nullable|mimes:pdf|max:2048',
+    //         'bab3' => 'nullable|mimes:pdf|max:2048',
+    //         'bab4' => 'nullable|mimes:pdf|max:2048',
+    //         'bab5' => 'nullable|mimes:pdf|max:2048',
+    //         'dapus' => 'nullable|mimes:pdf|max:2048',
+    //         // 'lampiran' => 'nullable|mimes:pdf|max:2048',
+    //     ]);
 
-        // Create Data Skripsi ------------------------------------------------------------------
-        $skripsi = new Skripsi;
+    //     // Create Data Skripsi ------------------------------------------------------------------
+    //     $skripsi = new Skripsi;
 
-        $skripsi->judul = $req->get('judul');
-        $skripsi->penulis = Auth::user()->name;
-        $skripsi->abstrak = $req->get('abstrak');
-        $skripsi->dospem = $req->get('dospem');
-        $skripsi->rilis = $req->get('rilis');
-        $skripsi->halaman = $req->get('halaman');
+    //     $skripsi->judul = $req->get('judul');
+    //     $skripsi->penulis = Auth::user()->name;
+    //     $skripsi->abstrak = $req->get('abstrak');
+    //     $skripsi->dospem = $req->get('dospem');
+    //     $skripsi->rilis = $req->get('rilis');
+    //     $skripsi->halaman = $req->get('halaman');
 
-        function uploadFile($req, $fieldName, $storagePath){
-            if ($req->hasFile($fieldName)) {
-                $extension = $req->file($fieldName)->extension();
-                $filename = $fieldName . '_skripsi' . time() . '.' . $extension;
-                $req->file($fieldName)->storeAs('public/' . $storagePath, $filename);
-                return $filename;
-            }
-            return null;
-        }
+    //     function uploadFile($req, $fieldName, $storagePath){
+    //         if ($req->hasFile($fieldName)) {
+    //             $extension = $req->file($fieldName)->extension();
+    //             $filename = $fieldName . '_skripsi' . time() . '.' . $extension;
+    //             $req->file($fieldName)->storeAs('public/' . $storagePath, $filename);
+    //             return $filename;
+    //         }
+    //         return null;
+    //     }
 
-        $skripsi->cover = uploadFile($req, 'cover', 'cover_skripsi');
-        $skripsi->pengesahan = uploadFile($req, 'pengesahan', 'pengesahan_skripsi');
-        $skripsi->daftarisi = uploadFile($req, 'daftarisi', 'daftarisi_skripsi');
-        $skripsi->daftargambar = uploadFile($req, 'daftargambar', 'daftargambar_skripsi');
-        $skripsi->daftarlampiran = uploadFile($req, 'daftarlampiran', 'daftarlampiran_skripsi');
-        $skripsi->bab1 = uploadFile($req, 'bab1', 'bab1_skripsi');
-        $skripsi->bab2 = uploadFile($req, 'bab2', 'bab2_skripsi');
-        $skripsi->bab3 = uploadFile($req, 'bab3', 'bab3_skripsi');
-        $skripsi->bab4 = uploadFile($req, 'bab4', 'bab4_skripsi');
-        $skripsi->bab5 = uploadFile($req, 'bab5', 'bab5_skripsi');
-        $skripsi->dapus = uploadFile($req, 'dapus', 'dapus_skripsi');
-        // $skripsi->lampiran = uploadFile($req, 'lampiran', 'dapus_skripsi');
-        $skripsi->save();
-        $notification = array(
-            'message' =>'Data Skripsi berhasil ditambahkan', 'alert-type' =>'success'
-        );
-        return redirect()->route('skripsiadmin')->with($notification);
-    }
+    //     $skripsi->cover = uploadFile($req, 'cover', 'cover_skripsi');
+    //     $skripsi->pengesahan = uploadFile($req, 'pengesahan', 'pengesahan_skripsi');
+    //     $skripsi->daftarisi = uploadFile($req, 'daftarisi', 'daftarisi_skripsi');
+    //     $skripsi->daftargambar = uploadFile($req, 'daftargambar', 'daftargambar_skripsi');
+    //     $skripsi->daftarlampiran = uploadFile($req, 'daftarlampiran', 'daftarlampiran_skripsi');
+    //     $skripsi->bab1 = uploadFile($req, 'bab1', 'bab1_skripsi');
+    //     $skripsi->bab2 = uploadFile($req, 'bab2', 'bab2_skripsi');
+    //     $skripsi->bab3 = uploadFile($req, 'bab3', 'bab3_skripsi');
+    //     $skripsi->bab4 = uploadFile($req, 'bab4', 'bab4_skripsi');
+    //     $skripsi->bab5 = uploadFile($req, 'bab5', 'bab5_skripsi');
+    //     $skripsi->dapus = uploadFile($req, 'dapus', 'dapus_skripsi');
+    //     // $skripsi->lampiran = uploadFile($req, 'lampiran', 'dapus_skripsi');
+    //     $skripsi->save();
+    //     $notification = array(
+    //         'message' =>'Data Skripsi berhasil ditambahkan', 'alert-type' =>'success'
+    //     );
+    //     return redirect()->route('skripsiadmin')->with($notification);
+    // }
 
     // Ubah Data Skripsi ----------------------------------------------------------------------------------------------
     public function ubah(Request $req) {
@@ -241,7 +245,7 @@ class SkripsiController extends Controller
         return redirect()->route('skripsi')->with($notification);
     }
     // Ubah Data Skripsi ----------------------------------------------------------------------------------------------
-    public function ubah1(Request $req) {
+    public function edit(Request $req) {
 
         // Validasi Data Skripsi ----------------------------------------------------------------
         $req->validate([
@@ -526,9 +530,45 @@ class SkripsiController extends Controller
         return view('welcomeskripsi', compact('pdfs', 'user', 'skripsi'));
     }
 
-    // Fungsi untuk menampilkan skripsi beserta komentarnya
+    public function verifikasi($id) {
+        $skripsi = Skripsi::find($id);
 
+        // Toggle status verifikasi
+        if ($skripsi->status == 0) {
+            $skripsi->status = 1;
+            $message = "Verifikasi skripsi berhasil diverifikasi";
+        } else {
+            $skripsi->status = 0;
+            $message = "Verifikasi skripsi berhasil dibatalkan verifikasinya";
+        }
+
+        $skripsi->save();
+
+        $success = true;
+
+        return response()->json([
+            'success' => $success,
+            'message' => $message,
+        ]);
+    }
+
+    public function cariYangMirip(Request $request)
+    {
+        $judul = $request->input('judul');
+        // Memecah judul menjadi kata-kata kunci
+        $keywords = explode(' ', $judul);
+
+        // Membangun query untuk mencari skripsi yang memiliki salah satu kata kunci di judulnya
+        $skripsi = Skripsi::where(function ($query) use ($keywords) {
+            foreach ($keywords as $keyword) {
+                $query->orWhere('judul', 'LIKE', '%' . $keyword . '%');
+            }
+        })->get();
+
+        return view('skripsi2', compact('skripsi'));
+    }
     // public function postkomentar (Request $request){
     //     dd($request->all());
     // }
+
 }

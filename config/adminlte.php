@@ -317,7 +317,7 @@ return [
             'can'  => 'isMahasiswa',
         ],
         [
-            'text' => 'Skripsi Favorite',
+            'text' => 'Favorite Saya',
             'url'  => 'home/favorite',
             'icon' => 'fas fa-fw fa-book',
             'can'  => 'isMahasiswa',

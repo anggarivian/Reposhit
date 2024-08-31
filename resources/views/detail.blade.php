@@ -74,29 +74,43 @@
                 </table>
                 <hr>
 
-                {{-- Combo box untuk menampilkan/menyembunyikan iframe --}}
-                <div class="form-group">
-                    <label for="selectPdf">Pilih bagian untuk melihat PDF:</label>
-                    <select class="form-control" id="selectPdf">
-                        <option value="">-- Pilih bagian --</option>
-                        @foreach($pdfs as $attribute => $pdf)
-                            @php
-                                $label = $attribute == 'dapus'
-                                    ? ''
-                                    : (strpos($attribute, 'bab') === 0
-                                        ? 'Bab ' . [
-                                            'bab1' => 'I',
-                                            'bab2' => 'II',
-                                            'bab3' => 'III',
-                                            'bab4' => 'IV',
-                                            'bab5' => 'V',
-                                        ][$attribute] ?? $attribute
-                                        : ucfirst($attribute));
-                            @endphp
-                            <option value="{{ $attribute }}">{{ $label }}</option>
-                        @endforeach
-                    </select>
-                </div>
+{{-- Combo box untuk menampilkan/menyembunyikan iframe --}}
+<div class="form-group">
+    <label for="selectPdf">Pilih bagian untuk melihat PDF:</label>
+    <select class="form-control" id="selectPdf">
+        <option value="">-- Pilih bagian --</option>
+        @foreach($pdfs as $attribute => $pdf)
+            @php
+                $label = $attribute == 'dapus'
+                    ? ''
+                    : (strpos($attribute, 'bab') === 0
+                        ? 'Bab ' . [
+                            'bab1' => 'I',
+                            'bab2' => 'II',
+                            'bab3' => 'III',
+                            'bab4' => 'IV',
+                            'bab5' => 'V',
+                        ][$attribute] ?? $attribute
+                        : ucfirst($attribute));
+            @endphp
+            <option value="{{ $attribute }}">{{ $label }}</option>
+        @endforeach
+    </select>
+</div>
+
+{{-- Menampilkan semua PDF --}}
+@foreach($pdfs as $attribute => $pdf)
+    @php
+        $label = ucfirst($attribute);
+    @endphp
+    <h2 id="{{ $attribute }}Header" style="display: none;" class="text-center">{{ ucfirst($label) }}</h2>
+    <iframe id="{{ $attribute }}Frame" src="data:application/pdf;base64,{{ $pdf }}#toolbar=0&navpanes=0&view=Fit" width="100%" height="700px" style="display: none; border: 1px solid #ccc; border-radius: 4px;"></iframe>
+@endforeach
+
+<button class="btn btn-secondary mt-3" id="closePdfButton" style="display: none;">Tutup PDF</button>
+
+<hr>
+
 
                 {{-- Menampilkan semua PDF --}}
                 @foreach($pdfs as $attribute => $pdf)

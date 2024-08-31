@@ -52,8 +52,7 @@ Route::middleware('is_admin')->group(function () {
 
     // Route Skripsi ------------------------------------------------------------------------------
     Route::get('/admin/skripsi', [SkripsiController::class, 'index1'])->name('skripsiadmin');
-    Route::post('/admin/skripsi', [SkripsiController::class, 'tambah1'])->name('tambah.skripsi1');
-    Route::patch('/admin/skripsi/ubah', [SkripsiController::class, 'ubah1'])->name('ubah.skripsi1');
+    Route::patch('/admin/skripsi/edit', [SkripsiController::class, 'edit'])->name('edit.skripsi');
     Route::get('admin/ajaxadmin/dataSkripsi/{id}', [SkripsiController::class, 'getDataSkripsi']);
     Route::get('/admin/skripsi/hapus/{id}', [SkripsiController::class, 'hapus1'])->name('hapus.skripsi');
     Route::get('/admin/skripsi/detail/{id}', [SkripsiController::class, 'showPdf'])->name('pdf.show');
@@ -78,6 +77,7 @@ Route::middleware('is_mahasiswa')->group(function () {
 
     Route::get('/home/skripsi/detail/{id}', [SkripsiController::class, 'detailskripsi']);
     Route::get('/home/skripsi', [SkripsiController::class, 'mahasiswa'])->name('mahasiswa.skripsi');
+    Route::get('/home/skripsi/cariYangMirip', [SkripsiController::class, 'cariYangMirip'])->name('cariYangMirip');
 
     // Route Komentar ---------------------------------------------------------------------------
     Route::post('/home/comment/detail', [CommentController::class, 'postkomentar'])->name('postkomentar');
@@ -97,6 +97,7 @@ Route::middleware('is_mahasiswa')->group(function () {
      Route::get('mahasiswa/ajaxmahasiswa/dataSkripsi/{id}', [SkripsiController::class, 'getDataSkripsi']);
      Route::get('/mahasiswa/skripsi/hapus/{id}', [SkripsiController::class, 'hapus'])->name('hapus.skripsi');
      Route::get('/mahasiswa/skripsi/detail/{id}', [SkripsiController::class, 'detailskripsi']);
+     route::get('/home/skripsi/cariYangMirip', [SkripsiController::class, 'cariYangMirip'])->name('cariYangMirip');
 });
 
 // View File PDF -----------------------------------------------------------------------------------

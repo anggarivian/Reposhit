@@ -5,6 +5,7 @@ use App\Models\favorite;
 use App\Models\Skripsi;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class FavoriteController extends Controller
 {
@@ -28,12 +29,18 @@ class FavoriteController extends Controller
     {
         $userId = auth()->user()->id;
 
-        $favoriteSkripsi = Favorite::where('id_user', $userId)
-                                   ->with('skripsi') // Pastikan relasi ada di model Favorite
-                                   ->get()
-                                   ->pluck('skripsi'); // Mengambil data skripsi dari relasi
+        $skripsifavorite = DB::table('favorites')
+                            ->join('skripsis','skripsis.id', '=','favorites.id_skripsi')
+                            ->join('users', 'skripsis.penulis', '=', 'users.name')
+                            ->where('favorites.id_user', $userId)
+                            ->select('skripsis.*','users.prodi')
+                            ->get();
+        // $favoriteSkripsi = Favorite::where('id_user', $userId)
+        //                            ->with('skripsi') // Pastikan relasi ada di model Favorite
+        //                            ->get()
+        //                            ->pluck('skripsi'); // Mengambil data skripsi dari relasi
 
-        return view('tampilfavorite', compact('favoriteSkripsi'));
+        return view('tampilfavorite', compact('skripsifavorite'));
     }
 
     public function removeFavorite($id)

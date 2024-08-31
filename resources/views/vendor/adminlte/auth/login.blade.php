@@ -70,14 +70,18 @@
                     </label>
                 </div>
             </div> --}}
-
-            <div class="col-5">
-                <button type=submit class="btn btn-block {{ config('adminlte.classes_auth_btn', 'btn-flat btn-primary') }}">
-                    <span class="fas fa-sign-in-alt"></span>
-                    {{ __('LOGIN') }}
-                </button>
+            <div class="row">
+                <div class="col-6">
+                    <a href="{{ route('welcome') }}" class="btn btn-block btn-warning" {{ config('adminlte.classes_auth_btn', 'btn-flat btn-secondary') }}">
+                        <span class="fas fa-arrow-left"></span>
+                    </a>
+                </div>
+                <div class="col-6">
+                    <button type=submit class="btn btn-block {{ config('adminlte.classes_auth_btn', 'btn-flat btn-primary') }}">
+                        <span>LOGIN</span>
+                    </button>
+                </div>
             </div>
-        </div>
 
     </form>
 @stop
