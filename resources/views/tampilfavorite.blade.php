@@ -29,10 +29,6 @@
                                Tahun : {{ $skripsi->rilis }}, {{ $skripsi->prodi }}, {{ 'Universitas Suryakancana' }}<br>
                             </p>
                             <div class="d-flex justify-content-start">
-                                <!-- Button untuk Lihat Detail -->
-                                <a type="button" class="btn btn-outline-primary btn-sm mr-2" href="/home/skripsi/detail/{{ $skripsi->id }}">
-                                    <i class="fas fa-eye"></i> Lihat Detail
-                                </a>
                                 <!-- Button untuk Hapus dari Favorite -->
                                 <form action="{{ route('removeFavorite', $skripsi->id) }}" method="POST" style="display:inline;">
                                     @csrf

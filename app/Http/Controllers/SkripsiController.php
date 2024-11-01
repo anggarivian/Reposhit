@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Storage;
 use App\Models\Comment;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
+use Barryvdh\DomPDF\Facade\Pdf; // Correctly import the Pdf facade
 
 class SkripsiController extends Controller
 {
@@ -33,6 +34,7 @@ class SkripsiController extends Controller
         $skripsi = DB::table('skripsis')
                     ->join('users', 'skripsis.penulis', '=', 'users.name')
                     ->select('skripsis.*', 'users.prodi')
+                    ->where('skripsis.status', 1)  // Menambahkan kondisi status
                     ->get();
         return view('skripsi2', compact('skripsi'));
     }
@@ -480,6 +482,8 @@ class SkripsiController extends Controller
         foreach ($pdfContents as $attribute => $pdfContent) {
             $pdfs[$attribute] = base64_encode($pdfContent);
         }
+        $skripsi->increment('views');
+
 
         // Mengirim data PDF, data user, dan data skripsi ke view 'detail'
         return view('detail', compact('pdfs', 'user', 'skripsi', 'comments'));
@@ -558,15 +562,51 @@ class SkripsiController extends Controller
         // Memecah judul menjadi kata-kata kunci
         $keywords = explode(' ', $judul);
 
-        // Membangun query untuk mencari skripsi yang memiliki salah satu kata kunci di judulnya
-        $skripsi = Skripsi::where(function ($query) use ($keywords) {
-            foreach ($keywords as $keyword) {
-                $query->orWhere('judul', 'LIKE', '%' . $keyword . '%');
-            }
-        })->get();
+        // Membangun query untuk mencari skripsi yang memiliki salah satu kata kunci di judulnya dan berstatus 1
+        $skripsi = DB::table('skripsis')
+                    ->join('users', 'skripsis.penulis', '=', 'users.name')
+                    ->select('skripsis.*', 'users.prodi')
+                    ->where('skripsis.status', 1) // Menambahkan kondisi status
+                    ->where(function ($query) use ($keywords) {
+                        foreach ($keywords as $keyword) {
+                            $query->orWhere('skripsis.judul', 'LIKE', '%' . $keyword . '%');
+                        }
+                    })
+                    ->get();
 
         return view('skripsi2', compact('skripsi'));
     }
+
+    public function searchSkripsi(Request $req)
+{
+    // Mengubah query untuk pencarian
+    $query = Skripsi::query();
+    $query->select('id', 'judul', 'penulis', 'rilis', 'dospem', 'halaman');
+
+    // Menambahkan kondisi pencarian berdasarkan judul jika tersedia
+    if (!empty($req->input('judul'))) {
+        $query->whereRaw('LOWER(judul) LIKE ?', ['%' . strtolower($req->input('judul')) . '%']);
+    }
+
+    // Menambahkan kondisi pencarian berdasarkan penulis jika tersedia
+    if (!empty($req->input('penulis'))) {
+        $query->whereRaw('LOWER(penulis) LIKE ?', ['%' . strtolower($req->input('penulis')) . '%']);
+    }
+
+    // Menambahkan kondisi pencarian berdasarkan rilis jika tersedia
+    if (!empty($req->input('rilis'))) {
+        $query->whereRaw('LOWER(rilis) LIKE ?', ['%' . strtolower($req->input('rilis')) . '%']);
+    }
+
+    // Mengurutkan hasil pencarian berdasarkan tanggal pembuatan terbaru
+    $query->orderBy('created_at', 'desc');
+
+    // Mengambil hasil pencarian dengan paginasi
+    $skripsi = $query->paginate(10);
+
+    // Mengembalikan tampilan dengan data pencarian
+    return view('skripsi2', compact('skripsi'));
+}
     // public function postkomentar (Request $request){
     //     dd($request->all());
     // }

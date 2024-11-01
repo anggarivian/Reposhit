@@ -18,12 +18,9 @@ class DosenImport implements WithHeadingRow, ToModel
         return new Dosen([
             'nama' => $row['nama'],
             'nip' => $row['nip'],
-            'alamat' => $row['alamat'],
-            'email' => $row['email'],
             'tgl_lahir' => $row['tgl_lahir'],
             'kontak' => $row['kontak'],
             'program_studi' => $row['program_studi'],
-            'jabatan' => $row['jabatan'],
         ]);
     }
 }

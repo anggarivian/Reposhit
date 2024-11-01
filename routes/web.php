@@ -78,7 +78,8 @@ Route::middleware('is_mahasiswa')->group(function () {
     Route::get('/home/skripsi/detail/{id}', [SkripsiController::class, 'detailskripsi']);
     Route::get('/home/skripsi', [SkripsiController::class, 'mahasiswa'])->name('mahasiswa.skripsi');
     Route::get('/home/skripsi/cariYangMirip', [SkripsiController::class, 'cariYangMirip'])->name('cariYangMirip');
-
+    Route::get('/home/skripsi/search', [SkripsiController::class, 'searchSkripsi'])->name('searchSkripsi');
+    // route::get('/home/skripsi/detail/{id}', [SkripsiController::class, 'showDetail'])->name('skripsi.detail');
     // Route Komentar ---------------------------------------------------------------------------
     Route::post('/home/comment/detail', [CommentController::class, 'postkomentar'])->name('postkomentar');
     Route::post('home/skripsi/detail/comment/postbalaskomentar', [CommentController::class, 'postBalasan'])->name('postBalasan');

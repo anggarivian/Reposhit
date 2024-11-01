@@ -34,6 +34,7 @@ class CreateSkripsisTable extends Migration
             $table->string('bab5');
             $table->string('dapus');
             $table->boolean('status')->nullable();
+            $table->integer('views')->default(0); // Tambah kolom views
             // $table->string('lampiran');
             $table->timestamps();
         });

@@ -56,10 +56,10 @@
                                     </button>
                                 </a>
                                 <button type="button" id="btn-edit-skripsi" class="btn btn-sm btn-success" data-toggle="modal" data-target="#edit" data-id="{{ $skripsis->id }}">
-                                    <i class="fas fa-edit">Edit Skripsi</i> <!-- Ikon untuk Edit -->
+                                    <i class="fas fa-edit">Edit</i> <!-- Ikon untuk Edit -->
                                 </button>
                                 <button type="button" class="btn btn-sm btn-danger" onclick="deleteConfirmation('{{$skripsis->id}}' , '{{$skripsis->judul}}' )">
-                                    <i class="fas fa-trash-alt"> Hapus Skripsi</i> <!-- Ikon untuk Hapus Favorite -->
+                                    <i class="fas fa-trash-alt"> Hapus</i> <!-- Ikon untuk Hapus Favorite -->
                                 </button>
                             </div>
                         </td>

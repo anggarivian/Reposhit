@@ -9,7 +9,7 @@
 @section('content')
 <div class="container-fluid">
     <div class="card card-default">
-    <div class="card-header">{{__(' ')}}</div>
+    {{-- <div class="card-header">{{__(' ')}}</div> --}}
         <div class="card-body">
             <div class="d-flex justify-content-between mb-3">
             </div>
@@ -49,17 +49,17 @@
                             <div class="form-group" role="group" aria-label="Basic example">
                                 <a href="/admin/skripsi/detail/{{$skripsis->id}}">
                                     <button class="btn btn-sm btn-info">
-                                          <i class="fas fa-eye"></i> <!-- Ikon untuk Lihat Detail Skripsi -->
+                                          <i class="fas fa-eye"> Lihat Skripsi</i> <!-- Ikon untuk Lihat Detail Skripsi -->
                                     </button>
                                 </a>
                                 <button type="button" id="btn-edit-skripsi" class="btn btn-sm btn-success" data-toggle="modal" data-target="#edit" data-id="{{ $skripsis->id }}">
-                                    <i class="fas fa-edit"></i> <!-- Ikon untuk Edit -->
+                                    <i class="fas fa-edit"> Edit </i> <!-- Ikon untuk Edit -->
                                 </button>
                                 <button type="button" class="btn btn-sm btn-danger" onclick="deleteConfirmation('{{$skripsis->id}}' , '{{$skripsis->judul}}' )">
-                                    <i class="fas fa-trash-alt"></i> <!-- Ikon untuk Hapus Favorite -->
+                                    <i class="fas fa-trash-alt"> Hapus  </i> <!-- Ikon untuk Hapus Favorite -->
                                 </button>
                                 <button type="button" class="btn btn-sm btn-info" onclick="verifikasiConfirmation('{{$skripsis->id}}' , '{{$skripsis->name}}' )">
-                                    <i class="fas fa-check-circle"></i>
+                                    <i class="fas fa-check-circle"> Verifikasi</i>
                                 </button>
                             </div>
                         </td>

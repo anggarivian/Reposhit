@@ -30,12 +30,12 @@ class HomeController extends Controller
     //         auth()->logout();
     //     }
     // }
-     
+
     public function index()
     {
         $user = Auth::user();
         $jumlahDosen = Dosen::count();
-        $jumlahMahasiswa = User::count();
+        $jumlahMahasiswa = User::where('roles_id', 2)->count();
         $jumlahSkripsi = Skripsi::count();
 
         if($user->roles_id == 2 && $user->status == 0){
@@ -48,7 +48,7 @@ class HomeController extends Controller
 
         return view('home', compact('user', 'jumlahDosen', 'jumlahMahasiswa', 'jumlahSkripsi'));
     }
-    
+
     public function welcome(Request $req){
 
         $query = Skripsi::query();
