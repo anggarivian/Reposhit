@@ -100,7 +100,7 @@
                             <div class="form-group col-md-3">
                                 <label for="dospem">Dosen Pembimbing</label>
                                 <select name="dospem" class="form-control" id="dospem">
-                                    <option selected >Pilih</option>
+                                    <option required placeholder>Pilih</option>
                                     @foreach ($namaDospem as $nama)
                                         <option value="{{$nama->nama}}" >{{$nama->nama}}</option>
                                     @endforeach

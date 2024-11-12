@@ -96,7 +96,7 @@
                                     <option disabled selected>Pilih</option>
                                     <option value="Agribisnis">Agribisnis</option>
                                     <option value="Agroteknologi">Agroteknologi</option>
-                                    <option value="Pemanfaatan Sumberdaya Perikanan">Pemanfaatan Sumberdaya Perikanan</option>
+                                    <option value="perikanan">Pemanfaatan Sumberdaya Perikanan</option>
                                 </select>
                             </div>
                             <div class="form-group col-md-6">

@@ -290,39 +290,39 @@
                 return false;
             })
         }
-        function toggleVerifikasiConfirmation(id, name) {
-    swal.fire({
-        title: "Tindakan verifikasi akun mahasiswa?",
-        type: 'warning',
-        text: "Apakah anda ingin " + (name.status == 0 ? 'memverifikasi' : 'membatalkan verifikasi') + " akun mahasiswa atas nama " + name + "?",
-        showCancelButton: true,
-        confirmButtonText: name.status == 0 ? "Ya, verifikasi!" : "Ya, batalkan!",
-        cancelButtonText: "Tidak, kembali!",
-    }).then(function (e) {
-        if (e.value === true) {
-            var CSRF_TOKEN = $('meta[name="csrf-token"]').attr('content');
-            $.ajax({
-                type: 'GET',
-                url: "{{url('/admin/mahasiswa/toggle-verifikasi')}}/" + id,
-                data: { _token: CSRF_TOKEN },
-                dataType: 'JSON',
-                success: function (results) {
-                    if (results.success === true) {
-                        swal.fire("Berhasil!", results.message, "success");
-                        setTimeout(function(){
-                            location.reload();
-                        }, 1000);
-                    } else {
-                        swal.fire("Gagal!", results.message, "error");
+    function toggleVerifikasiConfirmation(id, name) {
+        swal.fire({
+            title: "Tindakan verifikasi akun mahasiswa?",
+            type: 'warning',
+            text: "Apakah anda ingin " + (name.status == 0 ? 'memverifikasi' : 'membatalkan verifikasi') + " akun mahasiswa atas nama " + name + "?",
+            showCancelButton: true,
+            confirmButtonText: name.status == 0 ? "Ya, verifikasi!" : "Ya, batalkan!",
+            cancelButtonText: "Tidak, kembali!",
+        }).then(function (e) {
+            if (e.value === true) {
+                var CSRF_TOKEN = $('meta[name="csrf-token"]').attr('content');
+                $.ajax({
+                    type: 'GET',
+                    url: "{{url('/admin/mahasiswa/toggle-verifikasi')}}/" + id,
+                    data: { _token: CSRF_TOKEN },
+                    dataType: 'JSON',
+                    success: function (results) {
+                        if (results.success === true) {
+                            swal.fire("Berhasil!", results.message, "success");
+                            setTimeout(function(){
+                                location.reload();
+                            }, 1000);
+                        } else {
+                            swal.fire("Gagal!", results.message, "error");
+                        }
                     }
-                }
-            });
-        } else {
-            e.dismiss;
-        }
-    }, function (dismiss) {
-        return false;
-    });
+                });
+            } else {
+                e.dismiss;
+            }
+        }, function (dismiss) {
+            return false;
+        });
 }
 
 </script>
