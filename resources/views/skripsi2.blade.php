@@ -56,12 +56,12 @@
                                     </button>
                                 </form>
                             @endif
-
-                            <button class="btn btn-outline-primary btn-sm mr-2"><i class="fas fa-file-pdf"></i> Metadata PDF</button>
+                            <button class="btn btn-outline-secondary btn-sm mr-2" data-toggle="modal" data-target="#metadataModal-{{ $skripsis->id }}">
+                                <i class="fas fa-info-circle"></i> Metadata
+                            </button>
                             <button class="btn btn-outline-primary btn-sm mr-2" data-toggle="modal" data-target="#abstrakModal-{{ $skripsis->id }}">
                                 <i class="fas fa-file-pdf"></i> Abstrak
                             </button>
-
                             <!-- Modal untuk Tampilan PDF Abstrak -->
                             <div class="modal fade" id="abstrakModal-{{ $skripsis->id }}" tabindex="-1" role="dialog" aria-labelledby="abstrakModalLabel-{{ $skripsis->id }}" aria-hidden="true">
                                 <div class="modal-dialog modal-lg" role="document">
@@ -84,7 +84,61 @@
                                     </div>
                                 </div>
                             </div>
+                            <!-- Modal untuk Tampilan Metadata -->
+                            <div class="modal fade" id="metadataModal-{{ $skripsis->id }}" tabindex="-1" role="dialog" aria-labelledby="metadataLabel-{{ $skripsis->id }}" aria-hidden="true">
+                                <div class="modal-dialog modal-lg" role="document">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h6>Universitas Suryakancana</h6>
+                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                <span aria-hidden="true">&times;</span>
+                                            </button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <h1>Universitas Suryakancana Library</h1>
+                            
+                                            <div class="utama">
+                                                <div class="judul">
+                                                    <strong>Judul:</strong>
+                                                </div>
+                                                <div class="isi">
+                                                    <p>{{ $skripsis->judul }}</p>
+                                                </div>
+                                                <div class="judul">
+                                                    <strong>Pengarang:</strong>
+                                                    
+                                                </div>
+                                                <div class="isi">
+                                                    <p>{{ $skripsis->penulis }}</p>
+                                                </div>
+                                                <div class="judul">
+                                                    <strong>Penerbitan:</strong>
+                                                </div>
+                                                <div class="isi">
+                                                    <p>{{ $skripsis->prodi }} Universitas Suryakancana</p>
+                                                </div>
 
+                                                <div class="judul">
+                                                    <strong>Link Terkait:</strong>
+                                                    <ul>
+                                                        <li>
+                                                            <a href="{{ route('searchSkripsi') }}?judul={{ $skripsis->judul }}&penulis=&rilis=">
+                                                                Dokumen Yang Mirip
+                                                            </a>
+                                                        </li>
+                                                        <li><a href="/home/skripsi">Universitas Suryakancana Library</a></li>
+                                                    </ul>
+                                                </div>
+                                            </div>
+                            
+                                            <div class="footer">
+                                                <p>&copy; {{ date('Y') }} Universitas Suryakancana Library. All Rights Reserved.</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
                             <!-- Tambahan CSS untuk gaya tampilan -->
                             <style>
                                 .dashed-line {

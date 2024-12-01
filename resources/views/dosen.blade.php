@@ -46,10 +46,10 @@
                         <td>{{$dosens->kontak}}</td>
                         <td>
                             <div class="form-group" role="group" aria-label="Basic example">
-                                <button type="button" id="btn-edit-skripsi" class="btn btn-sm btn-success" data-toggle="modal" data-target="#edit" data-id="{{ $dosens->id }}">
+                                <button type="button" id="btn-edit-dosen" class="btn btn-sm btn-success" data-toggle="modal" data-target="#edit" data-id="{{ $dosens->id }}">
                                     <i class="fas fa-edit"> Edit</i> <!-- Ikon untuk Edit -->
                                 </button>
-                                <button type="button" class="btn btn-sm btn-danger" onclick="deleteConfirmation('{{$dosens->id}}' , '{{$dosens->judul}}' )">
+                                <button type="button" class="btn btn-sm btn-danger" onclick="deleteConfirmation('{{$dosens->id}}' , '{{$dosens->nama}}' )">
                                     <i class="fas fa-trash-alt"> Hapus </i> <!-- Ikon untuk Hapus Favorite -->
                                 </button>
                             </div>

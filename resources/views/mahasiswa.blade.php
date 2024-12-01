@@ -59,14 +59,14 @@
                         <td>{{$mahasiswas->alamat}}</td>
                         <td>
                             <div class="form-group" role="group" aria-label="Basic example">
-                                <button type="button" id="btn-edit-skripsi" class="btn btn-sm btn-success" data-toggle="modal" data-target="#edit" data-id="{{ $mahasiswas->id }}">
+                                <button type="button" id="btn-edit-mahasiswa" class="btn btn-sm btn-success" data-toggle="modal" data-target="#edit" data-id="{{ $mahasiswas->id }}">
                                     <i class="fas fa-edit"> Edit </i> <!-- Ikon untuk Edit -->
                                 </button>
-                                <button type="button" class="btn btn-sm btn-danger" onclick="deleteConfirmation('{{$mahasiswas->id}}' , '{{$mahasiswas->judul}}' )">
+                                <button type="button" class="btn btn-sm btn-danger" onclick="deleteConfirmation('{{$mahasiswas->id}}' , '{{$mahasiswas->name}}' )">
                                     <i class="fas fa-trash-alt"> Hapus </i> <!-- Ikon untuk Hapus Favorite -->
                                 </button>
                                 <button class="btn btn-sm {{ $mahasiswas->status == 0 ? 'btn-success' : 'btn-danger' }}"
-                                    onclick="toggleVerifikasiConfirmation({{ $mahasiswas->id }}, '{{ $mahasiswas->name }}')"
+                                    onclick="toggleVerifikasiConfirmation({{ $mahasiswas->id }}, '{{ $mahasiswas->name }}','{{ $mahasiswas->status }}')"
                                     title="{{ $mahasiswas->status == 0 ? 'Verifikasi' : 'Batalkan Verifikasi' }}">
                                     <i class="fa {{ $mahasiswas->status == 0 ? 'fa-check-circle' : 'fa-times-circle' }}"> Verifikasi</i>
                                 </button>
@@ -120,7 +120,7 @@
                     <div class="d-flex">
                         <div class="form-group col-md-12">
                             <label for="prodi">Program Studi</label>
-                            <select name="prodi" class="form-control" id="prodi" >
+                            <select name="prodi" class="form-control" id="prodi">
                                 <option disabled selected >Pilih</option>
                                 <option value="Agribisnis">Agribisnis</option>
                                 <option value="Agroteknologi">Agroteknologi</option>
@@ -163,21 +163,21 @@
                     <div class="d-flex">
                         <div class="form-group col-md-6">
                             <label for="npm">NPM</label>
-                            <input type="text" class="form-control" name="npm" id="edit-npm" required placeholder="Harus 10 Nomor">
+                            <input type="text" class="form-control" name="npm" id="edit-npm" required placeholder="Harus 10 Nomor"readonly>
                         </div>
                         <div class="form-group col-md-6">
                             <label for="tgl_lahir">Tanggal Lahir</label>
-                            <input type="date" class="form-control" name="tgl_lahir" id="edit-tgl_lahir" required>
+                            <input type="date" class="form-control" name="tgl_lahir" id="edit-tgl_lahir" readonly>
                         </div>
                     </div>
                     <div class="d-flex">
                         <div class="form-group col-md-6">
                             <label for="angkatan">Angkatan</label>
-                            <input type="text" class="form-control" name="angkatan" id="edit-angkatan" required placeholder="Harus 4 Angka">
+                            <input type="text" class="form-control" name="angkatan" id="edit-angkatan" required placeholder="Harus 4 Angka" readonly>
                         </div>
                         <div class="form-group col-md-6">
                             <label for="prodi">Program Studi</label>
-                            <select name="prodi" class="form-control" id="prodi" >
+                            <select name="prodi" class="form-control" id="prodi"readonly >
                                 <option disabled >Pilih</option>
                                 <option value="Agribisnis">Agribisnis</option>
                                 <option value="Agroteknologi">Agroteknologi</option>
@@ -199,6 +199,7 @@
     </div>
 </div>
 
+<!-- import -->
 <div class="modal fade" id="import" tabindex="-1" aria-labelledby="importLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
@@ -226,7 +227,6 @@
 </div>
 
 @stop
-
 
 @section('js')
 
@@ -259,7 +259,7 @@
             swal.fire({
                 title: "Hapus?",
                 type: 'warning',
-                text: "Apakah anda yakin akan menghapus data dengan Nama " +name+"?!",
+                text: "Apakah anda yakin akan menghapus data dengan Nama "+name+"?!",
                 showCancelButton: !0,
                 confirmButtonText: "Ya, lakukan!",
                 cancelButtonText: "Tidak, batalkan!",
@@ -290,13 +290,13 @@
                 return false;
             })
         }
-    function toggleVerifikasiConfirmation(id, name) {
+    function toggleVerifikasiConfirmation(id, name, status) {
         swal.fire({
             title: "Tindakan verifikasi akun mahasiswa?",
             type: 'warning',
-            text: "Apakah anda ingin " + (name.status == 0 ? 'memverifikasi' : 'membatalkan verifikasi') + " akun mahasiswa atas nama " + name + "?",
+            text: "Apakah anda ingin " + (status == 0 ? 'memverifikasi' : 'membatalkan verifikasi') + " akun mahasiswa atas nama " + name + "?",
             showCancelButton: true,
-            confirmButtonText: name.status == 0 ? "Ya, verifikasi!" : "Ya, batalkan!",
+            confirmButtonText: status == 0 ? "Ya, verifikasi!" : "Ya, batalkan!",
             cancelButtonText: "Tidak, kembali!",
         }).then(function (e) {
             if (e.value === true) {

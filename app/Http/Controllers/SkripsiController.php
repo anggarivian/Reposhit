@@ -13,6 +13,7 @@ use App\Models\Comment;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Barryvdh\DomPDF\Facade\Pdf; // Correctly import the Pdf facade
+use Illuminate\Support\Facades\View;
 
 class SkripsiController extends Controller
 {
@@ -577,15 +578,19 @@ class SkripsiController extends Controller
         return view('skripsi2', compact('skripsi'));
     }
 
-    public function searchSkripsi(Request $req)
-{
+    public function searchSkripsi(Request $req) {
     // Mengubah query untuk pencarian
     $query = Skripsi::query();
-    $query->select('id', 'judul', 'penulis', 'rilis', 'dospem', 'halaman');
+    $query->select('id', 'judul', 'penulis', 'rilis', 'dospem', 'halaman','views');
 
     // Menambahkan kondisi pencarian berdasarkan judul jika tersedia
     if (!empty($req->input('judul'))) {
-        $query->whereRaw('LOWER(judul) LIKE ?', ['%' . strtolower($req->input('judul')) . '%']);
+        $judulKeywords = explode(' ', strtolower($req->input('judul'))); // Memecah string menjadi array kata
+        $query->where(function ($subQuery) use ($judulKeywords) {
+            foreach ($judulKeywords as $word) {
+                $subQuery->orWhereRaw('LOWER(judul) LIKE ?', ['%' . $word . '%']);
+            }
+        });
     }
 
     // Menambahkan kondisi pencarian berdasarkan penulis jika tersedia
@@ -599,7 +604,9 @@ class SkripsiController extends Controller
     }
 
     // Mengurutkan hasil pencarian berdasarkan tanggal pembuatan terbaru
-    $query->orderBy('created_at', 'desc');
+    $query->join('users', 'skripsis.penulis', '=', 'users.name')
+    ->select('skripsis.*', 'users.prodi')
+    ->orderBy('skripsis.created_at', 'desc');
 
     // Mengambil hasil pencarian dengan paginasi
     $skripsi = $query->paginate(10);
@@ -607,6 +614,24 @@ class SkripsiController extends Controller
     // Mengembalikan tampilan dengan data pencarian
     return view('skripsi2', compact('skripsi'));
 }
+
+// public function showMetadataPdf($id)
+// {
+//     $skripsi = DB::table('skripsis')
+//     ->join('users', 'skripsis.penulis', '=', 'users.name')
+//     ->select('skripsis.*', 'users.prodi')
+//     ->where('skripsis.id', $id)  // Menambahkan kondisi status
+//     ->first();
+
+//     // Buat PDF dari view
+//     $pdf = Pdf::loadView('metadata', compact('skripsi'))
+//                ->setPaper('A4', 'portrait');
+
+//     // Menambahkan header inline agar tidak langsung diunduh
+//     return response($pdf->output(), 200)
+//     ->header('Content-Type', 'application/pdf')
+//     ->header('Content-Disposition', 'inline; filename="metadata-skripsi.pdf"');
+// }
     // public function postkomentar (Request $request){
     //     dd($request->all());
     // }

@@ -28,7 +28,7 @@ class MahasiswaController extends Controller
             'alamat' => 'required|string|max:255',
             'angkatan' => 'required|string|max:4|min:4',
             'password' => 'required|string|min:8|max:255',
-            'prodi' => 'required|string|max:25',
+            'prodi' => 'required|string|max:40',
         ]);
 
         // Create Data Mahasiswa ------------------------------------------------------------------
@@ -69,7 +69,7 @@ class MahasiswaController extends Controller
             'tgl_lahir' => 'required|date',
             'alamat' => 'required|string|max:255',
             'angkatan' => 'required|string|max:4|min:4',
-            'prodi' => 'required|string|max:25',
+            'prodi' => 'required|string|max:40',
         ]);
 
         // Update Data Mahasiswa ------------------------------------------------------------------
