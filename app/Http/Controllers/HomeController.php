@@ -37,6 +37,8 @@ class HomeController extends Controller
         $jumlahDosen = Dosen::count();
         $jumlahMahasiswa = User::where('roles_id', 2)->count();
         $jumlahSkripsi = Skripsi::count();
+        $jumlahSkripsiBelumDiverifikasi = Skripsi::where('status', 0)->count();
+        $jumlahSkripsiDiverifikasi = Skripsi::where('status', 1)->count();
 
         if($user->roles_id == 2 && $user->status == 0){
             Auth::logout();
@@ -46,7 +48,8 @@ class HomeController extends Controller
             return redirect()->route('welcome')->with($notification);
         }
 
-        return view('home', compact('user', 'jumlahDosen', 'jumlahMahasiswa', 'jumlahSkripsi'));
+        return view('home', compact('user', 'jumlahDosen', 'jumlahMahasiswa', 'jumlahSkripsi',
+                   'jumlahSkripsiBelumDiverifikasi', 'jumlahSkripsiDiverifikasi'));
     }
 
     public function welcome(Request $req){

@@ -10,6 +10,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use App\Models\Comment;
+use App\Models\riwayat_skripsi;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Barryvdh\DomPDF\Facade\Pdf; // Correctly import the Pdf facade
@@ -431,6 +432,17 @@ class SkripsiController extends Controller
             ->get();
         $comments = collect();
 
+        // Mengecek apakah riwayat sudah ada untuk pengguna ini
+    $existingHistory = riwayat_skripsi::where('id_user', $user->id)
+    ->where('id_skripsi', $id)
+    ->exists();
+        // Jika belum ada, tambahkan riwayat baru
+        if (!$existingHistory) {
+            riwayat_skripsi::create([
+                'id_user' => $user->id,
+                'id_skripsi' => $id,
+            ]);
+        }
         foreach ($childcomments as $comment) {
             if ($comment->parent_id === null) {
                 // This is a top-level comment

@@ -20,6 +20,7 @@
                 </button>
             </form>
         </div>
+        <div class="notification" id="notification"></div>
         <div class="card-body">
             @if($skripsi->isEmpty())
                 <!-- Teks penanda jika tidak ada skripsi yang tersedia -->
@@ -121,6 +122,7 @@
                                                 <div class="judul">
                                                     <strong>Link Terkait:</strong>
                                                     <ul>
+                                                        <li><a href="#">Deskripsi Bibliografi</a></li>
                                                         <li>
                                                             <a href="{{ route('searchSkripsi') }}?judul={{ $skripsis->judul }}&penulis=&rilis=">
                                                                 Dokumen Yang Mirip
@@ -162,6 +164,26 @@
                                     margin-top: 20px;
                                     line-height: 1.6;
                                 }
+                                .notification {
+                                    position: fixed; /* Tetapkan posisi tetap */
+                                    top: 20px; /* Jarak dari atas halaman */
+                                    right: 20px; /* Jarak dari kanan halaman */
+                                    padding: 10px 15px;
+                                    border-radius: 5px;
+                                    font-size: 14px;
+                                    color: #fff;
+                                    display: none; /* Default disembunyikan */
+                                    z-index: 9999; /* Pastikan berada di atas elemen lainnya */
+                                    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+                                }
+
+                                .notification-success {
+                                    background-color: #ffc107; /* Warna kuning untuk Tambah Favorite */
+                                }
+
+                                .notification-danger {
+                                    background-color: #dc3545; /* Warna merah untuk Hapus Favorite */
+                                }
                             </style>
                         </div>
                     </div>
@@ -173,9 +195,7 @@
 @stop
 
 @section('js')
-    <!-- Include Bootstrap's JavaScript jika belum termasuk -->
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.bundle.min.js"></script>
+
 
     <!-- JavaScript untuk menghilangkan pesan setelah 4 detik -->
     <script>
@@ -183,6 +203,28 @@
             setTimeout(function() {
                 $('#no-skripsi-message').fadeOut('slow');
             }, 10000); //
+        });
+        $(document).ready(function() {
+            // Menampilkan notifikasi
+            let notificationMessage = "{{ session('favorite') }}";
+            let notificationType = "{{ session('favorite_type') }}"; // Menggunakan tipe aksi dari controller
+
+            if (notificationMessage) {
+                // Tentukan class notifikasi berdasarkan tipe
+                let notificationClass = notificationType === 'add' ? 'notification-success' : 'notification-danger';
+
+                // Update dan tampilkan notifikasi
+                $('#notification')
+                    .removeClass('notification-success notification-danger')
+                    .addClass(notificationClass)
+                    .text(notificationMessage)
+                    .fadeIn(500); // Animasi fade in
+
+                // Menghilangkan notifikasi setelah 5 detik
+                setTimeout(() => {
+                    $('#notification').fadeOut(500); // Animasi fade out
+                }, 5000);
+            }
         });
     </script>
 @stop

@@ -28,7 +28,7 @@ class DosenController extends Controller
             'kontak' => 'required|string|max:12',
             // 'alamat' => 'required|string|max:255',
             'tgl_lahir' => 'required|date',
-            'program_studi' => 'required|string|max:25',
+            'program_studi' => 'required|string|max:40',
             // 'password' => 'required|string|min:8|max:255',
         ]);
 
@@ -85,7 +85,7 @@ class DosenController extends Controller
             'kontak' => 'required|string|max:12',
             // 'alamat' => 'required|string|max:255',
             'tgl_lahir' => 'required|date',
-            'program_studi' => 'required|string|max:25',
+            'program_studi' => 'required|string|max:40',
         ]);
 
         // Update Data Dosen ------------------------------------------------------------------

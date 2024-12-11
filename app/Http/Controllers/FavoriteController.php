@@ -22,7 +22,8 @@ class FavoriteController extends Controller
 
 
         // Kembali dengan notifikasi
-        return redirect()->back()->with('favorite', 'Skripsi ini telah ditambahkan ke favorite.');
+        return redirect()->back()->with('favorite', 'Skripsi berhasil ditambahkan ke favorite.')
+        ->with('favorite_type', 'add'); // Tambahkan tipe aksi
     }
 
     public function showFavorites()
@@ -59,6 +60,8 @@ class FavoriteController extends Controller
         // Menghapus favorite dari user yang login
         $user->favorites()->detach($id);
 
-        return redirect()->back()->with('success', 'Skripsi berhasil dihapus dari favorite.');
+        return redirect()->back()->with('favorite', 'Skripsi berhasil dihapus dari favorite.')
+        ->with('favorite_type', 'remove'); // Tambahkan tipe aksi
+
     }
 }

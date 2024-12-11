@@ -33,6 +33,7 @@
                         <th>Penulis</th>
                         <th>Dosen Pembimbing</th>
                         <th>Rilis</th>
+                        <th>Status</th>
                         <th>Halaman</th>
                         <th>Opsi</th>
                     </tr>
@@ -47,6 +48,13 @@
                         <td>{{$skripsis->penulis}}</td>
                         <td>{{$skripsis->dospem}}</td>
                         <td>{{$skripsis->rilis}}</td>
+                        <td>
+                            @if ($skripsis->status == 0)
+                                <a class="btn btn-sm btn-warning">Belum Diverifikasi</a>
+                            @elseif ($skripsis->status == 1)
+                                <a class="btn btn-sm btn-success">Sudah Diverifikasi</a>
+                            @endif
+                        </td>
                         <td>{{$skripsis->halaman}}</td>
                         <td>
                             <div class="form-group" role="group" aria-label="Basic example">

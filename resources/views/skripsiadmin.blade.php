@@ -24,6 +24,7 @@
                         <th>Rilis</th>
                         <th>Status</th>
                         <th>Halaman</th>
+                        <th>tanggal dibuat</th>
                         <th>Opsi</th>
                     </tr>
                 </thead>
@@ -45,6 +46,7 @@
                             @endif
                         </td>
                         <td>{{$skripsis->halaman}}</td>
+                        <td>{{ $skripsis->created_at->format('Y-m-d') }}</td>
                         <td>
                             <div class="form-group" role="group" aria-label="Basic example">
                                 <a href="/admin/skripsi/detail/{{$skripsis->id}}">

@@ -313,13 +313,19 @@ return [
         [
             'text' => 'Upload Skripsi',
             'url'  => 'mahasiswa/skripsi',
-            'icon' => 'fas fa-fw fa-book',
+            'icon' => 'fas fa-upload', // Ikon upload lebih sesuai
             'can'  => 'isMahasiswa',
         ],
         [
             'text' => 'Favorite Saya',
             'url'  => 'home/favorite',
-            'icon' => 'fas fa-fw fa-book',
+            'icon' => 'fas fa-star', // Ikon favorit lebih relevan
+            'can'  => 'isMahasiswa',
+        ],
+        [
+            'text' => 'Riwayat Skripsi',
+            'url'  => 'home/riwayat',
+            'icon' => 'fas fa-history', // Ikon riwayat mencerminkan histori
             'can'  => 'isMahasiswa',
         ],
         [
@@ -329,7 +335,7 @@ return [
         [
             'text' => 'Daftar Skripsi',
             'url'  => 'home/skripsi',
-            'icon' => 'fas fa-fw fa-book',
+            'icon' => 'fas fa-list', // Ikon daftar lebih sesuai
             'can'  => 'isMahasiswa',
         ],
         [
