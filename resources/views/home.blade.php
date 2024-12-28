@@ -72,7 +72,7 @@
                                         <div class="statistics-details d-flex align-items-center justify-content-between">
                                             <svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16c0 1.1.9 2 2 2h12a2 2 0 0 0 2-2V8l-6-6z"/><path d="M14 3v5h5M16 13H8M16 17H8M10 9H8"/></svg>
                                             <div class="title">
-                                                <h5>Jumlah Skripsi</h5>
+                                                <h5>Jumlah Skripsi terverifikasi</h5>
                                                 <h3 class="font-weight-bold text-right">{{$jumlahSkripsi}}</h3>
                                             </div>
                                         </div>
@@ -80,44 +80,6 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="col-lg-3 grid-margin">
-                            <div class="card">
-                                <div class="card-body bg-warning">
-                                    <div class="col-sm-12">
-                                        <div class="statistics-details d-flex align-items-center justify-content-between">
-                                            <svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" fill="currentColor" class="bi bi-exclamation-circle" viewBox="0 0 16 16">
-                                                <path d="M8 0a8 8 0 1 0 8 8A8 8 0 0 0 8 0zm0 14A6 6 0 1 1 8 2a6 6 0 0 1 0 12z"/>
-                                                <path d="M7.002 5.005h1.998V7H7.002V5.005zm1.998 7h-1.998v-1.5h1.998V12.005z"/>
-                                            </svg>
-                                            <div class="title">
-                                                <h5>Skripsi Belum Diverifikasi</h5>
-                                                <h3 class="font-weight-bold text-right">{{ $jumlahSkripsiBelumDiverifikasi }}</h3>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-lg-3 grid-margin">
-                            <div class="card">
-                                <div class="card-body bg-success">
-                                    <div class="col-sm-12">
-                                        <div class="statistics-details d-flex align-items-center justify-content-between">
-                                            <svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" fill="currentColor" class="bi bi-check-circle" viewBox="0 0 16 16">
-                                                <path d="M10.97 4.97a.75.75 0 0 1 1.07 1.05l-3.992 5a.75.75 0 0 1-1.08.02L5.324 9.384a.75.75 0 1 1 1.08-1.04l1.334 1.34L10.97 4.97Z"/>
-                                                <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14Zm0-1A6 6 0 1 0 8 2a6 6 0 0 0 0 12Z"/>
-                                            </svg>
-                                            <div class="title">
-                                                <h5>Skripsi Terverifikasi</h5>
-                                                <h3 class="font-weight-bold text-right">{{ $jumlahSkripsiDiverifikasi }}</h3>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
 
 @stop
 

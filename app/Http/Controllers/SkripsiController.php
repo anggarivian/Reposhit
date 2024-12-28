@@ -201,6 +201,17 @@ class SkripsiController extends Controller
             'dospem' => 'required|string|max:30',
             'rilis' => 'required|max:4|min:4',
             'halaman' => 'required|min:1',
+            'cover' => 'nullable|mimes:pdf|max:2048',
+            'pengesahan' => 'nullable|mimes:pdf|max:2048',
+            'daftarisi' => 'nullable|mimes:pdf|max:2048',
+            'daftargambar' => 'nullable|mimes:pdf|max:2048',
+            'daftarlampiran' => 'nullable|mimes:pdf|max:2048',
+            'bab1' => 'nullable|mimes:pdf|max:2048',
+            'bab2' => 'nullable|mimes:pdf|max:2048',
+            'bab3' => 'nullable|mimes:pdf|max:2048',
+            'bab4' => 'nullable|mimes:pdf|max:2048',
+            'bab5' => 'nullable|mimes:pdf|max:2048',
+            'dapus' => 'nullable|mimes:pdf|max:2048',
         ]);
 
         // Update Data Skripsi ------------------------------------------------------------------
@@ -259,6 +270,17 @@ class SkripsiController extends Controller
             'dospem' => 'required|string|max:30',
             'rilis' => 'required|max:4|min:4',
             'halaman' => 'required|min:1',
+            'cover' => 'nullable|mimes:pdf|max:2048',
+            'pengesahan' => 'nullable|mimes:pdf|max:2048',
+            'daftarisi' => 'nullable|mimes:pdf|max:2048',
+            'daftargambar' => 'nullable|mimes:pdf|max:2048',
+            'daftarlampiran' => 'nullable|mimes:pdf|max:2048',
+            'bab1' => 'nullable|mimes:pdf|max:2048',
+            'bab2' => 'nullable|mimes:pdf|max:2048',
+            'bab3' => 'nullable|mimes:pdf|max:2048',
+            'bab4' => 'nullable|mimes:pdf|max:2048',
+            'bab5' => 'nullable|mimes:pdf|max:2048',
+            'dapus' => 'nullable|mimes:pdf|max:2048',
         ]);
 
         // Update Data Skripsi ------------------------------------------------------------------
@@ -271,7 +293,8 @@ class SkripsiController extends Controller
         $skripsi->rilis = $req->get('rilis');
         $skripsi->halaman = $req->get('halaman');
 
-        function uploadFile($req, $fieldName, $storagePath, $oldFileName = null){
+        function uploadFile($req, $fieldName, $storagePath, $oldFileName = null)
+        {
             if ($req->hasFile($fieldName)) {
                 $extension = $req->file($fieldName)->extension();
                 $filename = $fieldName . '_skripsi' . time() . '.' . $extension;
@@ -591,41 +614,41 @@ class SkripsiController extends Controller
     }
 
     public function searchSkripsi(Request $req) {
-    // Mengubah query untuk pencarian
-    $query = Skripsi::query();
-    $query->select('id', 'judul', 'penulis', 'rilis', 'dospem', 'halaman','views');
-
-    // Menambahkan kondisi pencarian berdasarkan judul jika tersedia
-    if (!empty($req->input('judul'))) {
-        $judulKeywords = explode(' ', strtolower($req->input('judul'))); // Memecah string menjadi array kata
-        $query->where(function ($subQuery) use ($judulKeywords) {
-            foreach ($judulKeywords as $word) {
-                $subQuery->orWhereRaw('LOWER(judul) LIKE ?', ['%' . $word . '%']);
-            }
-        });
+        // Membuat query awal dengan kondisi status verifikasi = 1
+        $query = Skripsi::query();
+        $query->select('skripsis.id', 'skripsis.judul', 'skripsis.penulis', 'skripsis.rilis', 'skripsis.dospem', 'skripsis.halaman', 'skripsis.views', 'users.prodi')
+              ->join('users', 'skripsis.penulis', '=', 'users.name')
+              ->where('skripsis.status', 1); // Hanya skripsi yang sudah diverifikasi
+    
+        // Menambahkan kondisi pencarian berdasarkan judul jika tersedia
+        if (!empty($req->input('judul'))) {
+            $judulKeywords = explode(' ', strtolower($req->input('judul')));
+            $query->where(function ($subQuery) use ($judulKeywords) {
+                foreach ($judulKeywords as $word) {
+                    $subQuery->orWhereRaw('LOWER(skripsis.judul) LIKE ?', ['%' . $word . '%']);
+                }
+            });
+        }
+    
+        // Menambahkan kondisi pencarian berdasarkan penulis jika tersedia
+        if (!empty($req->input('penulis'))) {
+            $query->whereRaw('LOWER(skripsis.penulis) LIKE ?', ['%' . strtolower($req->input('penulis')) . '%']);
+        }
+    
+        // Menambahkan kondisi pencarian berdasarkan rilis jika tersedia
+        if (!empty($req->input('rilis'))) {
+            $query->whereRaw('LOWER(skripsis.rilis) LIKE ?', ['%' . strtolower($req->input('rilis')) . '%']);
+        }
+    
+        // Mengurutkan hasil pencarian berdasarkan tanggal pembuatan terbaru
+        $query->orderBy('skripsis.created_at', 'desc');
+    
+        // Mengambil hasil pencarian dengan paginasi
+        $skripsi = $query->paginate(10);
+    
+        // Mengembalikan tampilan dengan data pencarian
+        return view('skripsi2', compact('skripsi'));
     }
-
-    // Menambahkan kondisi pencarian berdasarkan penulis jika tersedia
-    if (!empty($req->input('penulis'))) {
-        $query->whereRaw('LOWER(penulis) LIKE ?', ['%' . strtolower($req->input('penulis')) . '%']);
-    }
-
-    // Menambahkan kondisi pencarian berdasarkan rilis jika tersedia
-    if (!empty($req->input('rilis'))) {
-        $query->whereRaw('LOWER(rilis) LIKE ?', ['%' . strtolower($req->input('rilis')) . '%']);
-    }
-
-    // Mengurutkan hasil pencarian berdasarkan tanggal pembuatan terbaru
-    $query->join('users', 'skripsis.penulis', '=', 'users.name')
-    ->select('skripsis.*', 'users.prodi')
-    ->orderBy('skripsis.created_at', 'desc');
-
-    // Mengambil hasil pencarian dengan paginasi
-    $skripsi = $query->paginate(10);
-
-    // Mengembalikan tampilan dengan data pencarian
-    return view('skripsi2', compact('skripsi'));
-}
 
 // public function showMetadataPdf($id)
 // {

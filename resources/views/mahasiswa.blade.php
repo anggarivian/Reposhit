@@ -31,7 +31,7 @@
                         <th>No</th>
                         <th>NPM</th>
                         <th>Nama</th>
-                        <th>Status</th>
+                        {{-- <th>Status</th> --}}
                         <th>Tanggal Lahir</th>
                         <th>Angkatan</th>
                         <th>Prodi</th>
@@ -46,13 +46,13 @@
                         <td>{{$no++}}</td>
                         <td>{{$mahasiswas->npm}}</td>
                         <td>{{$mahasiswas->name}}</td>
-                        <td>
+                        {{-- <td>
                             @if ($mahasiswas->status == 0)
                                 <a class="btn btn-sm btn-warning">Belum Diverifikasi</a>
                             @elseif ($mahasiswas->status == 1)
                                 <a class="btn btn-sm btn-success">Sudah Diverifikasi</a>
                             @endif
-                        </td>
+                        </td> --}}
                         <td>{{$mahasiswas->tgl_lahir}}</td>
                         <td>{{$mahasiswas->angkatan}}</td>
                         <td>{{$mahasiswas->prodi}}</td>
@@ -65,11 +65,11 @@
                                 <button type="button" class="btn btn-sm btn-danger" onclick="deleteConfirmation('{{$mahasiswas->id}}' , '{{$mahasiswas->name}}' )">
                                     <i class="fas fa-trash-alt"> Hapus </i> <!-- Ikon untuk Hapus Favorite -->
                                 </button>
-                                <button class="btn btn-sm {{ $mahasiswas->status == 0 ? 'btn-success' : 'btn-danger' }}"
+                                {{-- <button class="btn btn-sm {{ $mahasiswas->status == 0 ? 'btn-success' : 'btn-danger' }}"
                                     onclick="toggleVerifikasiConfirmation({{ $mahasiswas->id }}, '{{ $mahasiswas->name }}','{{ $mahasiswas->status }}')"
                                     title="{{ $mahasiswas->status == 0 ? 'Verifikasi' : 'Batalkan Verifikasi' }}">
                                     <i class="fa {{ $mahasiswas->status == 0 ? 'fa-check-circle' : 'fa-times-circle' }}"> Verifikasi</i>
-                                </button>
+                                </button> --}}
                             </div>
                         </td>
                     </tr>
@@ -167,17 +167,17 @@
                         </div>
                         <div class="form-group col-md-6">
                             <label for="tgl_lahir">Tanggal Lahir</label>
-                            <input type="date" class="form-control" name="tgl_lahir" id="edit-tgl_lahir" readonly>
+                            <input type="date" class="form-control" name="tgl_lahir" id="edit-tgl_lahir">
                         </div>
                     </div>
                     <div class="d-flex">
                         <div class="form-group col-md-6">
                             <label for="angkatan">Angkatan</label>
-                            <input type="text" class="form-control" name="angkatan" id="edit-angkatan" required placeholder="Harus 4 Angka" readonly>
+                            <input type="text" class="form-control" name="angkatan" id="edit-angkatan" required placeholder="Harus 4 Angka">
                         </div>
                         <div class="form-group col-md-6">
                             <label for="prodi">Program Studi</label>
-                            <select name="prodi" class="form-control" id="prodi"readonly >
+                            <select name="prodi" class="form-control" id="prodi">
                                 <option disabled >Pilih</option>
                                 <option value="Agribisnis">Agribisnis</option>
                                 <option value="Agroteknologi">Agroteknologi</option>
@@ -204,7 +204,7 @@
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="importLabel">Import Data Mahasiswa</h5>
+                <h5 class="modal-title" id="importLabel">File yang harus di import harus excel</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>

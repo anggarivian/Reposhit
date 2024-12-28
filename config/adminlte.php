@@ -329,6 +329,12 @@ return [
             'can'  => 'isMahasiswa',
         ],
         [
+            'text' => 'Ubah Password',
+            'url'  => 'home/ubah',
+            'icon' => 'fas fa-user-lock', // Ikon riwayat mencerminkan histori
+            'can'  => 'isMahasiswa',
+        ],
+        [
             'header' => 'LAPORAN SKRIPSI',
             'can'    => 'isMahasiswa',
         ],

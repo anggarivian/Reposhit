@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Imports\MahasiswaImport;
 use Illuminate\Support\Facades\Hash;
 use Maatwebsite\Excel\Facades\Excel;
+use Illuminate\Support\Facades\Auth;
 
 class MahasiswaController extends Controller
 {
@@ -119,26 +120,60 @@ class MahasiswaController extends Controller
         return redirect()->route('mahasiswa')->with($notification);
     }
 
-    public function toggleVerifikasi($id) {
-        $mahasiswa = User::find($id);
+    // public function toggleVerifikasi($id) {
+    //     $mahasiswa = User::find($id);
 
-        // Toggle status verifikasi
-        if ($mahasiswa->status == 0) {
-            $mahasiswa->status = 1;
-            $message = "Data Mahasiswa berhasil diverifikasi";
-        } else {
-            $mahasiswa->status = 0;
-            $message = "Data Mahasiswa berhasil dibatalkan verifikasinya";
-        }
+    //     // Toggle status verifikasi
+    //     if ($mahasiswa->status == 0) {
+    //         $mahasiswa->status = 1;
+    //         $message = "Data Mahasiswa berhasil diverifikasi";
+    //     } else {
+    //         $mahasiswa->status = 0;
+    //         $message = "Data Mahasiswa berhasil dibatalkan verifikasinya";
+    //     }
 
-        $mahasiswa->save();
+    //     $mahasiswa->save();
 
-        $success = true;
+    //     $success = true;
 
-        return response()->json([
-            'success' => $success,
-            'message' => $message,
-        ]);
+    //     return response()->json([
+    //         'success' => $success,
+    //         'message' => $message,
+    //     ]);
+    // }
+
+    // Tampilkan form ubah password
+    public function ubahPassword()
+{
+    return view('resetpassword'); // Pastikan Anda membuat view ini
+}
+
+public function updatePassword(Request $req)
+{
+    $customMessages = [
+        'password.required' => 'Password baru harus diisi.',
+        'password.string' => 'Password baru harus berupa teks.',
+        'password.min' => 'Password minimal harus memiliki 8 karakter.',
+        'password.confirmed' => 'Konfirmasi password tidak sesuai.',
+    ];
+
+    $req->validate([
+        'password' => 'required|string|min:8|confirmed',
+    ], $customMessages);
+
+    $mahasiswa = Auth::user();
+    if (!$mahasiswa) {
+        return redirect()->route('login')->withErrors(['message' => 'Anda harus login untuk mengubah password.']);
     }
 
+    $mahasiswa->password = Hash::make($req->password);
+    $mahasiswa->save();
+
+    $notification = [
+        'message' => 'Password berhasil diperbarui.',
+        'alert-type' => 'success',
+    ];
+
+    return redirect()->route('home')->with($notification);
+}
 }
