@@ -15,27 +15,15 @@ class CreateSkripsisTable extends Migration
     {
         Schema::create('skripsis', function (Blueprint $table) {
             $table->id();
-            // $table->string('id_user');
             $table->string('judul');
             $table->string('penulis');
             $table->string('dospem');
             $table->string('rilis');
             $table->string('halaman');
-            $table->string('cover');
-            $table->string('pengesahan');
-            $table->longtext('abstrak');
-            $table->string('daftarisi');
-            $table->string('daftargambar');
-            $table->string('daftarlampiran');
-            $table->string('bab1');
-            $table->string('bab2');
-            $table->string('bab3');
-            $table->string('bab4');
-            $table->string('bab5');
-            $table->string('dapus');
+            $table->longText('abstrak');
+            $table->string('file_skripsi');  // Menambahkan file_skripsi
             $table->boolean('status')->nullable();
-            $table->integer('views')->default(0); // Tambah kolom views
-            // $table->string('lampiran');
+            $table->integer('views')->default(0);
             $table->timestamps();
         });
     }

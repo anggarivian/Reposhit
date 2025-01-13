@@ -9,7 +9,6 @@
 @section('content')
 <div class="container-fluid">
     <div class="card card-default">
-    {{-- <div class="card-header">{{__(' ')}}</div> --}}
         <div class="card-body">
             <div class="d-flex justify-content-between mb-3">
             </div>
@@ -24,7 +23,7 @@
                         <th>Rilis</th>
                         <th>Status</th>
                         <th>Halaman</th>
-                        <th>tanggal dibuat</th>
+                        <th>Tanggal Dibuat</th>
                         <th>Opsi</th>
                     </tr>
                 </thead>
@@ -51,16 +50,17 @@
                             <div class="form-group" role="group" aria-label="Basic example">
                                 <a href="/admin/skripsi/detail/{{$skripsis->id}}">
                                     <button class="btn btn-sm btn-info">
-                                          <i class="fas fa-eye"> Lihat Skripsi</i> <!-- Ikon untuk Lihat Detail Skripsi -->
+                                          <i class="fas fa-eye"> Lihat Skripsi</i> 
                                     </button>
                                 </a>
-                                <button type="button" id="btn-edit-skripsi" class="btn btn-sm btn-success" data-toggle="modal" data-target="#edit" data-id="{{ $skripsis->id }}">
-                                    <i class="fas fa-edit"> Edit </i> <!-- Ikon untuk Edit -->
+                                <button type="button" id="btn-edit-skripsi" class="btn btn-sm btn-success" 
+                                    data-toggle="modal" data-target="#edit" data-id="{{ $skripsis->id }}">
+                                    <i class="fas fa-edit"> Edit </i>
                                 </button>
                                 <button type="button" class="btn btn-sm btn-danger" onclick="deleteConfirmation('{{$skripsis->id}}' , '{{$skripsis->judul}}' )">
-                                    <i class="fas fa-trash-alt"> Hapus  </i> <!-- Ikon untuk Hapus Favorite -->
+                                    <i class="fas fa-trash-alt"> Hapus </i>
                                 </button>
-                                <button type="button" class="btn btn-sm btn-info" onclick="verifikasiConfirmation('{{$skripsis->id}}' , '{{$skripsis->name}}' )">
+                                <button type="button" class="btn btn-sm btn-info" onclick="verifikasiConfirmation('{{$skripsis->id}}' , '{{$skripsis->judul}}' )">
                                     <i class="fas fa-check-circle"> Verifikasi</i>
                                 </button>
                             </div>
@@ -80,129 +80,59 @@
                 <div class="modal-header">
                     <h5 class="modal-title" id="exampleModalLabel">Edit Data Skripsi</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
+                        <span aria-hidden="true">&times;</span>
+                    </button>
                 </div>
-                <form method="post" action="{{ route('edit.skripsi')}}" enctype="multipart/form-data">
+                <form method="post" action="{{ route('edit.skripsi') }}" enctype="multipart/form-data">
                     @csrf
-                    @method ('PATCH')
+                    @method('PATCH')
                     <div class="modal-body">
-                        <input type="text" class="form-control" name="id" id="edit-id" hidden>
+                        <input type="hidden" class="form-control" name="id" id="edit-id">
                         <div class="form-group">
                             <label for="judul">Judul</label>
                             <input type="text" class="form-control" name="judul" id="edit-judul" required placeholder="Masukkan Judul Skripsi">
                         </div>
                         <div class="form-group">
                             <label for="abstrak">Abstrak</label>
-                            <input type="text" class="form-control" name="abstrak" id="old-abstrak" required placeholder="Masukkan Abstrak">
-                        </div>
-                        <div class="form-group">
-                            <label for="penulis">penulis</label>
-                            <input type="text" class="form-control" name="penulis" id="edit-penulis" required placeholder="Masukkan penulis Skripsi"readonly>
+                            <textarea class="form-control" name="abstrak" id="edit-abstrak" required placeholder="Masukkan Abstrak"></textarea>
                         </div>
                         <div class="d-flex" style="margin: -7px">
-                            <div class="form-group col-md-4">
-                            <label for="dospem">Dosen Pembimbing</label>
-                            <select name="dospem" class="form-control" id="edit-dospem">
-                                <option selected >Pilih</option>
-                                @foreach ($namaDospem as $nama)
-                                    <option value="{{$nama->nama}}" >{{$nama->nama}}</option>
-                                @endforeach
-                            </select>
+                            <div class="form-group col-md-3">
+                                <label for="penulis">Penulis</label>
+                                <input type="text" class="form-control" name="penulis" id="penulis" value="{{ Auth::user()->name }}" readonly>
                             </div>
-                            <div class="form-group col-md-4">
+                            <div class="form-group col-md-3">
+                                <label for="dospem">Dosen Pembimbing</label>
+                                <select name="dospem" class="form-control" id="edit-dospem">
+                                    <option selected>Pilih</option>
+                                    @foreach ($namaDospem as $nama)
+                                        <option value="{{$nama->nama}}">{{$nama->nama}}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <div class="form-group col-md-3">
                                 <label for="rilis">Rilis Pada Tahun</label>
                                 <input type="text" class="form-control" name="rilis" id="edit-rilis" required placeholder="Harus 4 Angka">
                             </div>
-                            <div class="form-group col-md-4">
+                            <div class="form-group col-md-3">
                                 <label for="halaman">Halaman</label>
                                 <input type="text" class="form-control" name="halaman" id="edit-halaman" required placeholder="Masukkan Jumlah Halaman">
                             </div>
                         </div>
-                        <div class="d-flex" style="margin: -7px">
-                            <div class="form-group col-md-4">
-                                <label for="cover">Pilih Cover (Maks. 2 MB) :</label>
-                                <input type="file" class="form-control" style="padding-bottom: 37px" name="cover" id="edit-cover">
-                                <div class="form-group" id="cover-area"></div>
-                            </div>
-                            <div class="form-group col-md-4">
-                                <label for="pengesahan">Pilih Pengesahan (Maks. 2 MB) :</label>
-                                <input type="file" class="form-control" style="padding-bottom: 37px" name="pengesahan" id="edit-pengesahan">
-                                <div class="form-group" id="pengesahan-area"></div>
-                            </div>
-                            <div class="form-group col-md-4">
-                                <label for="abstrak">Pilih Abstrak (Maks. 2 MB) :</label>
-                                <input type="file" class="form-control" style="padding-bottom: 37px" name="abstrak" id="edit-abstrak">
-                                <div class="form-group" id="abstrak-area"></div>
-                            </div>
+                        <!-- Form untuk Mengganti File Skripsi -->
+                        <div id="file-upload-area" class="mb-3" style="display:none;">
+                            <label for="edit-file_skripsi" class="form-label">Pilih File Skripsi Baru</label>
+                            <input type="file" class="form-control" id="edit-file_skripsi" name="file_skripsi">
                         </div>
-                        <div class="d-flex" style="margin: -7px">
-                            <div class="form-group col-md-4">
-                                <label for="daftarisi">Pilih Daftar Isi (Maks. 2 MB) :</label>
-                                <input type="file" class="form-control" style="padding-bottom: 37px" name="daftarisi" id="edit-daftarisi">
-                                <div class="form-group" id="daftarisi-area"></div>
-                            </div>
-                            <div class="form-group col-md-4">
-                                <label for="daftargambar">Pilih Daftar Gambar (Maks. 2 MB) :</label>
-                                <input type="file" class="form-control" style="padding-bottom: 37px" name="daftargambar" id="edit-daftargambar">
-                                <div class="form-group" id="daftargambar-area"></div>
-                            </div>
-                            <div class="form-group col-md-4">
-                                <label for="daftarlampiran">Pilih Lampiran (Maks. 2 MB) :</label>
-                                <input type="file" class="form-control" style="padding-bottom: 37px" name="daftarlampiran" id="edit-daftarlampiran">
-                                <div class="form-group" id="daftarlampiran-area"></div>
-                            </div>
+                        <!-- Status File Skripsi -->
+                        <div id="file_skripsi-area" class="mb-3">
+                            <!-- Teks ini akan diubah oleh JavaScript berdasarkan status file -->
                         </div>
-                        <div class="d-flex" style="margin: -7px">
-                            <div class="form-group col-md-4">
-                                <label for="bab1">Pilih BAB 1 (Maks. 2 MB) :</label>
-                                <input type="file" class="form-control" style="padding-bottom: 37px" name="bab1" id="edit-bab1">
-                                <div class="form-group" id="bab1-area"></div>
-                            </div>
-                            <div class="form-group col-md-4">
-                                <label for="bab2">Pilih BAB 2 (Maks. 2 MB) :</label>
-                                <input type="file" class="form-control" style="padding-bottom: 37px" name="bab2" id="edit-bab2">
-                                <div class="form-group" id="bab2-area"></div>
-                            </div>
-                            <div class="form-group col-md-4">
-                                <label for="bab3">Pilih Bab 3 (Maks. 2 MB) :</label>
-                                <input type="file" class="form-control" style="padding-bottom: 37px" name="bab3" id="edit-bab3">
-                                <div class="form-group" id="bab3-area"></div>
-                            </div>
+                        <div class="modal-footer">
+                            <input type="text" name="old_file_skripsi" id="edit-old-file_skripsi" hidden />
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                            <button type="submit" class="btn btn-primary">Ubah Data</button>
                         </div>
-                        <div class="d-flex" style="margin: -7px">
-                            <div class="form-group col-md-4">
-                                <label for="bab4">Pilih bab 4 (Maks. 2 MB) :</label>
-                                <input type="file" class="form-control" style="padding-bottom: 37px" name="bab4" id="edit-bab4">
-                                <div class="form-group" id="bab4-area"></div>
-                            </div>
-                            <div class="form-group col-md-4">
-                                <label for="bab5">Pilih Bab5 (Maks. 2 MB) :</label>
-                                <input type="file" class="form-control" style="padding-bottom: 37px" name="bab5" id="edit-bab5">
-                                <div class="form-group" id="bab5-area"></div>
-                            </div>
-                            <div class="form-group col-md-4">
-                                <label for="dapus">Pilih Daftar Pustaka (Maks. 2 MB) :</label>
-                                <input type="file" class="form-control" style="padding-bottom: 37px" name="dapus" id="edit-dapus">
-                                <div class="form-group" id="dapus-area"></div>
-                            </div>
-                        </div>
-                    <div class="modal-footer">
-                        <input type="text" name="old_cover" id="edit-old-cover" hidden/>
-                        <input type="text" name="old_pengesahan" id="edit-old-pengesahan" hidden/>
-                        <input type="text" name="old_abstrak" id="edit-old-abstrak" hidden/>
-                        <input type="text" name="old_daftarisi" id="edit-old-daftarisi" hidden/>
-                        <input type="text" name="old_daftargambar" id="edit-old-daftargambar" hidden/>
-                        <input type="text" name="old_daftarlampiran" id="edit-old-daftarlampiran" hidden/>
-                        <input type="text" name="old_bab1" id="edit-old-bab1" hidden/>
-                        <input type="text" name="old_bab2" id="edit-old-bab2" hidden/>
-                        <input type="text" name="old_bab3" id="edit-old-bab3" hidden/>
-                        <input type="text" name="old_bab4" id="edit-old-bab4" hidden/>
-                        <input type="text" name="old_bab5" id="edit-old-bab5" hidden/>
-                        <input type="text" name="old_dapus" id="edit-old-dapus" hidden/>
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                        <button type="submit" class="btn btn-primary">Ubah Data</button>
-                    </div>
                 </form>
             </div>
         </div>
@@ -210,175 +140,109 @@
 @stop
 
 @section('js')
-
 <script>
-        $(function(){
-            $(document).on('click','#btn-edit-skripsi', function(){
-                let id = $(this).data('id');
-                $('#image-area').empty();
+    $(function(){
+        $(document).on('click', '#btn-edit-skripsi', function () {
+            let id = $(this).data('id');
+            $('#file_skripsi-area').empty(); // Kosongkan elemen sebelum diisi ulang
+            $('#file-upload-area').hide(); // Sembunyikan area upload file saat modal dibuka
 
-                $.ajax({
-                    type: "get",
-                    url: "{{url('/admin/ajaxadmin/dataSkripsi')}}/"+id,
-                    dataType: 'json',
-                    success: function(res){
-                        $('#edit-judul').val(res.judul);
-                        $('#edit-penulis').val(res.penulis);
-                        $('#edit-id').val(res.id);
-                        $('#edit-dospem').val(res.dospem);
-                        $('#edit-rilis').val(res.rilis);
-                        $('#edit-volume').val(res.volume);
-                        $('#edit-halaman').val(res.halaman);
-                        $('#old-cover').val(res.cover);
-                        $('#old-pengesahan').val(res.pengesahan);
-                        $('#old-abstrak').val(res.abstrak);
-                        $('#old-daftarisi').val(res.daftarisi);
-                        $('#old-daftargambar').val(res.daftargambar);
-                        $('#old-daftarlampiran').val(res.daftarlampiran);
-                        $('#old-bab1').val(res.bab1);
-                        $('#old-bab2').val(res.bab2);
-                        $('#old-bab3').val(res.bab3);
-                        $('#old-bab4').val(res.bab4);
-                        $('#old-bab5').val(res.bab5);
-                        $('#old-dapus').val(res.dapus);
+            $.ajax({
+                type: "GET",
+                url: "{{ url('admin/ajaxskripsi/dataSkripsi') }}/" + id,
+                dataType: 'json',
+                success: function (res) {
+                    $('#edit-id').val(res.id);
+                    $('#edit-judul').val(res.judul);
+                    $('#edit-abstrak').val(res.abstrak);
+                    $('#edit-dospem').val(res.dospem);
+                    $('#edit-rilis').val(res.rilis);
+                    $('#edit-halaman').val(res.halaman);
+                    $('#edit-old-file_skripsi').val(res.file_skripsi);
 
-                        if (res.cover !== null) {
-                            $('#cover-area').append('[Cover tersedia]');
-                        } else {
-                            $('#cover-area').append('[Cover tidak tersedia]');
-                        }
-                        if (res.pengesahan !== null) {
-                            $('#pengesahan-area').append('[Pengesahan tersedia]');
-                        } else {
-                            $('#pengesahan-area').append('[Pengesahan tidak tersedia]');
-                        }
-                        if (res.abstrak !== null) {
-                            $('#abstrak-area').append('[Abstrak tersedia]');
-                        } else {
-                            $('#abstrak-area').append('[Abstrak tidak tersedia]');
-                        }
-                        if (res.daftarisi !== null) {
-                            $('#daftarisi-area').append('[Daftarisi tersedia]');
-                        } else {
-                            $('#daftarisi-area').append('[Daftarisi tidak tersedia]');
-                        }
-                        if (res.daftargambar !== null) {
-                            $('#daftargambar-area').append('[Daftargambar tersedia]');
-                        } else {
-                            $('#daftargambar-area').append('[Daftargambar tidak tersedia]');
-                        }
-                        if (res.daftarlampiran !== null) {
-                            $('#daftarlampiran-area').append('[Daftarlampiran tersedia]');
-                        } else {
-                            $('#daftarlampiran-area').append('[Daftarlampiran tidak tersedia]');
-                        }
-                        if (res.bab1 !== null) {
-                            $('#bab1-area').append('[Bab 1 tersedia]');
-                        } else {
-                            $('#bab1-area').append('[Bab 1 tidak tersedia]');
-                        }
-                        if (res.bab2 !== null) {
-                            $('#bab2-area').append('[Bab 2 tersedia]');
-                        } else {
-                            $('#bab2-area').append('[Bab 2 tidak tersedia]');
-                        }
-                        if (res.bab3 !== null) {
-                            $('#bab3-area').append('[Bab 3 tersedia]');
-                        } else {
-                            $('#bab3-area').append('[Bab 3 tidak tersedia]');
-                        }
-                        if (res.bab4 !== null) {
-                            $('#bab4-area').append('[Bab 4 tersedia]');
-                        } else {
-                            $('#bab4-area').append('[Bab 4 tidak tersedia]');
-                        }
-                        if (res.bab5 !== null) {
-                            $('#bab5-area').append('[Bab 5 tersedia]');
-                        } else {
-                            $('#bab5-area').append('[Bab 5 tidak tersedia]');
-                        }
-                        if (res.dapus !== null) {
-                            $('#dapus-area').append('[Daftar Pustaka tersedia]');
-                        } else {
-                            $('#dapus-area').append('[Daftar Pustaka tidak tersedia]');
-                        }
-                    },
-                });
+                    // Menampilkan status file skripsi
+                    if (res.file_skripsi) {
+                        $('#file_skripsi-area').html('<span class="text-success">File Tersedia: ' + res.file_skripsi + '</span>');
+                        $('#file-upload-area').show(); // Menampilkan form upload file jika file tersedia
+                    } else {
+                        $('#file_skripsi-area').html('<span class="text-danger">File Tidak Tersedia</span>');
+                    }
+                },
+                error: function () {
+                    alert("Gagal mengambil data!");
+                }
             });
         });
+    });
 
-        function deleteConfirmation(id,judul) {
-            swal.fire({
-                title: "Hapus?",
-                type: 'warning',
-                text: "Apakah anda yakin akan menghapus Skripsi dengan Judul " +judul+"?!",
-                showCancelButton: !0,
-                confirmButtonText: "Ya, lakukan!",
-                cancelButtonText: "Tidak, batalkan!",
-
-            }).then (function (e) {
-                if (e.value === true) {
-                    var CSRF_TOKEN = $('meta[name="csrf-token"]').attr('content');
-                    $.ajax({
-                        type: 'GET',
-                        url: "{{url('/admin/skripsi/hapus')}}/"+id,
-                        data: {_token: CSRF_TOKEN},
-                        dataType: 'JSON',
-                        success: function (results) {
-                            if (results.success === true) {
-                                swal.fire("Done!", results.message, "success");
-                                setTimeout(function(){
-                                    location.reload();
-                                },1000);
-                            } else {
-                                swal.fire("Error!", results.message, "error");
-                            }
+    function deleteConfirmation(id,judul) {
+        swal.fire({
+            title: "Hapus?",
+            type: 'warning',
+            text: "Apakah anda yakin akan menghapus Skripsi dengan Judul " +judul+"?!",
+            showCancelButton: !0,
+            confirmButtonText: "Ya, lakukan!",
+            cancelButtonText: "Tidak, batalkan!",
+        }).then (function (e) {
+            if (e.value === true) {
+                var CSRF_TOKEN = $('meta[name="csrf-token"]').attr('content');
+                $.ajax({
+                    type: 'GET',
+                    url: "{{url('/admin/skripsi/hapus')}}/"+id,
+                    data: {_token: CSRF_TOKEN},
+                    dataType: 'JSON',
+                    success: function (results) {
+                        if (results.success === true) {
+                            swal.fire("Done!", results.message, "success");
+                            setTimeout(function(){
+                                location.reload();
+                            },1000);
+                        } else {
+                            swal.fire("Error!", results.message, "error");
                         }
-                    });
-                } else {
-                    e.dismiss;
-                }
-            }, function (dismiss) {
-                return false;
-            })
-        }
+                    }
+                });
+            } else {
+                e.dismiss;
+            }
+        }, function (dismiss) {
+            return false;
+        })
+    }
 
-        function verifikasiConfirmation(id,name) {
-            swal.fire({
-                title: "Verifikasi akun Skripsi?",
-                type: 'warning',
-                text: "Apakah anda ingin memverifikasi skripsi tersebut " +name+"?",
-                showCancelButton: !0,
-                confirmButtonText: "Ya, lakukan!",
-                cancelButtonText: "Tidak, batalkan!",
-
-            }).then (function (e) {
-                if (e.value === true) {
-                    var CSRF_TOKEN = $('meta[name="csrf-token"]').attr('content');
-                    $.ajax({
-                        type: 'GET',
-                        url: "{{url('/admin/skripsi/verifikasi')}}/"+id,
-                        data: {_token: CSRF_TOKEN},
-                        dataType: 'JSON',
-                        success: function (results) {
-                            console.log(results);
-
-                            if (results.success === true) {
-                                swal.fire("Done!", results.message, "success");
-                                setTimeout(function(){
-                                    location.reload();
-                                },1000);
-                            } else {
-                                swal.fire("Error!", results.message, "error");
-                            }
+    function verifikasiConfirmation(id,name) {
+        swal.fire({
+            title: "Verifikasi akun Skripsi?",
+            type: 'warning',
+            text: "Apakah anda ingin memverifikasi skripsi tersebut " +name+"?",
+            showCancelButton: !0,
+            confirmButtonText: "Ya, lakukan!",
+            cancelButtonText: "Tidak, batalkan!",
+        }).then (function (e) {
+            if (e.value === true) {
+                var CSRF_TOKEN = $('meta[name="csrf-token"]').attr('content');
+                $.ajax({
+                    type: 'GET',
+                    url: "{{url('/admin/skripsi/verifikasi')}}/"+id,
+                    data: {_token: CSRF_TOKEN},
+                    dataType: 'JSON',
+                    success: function (results) {
+                        if (results.success === true) {
+                            swal.fire("Done!", results.message, "success");
+                            setTimeout(function(){
+                                location.reload();
+                            },1000);
+                        } else {
+                            swal.fire("Error!", results.message, "error");
                         }
-                    });
-                } else {
-                    e.dismiss;
-                }
-            }, function (dismiss) {
-                return false;
-            })
-        }
+                    }
+                });
+            } else {
+                e.dismiss;
+            }
+        }, function (dismiss) {
+            return false;
+        })
+    }
 </script>
 @stop

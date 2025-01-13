@@ -34,27 +34,12 @@ class LoginController extends Controller
 
     // ...
 
-    protected function attemptLogin(Request $request)
-    {
+    protected function attemptLogin(Request $request) {
         $field = filter_var($request->input('email'), FILTER_VALIDATE_EMAIL) ? 'email' : 'npm';
 
-        $credentials = [
+        return Auth::attempt([
             $field => $request->input('email'),
             'password' => $request->input('password'),
-        ];
-
-        // Cek status verifikasi dan role
-        $user = \App\Models\User::where($field, $request->input('email'))->first();
-        if ($user && $user->roles_id == 2 && $user->status == 0) {
-            // Jika role_id adalah 2 (mahasiswa) dan status = 0 (belum diverifikasi)
-            return redirect()->back()->with('error', 'Akun Anda belum diverifikasi oleh admin.');
-        }
-
-        if (Auth::attempt($credentials, $request->filled('remember'))) {
-            $request->session()->regenerate();
-            return redirect()->intended($this->redirectPath())->with('success', 'Selamat datang, Anda berhasil login.');
-        }
-
-        return redirect()->back()->with('error', 'Login gagal, silakan periksa kembali kredensial Anda.');
+        ], $request->filled('remember'));
     }
 }

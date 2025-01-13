@@ -72,56 +72,26 @@
                         <td>{{ $skripsi->halaman }}</td>
                     </tr>
                 </table>
+                {{-- Menampilkan file skripsi dalam iframe --}}
                 <hr>
-
-{{-- Combo box untuk menampilkan/menyembunyikan iframe --}}
-<div class="form-group">
-    <label for="selectPdf">Pilih bagian untuk melihat PDF:</label>
-    <select class="form-control" id="selectPdf">
-        <option value="">-- Pilih bagian --</option>
-        @foreach($pdfs as $attribute => $pdf)
-            @php
-                $label = $attribute == 'dapus'
-                    ? ''
-                    : (strpos($attribute, 'bab') === 0
-                        ? 'Bab ' . [
-                            'bab1' => 'I',
-                            'bab2' => 'II',
-                            'bab3' => 'III',
-                            'bab4' => 'IV',
-                            'bab5' => 'V',
-                        ][$attribute] ?? $attribute
-                        : ucfirst($attribute));
-            @endphp
-            <option value="{{ $attribute }}">{{ $label }}</option>
-        @endforeach
-    </select>
-</div>
-
-{{-- Menampilkan semua PDF --}}
-@foreach($pdfs as $attribute => $pdf)
-    @php
-        $label = ucfirst($attribute);
-    @endphp
-    <h2 id="{{ $attribute }}Header" style="display: none;" class="text-center">{{ ucfirst($label) }}</h2>
-    <iframe id="{{ $attribute }}Frame" src="data:application/pdf;base64,{{ $pdf }}#toolbar=0&navpanes=0&view=Fit" width="100%" height="700px" style="display: none; border: 1px solid #ccc; border-radius: 4px;"></iframe>
-@endforeach
-
-<button class="btn btn-secondary mt-3" id="closePdfButton" style="display: none;">Tutup PDF</button>
-
-<hr>
-
-
-                {{-- Menampilkan semua PDF --}}
-                @foreach($pdfs as $attribute => $pdf)
-                    <h2 id="{{ $attribute }}Header" style="display: none;" class="text-center">{{ ucfirst($label) }}</h2>
-                    <iframe id="{{ $attribute }}Frame" src="data:application/pdf;base64,{{ $pdf }}#toolbar=0&navpanes=0&view=Fit" width="100%" height="700px" style="display: none; border: 1px solid #ccc; border-radius: 4px;"></iframe>
-                @endforeach
-
-                <button class="btn btn-secondary mt-3" id="closePdfButton" style="display: none;">Tutup PDF</button>
-
+                @if($skripsi->file_skripsi)
+                    <div id="pdf-container" style="position: relative;">
+                        <iframe 
+                            id="pdfFrame" 
+                            src="{{ asset('storage/skripsi_files/' . $skripsi->file_skripsi) }}#toolbar=0" 
+                            width="100%" 
+                            height="600px" 
+                            style="border: none;">
+                            <p>Your browser does not support iframes.</p>
+                        </iframe>
+                        <button id="fullscreenButton" class="btn btn-secondary mt-2" style="position: absolute; top: 10px; right: 10px;">
+                            Fullscreen
+                        </button>
+                    </div>
+                @else
+                    <p>File skripsi tidak ditemukan.</p>
+                @endif
                 <hr>
-
                 <div class="btn-group">
                     @if(auth()->user()->favorites()->where('id_skripsi', $skripsi->id)->exists())
                         <!-- Button untuk menghapus favorite -->
@@ -278,25 +248,19 @@ document.addEventListener('DOMContentLoaded', function () {
             alert.style.display = 'none';
         }, 5000); // Menutup notifikasi setelah 5 detik
     });
+    // Fullscreen untuk PDF
+    const fullscreenButton = document.getElementById('fullscreenButton');
+    const pdfFrame = document.getElementById('pdfFrame');
 
-    // Script untuk menampilkan/mengatur tampilan PDF
-    const selectPdf = document.getElementById('selectPdf');
-    const closePdfButton = document.getElementById('closePdfButton');
-
-    selectPdf.addEventListener('change', function () {
-        const selectedValue = selectPdf.value;
-
-        // Sembunyikan semua iframe dan header terlebih dahulu
-        document.querySelectorAll('iframe').forEach(iframe => iframe.style.display = 'none');
-        document.querySelectorAll('h2[id$="Header"]').forEach(header => header.style.display = 'none');
-
-        // Jika ada nilai yang dipilih, tampilkan iframe dan header yang sesuai
-        if (selectedValue) {
-            document.getElementById(`${selectedValue}Frame`).style.display = 'block';
-            document.getElementById(`${selectedValue}Header`).style.display = 'block';
-            closePdfButton.style.display = 'inline-block';
-        } else {
-            closePdfButton.style.display = 'none';
+    fullscreenButton.addEventListener('click', function () {
+        if (pdfFrame.requestFullscreen) {
+            pdfFrame.requestFullscreen();
+        } else if (pdfFrame.mozRequestFullScreen) { // Firefox
+            pdfFrame.mozRequestFullScreen();
+        } else if (pdfFrame.webkitRequestFullscreen) { // Chrome, Safari, Opera
+            pdfFrame.webkitRequestFullscreen();
+        } else if (pdfFrame.msRequestFullscreen) { // IE/Edge
+            pdfFrame.msRequestFullscreen();
         }
     });
 
@@ -322,6 +286,7 @@ document.addEventListener('DOMContentLoaded', function () {
         komentarUtamaForm.style.display = 'none';
         btnKomentarUtama.style.display = 'inline-block';
     });
+    
 });
     </script>
 @stop

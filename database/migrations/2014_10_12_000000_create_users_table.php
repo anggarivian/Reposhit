@@ -18,7 +18,7 @@ class CreateUsersTable extends Migration
             $table->string('npm')->unique();
             $table->string('name');
             // $table->string('email')->unique();
-            $table->boolean('status')->nullable();
+            // $table->boolean('status')->nullable();
             $table->string('tgl_lahir');
             $table->string('alamat');
             $table->string('angkatan');

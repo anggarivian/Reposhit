@@ -64,8 +64,7 @@ class SkripsiController extends Controller
     }
 
     // Tambah Data Skripsi ----------------------------------------------------------------------------------------------
-    public function tambah(Request $req){
-
+    public function tambah(Request $req) {
         // Validasi Data Skripsi ----------------------------------------------------------------
         $req->validate([
             'judul' => 'required|string|max:200',
@@ -74,261 +73,156 @@ class SkripsiController extends Controller
             'dospem' => 'required|string|max:30',
             'rilis' => 'required|max:4|min:4',
             'halaman' => 'required|min:1',
-            'cover' => 'nullable|mimes:pdf|max:2048',
-            'pengesahan' => 'nullable|mimes:pdf|max:2048',
-            'daftarisi' => 'nullable|mimes:pdf|max:2048',
-            'daftargambar' => 'nullable|mimes:pdf|max:2048',
-            'daftarlampiran' => 'nullable|mimes:pdf|max:2048',
-            'bab1' => 'nullable|mimes:pdf|max:2048',
-            'bab2' => 'nullable|mimes:pdf|max:2048',
-            'bab3' => 'nullable|mimes:pdf|max:2048',
-            'bab4' => 'nullable|mimes:pdf|max:2048',
-            'bab5' => 'nullable|mimes:pdf|max:2048',
-            'dapus' => 'nullable|mimes:pdf|max:2048',
-            // 'lampiran' => 'nullable|mimes:pdf|max:2048',
+            'file_skripsi' => 'required|mimes:pdf|max:10240', // max 10 MB
         ]);
-
+    
         // Create Data Skripsi ------------------------------------------------------------------
         $skripsi = new Skripsi;
-
         $skripsi->judul = $req->get('judul');
         $skripsi->penulis = Auth::user()->name;
         $skripsi->abstrak = $req->get('abstrak');
         $skripsi->dospem = $req->get('dospem');
         $skripsi->rilis = $req->get('rilis');
         $skripsi->halaman = $req->get('halaman');
-
-        function uploadFile($req, $fieldName, $storagePath){
+    
+        // Upload File Skripsi
+        function uploadFile($req, $fieldName, $storagePath) {
             if ($req->hasFile($fieldName)) {
                 $extension = $req->file($fieldName)->extension();
-                $filename = $fieldName . '_skripsi' . time() . '.' . $extension;
+                $filename = $fieldName . '_skripsi_' . time() . '.' . $extension;
                 $req->file($fieldName)->storeAs('public/' . $storagePath, $filename);
                 return $filename;
             }
             return null;
         }
-
-        $skripsi->cover = uploadFile($req, 'cover', 'cover_skripsi');
-        $skripsi->pengesahan = uploadFile($req, 'pengesahan', 'pengesahan_skripsi');
-        $skripsi->daftarisi = uploadFile($req, 'daftarisi', 'daftarisi_skripsi');
-        $skripsi->daftargambar = uploadFile($req, 'daftargambar', 'daftargambar_skripsi');
-        $skripsi->daftarlampiran = uploadFile($req, 'daftarlampiran', 'daftarlampiran_skripsi');
-        $skripsi->bab1 = uploadFile($req, 'bab1', 'bab1_skripsi');
-        $skripsi->bab2 = uploadFile($req, 'bab2', 'bab2_skripsi');
-        $skripsi->bab3 = uploadFile($req, 'bab3', 'bab3_skripsi');
-        $skripsi->bab4 = uploadFile($req, 'bab4', 'bab4_skripsi');
-        $skripsi->bab5 = uploadFile($req, 'bab5', 'bab5_skripsi');
-        $skripsi->dapus = uploadFile($req, 'dapus', 'dapus_skripsi');
-        // $skripsi->lampiran = uploadFile($req, 'lampiran', 'dapus_skripsi');
+    
+        $skripsi->file_skripsi = uploadFile($req, 'file_skripsi', 'skripsi_files');
         $skripsi->save();
+    
         $notification = array(
-            'message' =>'Data Skripsi berhasil ditambahkan', 'alert-type' =>'success'
+            'message' => 'Data Skripsi berhasil ditambahkan', 'alert-type' => 'success'
         );
+    
         return redirect()->route('skripsi')->with($notification);
     }
-    // Tambah Data Skripsi ----------------------------------------------------------------------------------------------
-    // public function tambah1(Request $req){
-
-    //     // Validasi Data Skripsi ----------------------------------------------------------------
-    //     $req->validate([
-    //         'judul' => 'required|string|max:200',
-    //         'penulis' => 'required|string|max:30',
-    //         'abstrak' => 'required|string',
-    //         'dospem' => 'required|string|max:30',
-    //         'rilis' => 'required|max:4|min:4',
-    //         'halaman' => 'required|min:1',
-    //         'cover' => 'nullable|mimes:pdf|max:2048',
-    //         'pengesahan' => 'nullable|mimes:pdf|max:2048',
-    //         'daftarisi' => 'nullable|mimes:pdf|max:2048',
-    //         'daftargambar' => 'nullable|mimes:pdf|max:2048',
-    //         'daftarlampiran' => 'nullable|mimes:pdf|max:2048',
-    //         'bab1' => 'nullable|mimes:pdf|max:2048',
-    //         'bab2' => 'nullable|mimes:pdf|max:2048',
-    //         'bab3' => 'nullable|mimes:pdf|max:2048',
-    //         'bab4' => 'nullable|mimes:pdf|max:2048',
-    //         'bab5' => 'nullable|mimes:pdf|max:2048',
-    //         'dapus' => 'nullable|mimes:pdf|max:2048',
-    //         // 'lampiran' => 'nullable|mimes:pdf|max:2048',
-    //     ]);
-
-    //     // Create Data Skripsi ------------------------------------------------------------------
-    //     $skripsi = new Skripsi;
-
-    //     $skripsi->judul = $req->get('judul');
-    //     $skripsi->penulis = Auth::user()->name;
-    //     $skripsi->abstrak = $req->get('abstrak');
-    //     $skripsi->dospem = $req->get('dospem');
-    //     $skripsi->rilis = $req->get('rilis');
-    //     $skripsi->halaman = $req->get('halaman');
-
-    //     function uploadFile($req, $fieldName, $storagePath){
-    //         if ($req->hasFile($fieldName)) {
-    //             $extension = $req->file($fieldName)->extension();
-    //             $filename = $fieldName . '_skripsi' . time() . '.' . $extension;
-    //             $req->file($fieldName)->storeAs('public/' . $storagePath, $filename);
-    //             return $filename;
-    //         }
-    //         return null;
-    //     }
-
-    //     $skripsi->cover = uploadFile($req, 'cover', 'cover_skripsi');
-    //     $skripsi->pengesahan = uploadFile($req, 'pengesahan', 'pengesahan_skripsi');
-    //     $skripsi->daftarisi = uploadFile($req, 'daftarisi', 'daftarisi_skripsi');
-    //     $skripsi->daftargambar = uploadFile($req, 'daftargambar', 'daftargambar_skripsi');
-    //     $skripsi->daftarlampiran = uploadFile($req, 'daftarlampiran', 'daftarlampiran_skripsi');
-    //     $skripsi->bab1 = uploadFile($req, 'bab1', 'bab1_skripsi');
-    //     $skripsi->bab2 = uploadFile($req, 'bab2', 'bab2_skripsi');
-    //     $skripsi->bab3 = uploadFile($req, 'bab3', 'bab3_skripsi');
-    //     $skripsi->bab4 = uploadFile($req, 'bab4', 'bab4_skripsi');
-    //     $skripsi->bab5 = uploadFile($req, 'bab5', 'bab5_skripsi');
-    //     $skripsi->dapus = uploadFile($req, 'dapus', 'dapus_skripsi');
-    //     // $skripsi->lampiran = uploadFile($req, 'lampiran', 'dapus_skripsi');
-    //     $skripsi->save();
-    //     $notification = array(
-    //         'message' =>'Data Skripsi berhasil ditambahkan', 'alert-type' =>'success'
-    //     );
-    //     return redirect()->route('skripsiadmin')->with($notification);
-    // }
+    
+    
 
     // Ubah Data Skripsi ----------------------------------------------------------------------------------------------
     public function ubah(Request $req) {
-
-        // Validasi Data Skripsi ----------------------------------------------------------------
+        // Validasi Data Skripsi
         $req->validate([
             'judul' => 'required|string|max:200',
             'penulis' => 'required|string|max:30',
             'abstrak' => 'required|string',
             'dospem' => 'required|string|max:30',
-            'rilis' => 'required|max:4|min:4',
-            'halaman' => 'required|min:1',
-            'cover' => 'nullable|mimes:pdf|max:2048',
-            'pengesahan' => 'nullable|mimes:pdf|max:2048',
-            'daftarisi' => 'nullable|mimes:pdf|max:2048',
-            'daftargambar' => 'nullable|mimes:pdf|max:2048',
-            'daftarlampiran' => 'nullable|mimes:pdf|max:2048',
-            'bab1' => 'nullable|mimes:pdf|max:2048',
-            'bab2' => 'nullable|mimes:pdf|max:2048',
-            'bab3' => 'nullable|mimes:pdf|max:2048',
-            'bab4' => 'nullable|mimes:pdf|max:2048',
-            'bab5' => 'nullable|mimes:pdf|max:2048',
-            'dapus' => 'nullable|mimes:pdf|max:2048',
+            'rilis' => 'required|string',
+            'halaman' => 'required|integer',
+            'file_skripsi' => 'nullable|file|mimes:pdf|max:10240', // Validasi file (optional)
         ]);
-
-        // Update Data Skripsi ------------------------------------------------------------------
-        $skripsi = Skripsi::find($req->get('id'));
-
-        $skripsi->judul = $req->get('judul');
-        $skripsi->penulis = $req->get('penulis');
-        $skripsi->abstrak = $req->get('abstrak');
-        $skripsi->dospem = $req->get('dospem');
-        $skripsi->rilis = $req->get('rilis');
-        $skripsi->halaman = $req->get('halaman');
-
-        function uploadFile($req, $fieldName, $storagePath, $oldFileName = null){
-            if ($req->hasFile($fieldName)) {
-                $extension = $req->file($fieldName)->extension();
-                $filename = $fieldName . '_skripsi' . time() . '.' . $extension;
-                $req->file($fieldName)->storeAs('public/' . $storagePath, $filename);
-                // Delete old file
-                if($oldFileName) {
-                    Storage::delete('public/' . $storagePath . '/' . $oldFileName);
-                }
-                return $filename;
+    
+        $skripsi = Skripsi::findOrFail($req->id);
+        
+        // Jika ada file baru yang diupload, hapus file lama dan simpan yang baru
+        if ($req->hasFile('file_skripsi')) {
+            // Hapus file lama jika ada
+            if ($skripsi->file_skripsi && file_exists(storage_path('app/public/skripsi_files/' . $skripsi->file_skripsi))) {
+                unlink(storage_path('app/public/skripsi_files/' . $skripsi->file_skripsi));
             }
-            return $oldFileName;
+    
+            // Simpan file baru
+            $file = $req->file('file_skripsi');
+            $fileName = time() . '_' . $file->getClientOriginalName();
+            $file->storeAs('public/skripsi_files', $fileName);
+    
+            $skripsi->file_skripsi = $fileName;
         }
-
-        $skripsi->cover = uploadFile($req, 'cover', 'cover_skripsi', $skripsi->cover);
-        $skripsi->pengesahan = uploadFile($req, 'pengesahan', 'pengesahan_skripsi', $skripsi->pengesahan);
-        $skripsi->daftarisi = uploadFile($req, 'daftarisi', 'daftarisi_skripsi', $skripsi->daftarisi);
-        $skripsi->daftargambar = uploadFile($req, 'daftargambar', 'daftargambar_skripsi', $skripsi->daftargambar);
-        $skripsi->daftarlampiran = uploadFile($req, 'daftarlampiran', 'daftarlampiran_skripsi', $skripsi->daftarlampiran);
-        $skripsi->bab1 = uploadFile($req, 'bab1', 'bab1_skripsi', $skripsi->bab1);
-        $skripsi->bab2 = uploadFile($req, 'bab2', 'bab2_skripsi', $skripsi->bab2);
-        $skripsi->bab3 = uploadFile($req, 'bab3', 'bab3_skripsi', $skripsi->bab3);
-        $skripsi->bab4 = uploadFile($req, 'bab4', 'bab4_skripsi', $skripsi->bab4);
-        $skripsi->bab5 = uploadFile($req, 'bab5', 'bab5_skripsi', $skripsi->bab5);
-        $skripsi->dapus = uploadFile($req, 'dapus', 'dapus_skripsi', $skripsi->dapus);
-        // $skripsi->lampiran = uploadFile($req, 'lampiran', 'lampiran_skripsi', $skripsi->lampiran);
-
+    
+        // Update data skripsi lainnya
+        $skripsi->judul = $req->judul;
+        $skripsi->penulis = $req->penulis;
+        $skripsi->abstrak = $req->abstrak;
+        $skripsi->dospem = $req->dospem;
+        $skripsi->rilis = $req->rilis;
+        $skripsi->halaman = $req->halaman;
+        
         $skripsi->save();
-
         $notification = array(
-            'message' => 'Data Skripsi berhasil diubah',
-            'alert-type' => 'success'
+            'message' => 'Data Skripsi berhasil ditambahkan', 'alert-type' => 'success'
         );
+    
         return redirect()->route('skripsi')->with($notification);
     }
+    
+        // Get Data Skripsi ----------------------------------------------------------------------------------------------
+        public function getDataSkripsi($id)
+        {
+            $skripsi = Skripsi::find($id);
+        
+            if ($skripsi) {
+                return response()->json([
+                    'id' => $skripsi->id,
+                    'judul' => $skripsi->judul,
+                    'abstrak' => $skripsi->abstrak,
+                    'penulis' => $skripsi->penulis,
+                    'dospem' => $skripsi->dospem,
+                    'rilis' => $skripsi->rilis,
+                    'halaman' => $skripsi->halaman,
+                    'file_skripsi' => $skripsi->file_skripsi, // pastikan ini sesuai dengan kolom di database
+                ]);
+            } else {
+                return response()->json(['error' => 'Data tidak ditemukan'], 404);
+            }
+        }        
+    
     // Ubah Data Skripsi ----------------------------------------------------------------------------------------------
     public function edit(Request $req) {
-
-        // Validasi Data Skripsi ----------------------------------------------------------------
+        // Validasi Data Skripsi
         $req->validate([
             'judul' => 'required|string|max:200',
-            'penulis' => 'required|string|max:30',
+            'penulis' => 'required|string|max:30', // Penulis tetap wajib, meski tidak boleh diubah oleh admin
             'abstrak' => 'required|string',
             'dospem' => 'required|string|max:30',
-            'rilis' => 'required|max:4|min:4',
-            'halaman' => 'required|min:1',
-            'cover' => 'nullable|mimes:pdf|max:2048',
-            'pengesahan' => 'nullable|mimes:pdf|max:2048',
-            'daftarisi' => 'nullable|mimes:pdf|max:2048',
-            'daftargambar' => 'nullable|mimes:pdf|max:2048',
-            'daftarlampiran' => 'nullable|mimes:pdf|max:2048',
-            'bab1' => 'nullable|mimes:pdf|max:2048',
-            'bab2' => 'nullable|mimes:pdf|max:2048',
-            'bab3' => 'nullable|mimes:pdf|max:2048',
-            'bab4' => 'nullable|mimes:pdf|max:2048',
-            'bab5' => 'nullable|mimes:pdf|max:2048',
-            'dapus' => 'nullable|mimes:pdf|max:2048',
+            'rilis' => 'required|string',
+            'halaman' => 'required|integer',
+            'file_skripsi' => 'nullable|file|mimes:pdf|max:10240', // Validasi file (optional)
         ]);
-
-        // Update Data Skripsi ------------------------------------------------------------------
-        $skripsi = Skripsi::find($req->get('id'));
-
-        $skripsi->judul = $req->get('judul');
-        $skripsi->penulis = $req->get('penulis');
-        $skripsi->abstrak = $req->get('abstrak');
-        $skripsi->dospem = $req->get('dospem');
-        $skripsi->rilis = $req->get('rilis');
-        $skripsi->halaman = $req->get('halaman');
-
-        function uploadFile($req, $fieldName, $storagePath, $oldFileName = null)
-        {
-            if ($req->hasFile($fieldName)) {
-                $extension = $req->file($fieldName)->extension();
-                $filename = $fieldName . '_skripsi' . time() . '.' . $extension;
-                $req->file($fieldName)->storeAs('public/' . $storagePath, $filename);
-                // Delete old file
-                if($oldFileName) {
-                    Storage::delete('public/' . $storagePath . '/' . $oldFileName);
-                }
-                return $filename;
+    
+        $skripsi = Skripsi::findOrFail($req->id);
+    
+        // Jika ada file baru yang diupload, hapus file lama dan simpan yang baru
+        if ($req->hasFile('file_skripsi')) {
+            // Hapus file lama jika ada
+            if ($skripsi->file_skripsi && file_exists(storage_path('app/public/skripsi_files/' . $skripsi->file_skripsi))) {
+                unlink(storage_path('app/public/skripsi_files/' . $skripsi->file_skripsi));
             }
-            return $oldFileName;
+    
+            // Simpan file baru
+            $file = $req->file('file_skripsi');
+            $fileName = time() . '_' . $file->getClientOriginalName();
+            $file->storeAs('public/skripsi_files', $fileName);
+    
+            $skripsi->file_skripsi = $fileName;
         }
-
-        $skripsi->cover = uploadFile($req, 'cover', 'cover_skripsi', $skripsi->cover);
-        $skripsi->pengesahan = uploadFile($req, 'pengesahan', 'pengesahan_skripsi', $skripsi->pengesahan);
-        $skripsi->daftarisi = uploadFile($req, 'daftarisi', 'daftarisi_skripsi', $skripsi->daftarisi);
-        $skripsi->daftargambar = uploadFile($req, 'daftargambar', 'daftargambar_skripsi', $skripsi->daftargambar);
-        $skripsi->daftarlampiran = uploadFile($req, 'daftarlampiran', 'daftarlampiran_skripsi', $skripsi->daftarlampiran);
-        $skripsi->bab1 = uploadFile($req, 'bab1', 'bab1_skripsi', $skripsi->bab1);
-        $skripsi->bab2 = uploadFile($req, 'bab2', 'bab2_skripsi', $skripsi->bab2);
-        $skripsi->bab3 = uploadFile($req, 'bab3', 'bab3_skripsi', $skripsi->bab3);
-        $skripsi->bab4 = uploadFile($req, 'bab4', 'bab4_skripsi', $skripsi->bab4);
-        $skripsi->bab5 = uploadFile($req, 'bab5', 'bab5_skripsi', $skripsi->bab5);
-        $skripsi->dapus = uploadFile($req, 'dapus', 'dapus_skripsi', $skripsi->dapus);
-        // $skripsi->lampiran = uploadFile($req, 'lampiran', 'lampiran_skripsi', $skripsi->lampiran);
-
+    
+        // Update data skripsi lainnya, kecuali penulis
+        $skripsi->judul = $req->judul;
+        // Mengabaikan perubahan penulis, tetap dari data aslinya (dari mahasiswa yang mengupload)
+        $skripsi->abstrak = $req->abstrak;
+        $skripsi->dospem = $req->dospem;
+        $skripsi->rilis = $req->rilis;
+        $skripsi->halaman = $req->halaman;
+    
+        // Menyimpan perubahan ke database
         $skripsi->save();
-
+    
         $notification = array(
-            'message' => 'Data Skripsi berhasil diubah',
-            'alert-type' => 'success'
+            'message' => 'Data Skripsi berhasil diperbarui', 'alert-type' => 'success'
         );
+    
         return redirect()->route('skripsiadmin')->with($notification);
     }
+    
 
     // Hapus Data Skripsi ----------------------------------------------------------------------------------------------
     public function hapus($id){
@@ -357,12 +251,6 @@ class SkripsiController extends Controller
             'success' => $success,
             'message' => $message,
         ]);
-    }
-
-    // Get Data Skripsi ----------------------------------------------------------------------------------------------
-    public function getDataSkripsi($id){
-        $skripsi = Skripsi::find($id);
-        return response()->json($skripsi);
     }
 
     // Tampil PDF  Skripsi ----------------------------------------------------------------------------------------------
@@ -456,74 +344,43 @@ class SkripsiController extends Controller
         $comments = collect();
 
         // Mengecek apakah riwayat sudah ada untuk pengguna ini
-    $existingHistory = riwayat_skripsi::where('id_user', $user->id)
-    ->where('id_skripsi', $id)
-    ->exists();
-        // Jika belum ada, tambahkan riwayat baru
-        if (!$existingHistory) {
-            riwayat_skripsi::create([
-                'id_user' => $user->id,
-                'id_skripsi' => $id,
-            ]);
-        }
-        foreach ($childcomments as $comment) {
-            if ($comment->parent_id === null) {
-                // This is a top-level comment
-                $comments->put($comment->id, [
-                    'comment' => $comment,
-                    'replies' => collect()  // Initialize replies as a collection
-                ]);
-            } else {
-                // This is a reply
-                if ($comments->has($comment->parent_id)) {
-                    // Add reply to its parent comment's 'replies' collection
-                    $comments->get($comment->parent_id)['replies']->push($comment);
+            $existingHistory = riwayat_skripsi::where('id_user', $user->id)
+            ->where('id_skripsi', $id)
+            ->exists();
+                // Jika belum ada, tambahkan riwayat baru
+                if (!$existingHistory) {
+                    riwayat_skripsi::create([
+                        'id_user' => $user->id,
+                        'id_skripsi' => $id,
+                    ]);
                 }
-            }
-        }
+                foreach ($childcomments as $comment) {
+                    if ($comment->parent_id === null) {
+                        // This is a top-level comment
+                        $comments->put($comment->id, [
+                            'comment' => $comment,
+                            'replies' => collect()  // Initialize replies as a collection
+                        ]);
+                    } else {
+                        // This is a reply
+                        if ($comments->has($comment->parent_id)) {
+                            // Add reply to its parent comment's 'replies' collection
+                            $comments->get($comment->parent_id)['replies']->push($comment);
+                        }
+                    }
+                }
 
-        // dd($comments);
+                // dd($comments);
 
-        // Menyusun path untuk setiap file PDF yang ingin diambil
-        $pdfPaths = [
-            'cover' => storage_path('app/public/cover_skripsi/' . $data->cover),
-            'pengesahan' => storage_path('app/public/pengesahan_skripsi/' . $data->pengesahan),
-            'daftarisi' => storage_path('app/public/daftarisi_skripsi/' . $data->daftarisi),
-            'daftargambar' => storage_path('app/public/daftargambar_skripsi/' . $data->daftargambar),
-            'daftarlampiran' => storage_path('app/public/daftarlampiran_skripsi/' . $data->daftarlampiran),
-            'bab1' => storage_path('app/public/bab1_skripsi/' . $data->bab1),
-            'bab2' => storage_path('app/public/bab2_skripsi/' . $data->bab2),
-            'bab3' => storage_path('app/public/bab3_skripsi/' . $data->bab3),
-            'bab4' => storage_path('app/public/bab4_skripsi/' . $data->bab4),
-            'bab5' => storage_path('app/public/bab5_skripsi/' . $data->bab5),
-            'dapus' => storage_path('app/public/dapus_skripsi/' . $data->dapus),
-            // 'lampiran' => storage_path('app/public/lampiran_skripsi/' . $data->lampiran),
-        ];
-
-        // Memeriksa apakah setiap file PDF ada di storage
-        foreach ($pdfPaths as $attribute => $pdfPath) {
-            if (!Storage::exists('public/' . $attribute . '_skripsi/' . $data->$attribute)) {
-                abort(404);
-            }
-        }
-
-        // Mengambil konten setiap file PDF
-        $pdfContents = [];
-        foreach ($pdfPaths as $attribute => $pdfPath) {
-            $pdfContents[$attribute] = Storage::get('public/' . $attribute . '_skripsi/' . $data->$attribute);
-        }
-
-        // Mengubah konten setiap file PDF menjadi base64
-        $pdfs = [];
-        foreach ($pdfContents as $attribute => $pdfContent) {
-            $pdfs[$attribute] = base64_encode($pdfContent);
-        }
-        $skripsi->increment('views');
+            
+                $skripsi->increment('views');
 
 
-        // Mengirim data PDF, data user, dan data skripsi ke view 'detail'
-        return view('detail', compact('pdfs', 'user', 'skripsi', 'comments'));
-    }
+                // Mengirim data PDF, data user, dan data skripsi ke view 'detail'
+                return view('detail', compact( 'user', 'skripsi', 'comments'));
+}
+
+    
 
     // Get Data Skripsi ----------------------------------------------------------------------------------------------
     public function welcomeskripsi($id){

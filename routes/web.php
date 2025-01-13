@@ -25,7 +25,7 @@ Route::get('/', function () {
     return redirect('/welcome');
 });
 
-Auth::routes();
+// Auth::routes();
 
 Route::get('/home', function() {
     return view('home');
@@ -49,12 +49,12 @@ Route::middleware('is_admin')->group(function () {
     Route::patch('/admin/mahasiswa/ubah', [MahasiswaController::class, 'ubah'])->name('ubah.mahasiswa');
     Route::get('admin/ajaxadmin/dataMahasiswa/{id}', [MahasiswaController::class, 'getDataMahasiswa']);
     Route::get('/admin/mahasiswa/hapus/{id}', [MahasiswaController::class,'hapus'])->name('hapus.mahasiswa');
-    Route::get('/admin/mahasiswa/toggle-verifikasi/{id}', [MahasiswaController::class, 'toggleVerifikasi'])->name('toggle.verifikasi');
+    // Route::get('/admin/mahasiswa/toggle-verifikasi/{id}', [MahasiswaController::class, 'toggleVerifikasi'])->name('toggle.verifikasi');
 
     // Route Skripsi ------------------------------------------------------------------------------
     Route::get('/admin/skripsi', [SkripsiController::class, 'index1'])->name('skripsiadmin');
     Route::patch('/admin/skripsi/edit', [SkripsiController::class, 'edit'])->name('edit.skripsi');
-    Route::get('admin/ajaxadmin/dataSkripsi/{id}', [SkripsiController::class, 'getDataSkripsi']);
+    Route::get('admin/ajaxskripsi/dataSkripsi/{id}', [SkripsiController::class, 'getDataSkripsi']);
     Route::get('/admin/skripsi/hapus/{id}', [SkripsiController::class, 'hapus1'])->name('hapus.skripsi');
     Route::get('/admin/skripsi/detail/{id}', [SkripsiController::class, 'showPdf'])->name('pdf.show');
     Route::get('/admin/skripsi/verifikasi/{id}', [SkripsiController::class,'verifikasi'])->name('verifikasi');
