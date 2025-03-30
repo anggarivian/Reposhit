@@ -10,21 +10,20 @@ use Illuminate\Support\Facades\DB;
 class FavoriteController extends Controller
 {
     public function addFavorite($id)
-    {
-        // Ambil ID pengguna
-        $userId = auth()->user()->id;
+{
+    // Ambil ID pengguna
+    $userId = auth()->user()->id;
 
-        // Tambahkan skripsi ke favorite
-        favorite::updateOrCreate([
-            'id_user' => $userId,
-            'id_skripsi' => $id
-        ]);
+    // Tambahkan skripsi ke favorite
+    favorite::updateOrCreate([
+        'id_user' => $userId,
+        'id_skripsi' => $id
+    ]);
 
-
-        // Kembali dengan notifikasi
-        return redirect()->back()->with('favorite', 'Skripsi berhasil ditambahkan ke favorite.')
+    // Kembali dengan notifikasi
+    return redirect()->back()->with('favorite', 'Skripsi berhasil ditambahkan ke favorite.')
         ->with('favorite_type', 'add'); // Tambahkan tipe aksi
-    }
+}
 
     public function showFavorites()
     {
@@ -54,14 +53,13 @@ class FavoriteController extends Controller
         return redirect()->route('favorites')->with('success', 'Skripsi berhasil dihapus dari favorite.');
     }
     public function removeFavorite1($id)
-    {
-        $user = auth()->user();
+{
+    $user = auth()->user();
 
-        // Menghapus favorite dari user yang login
-        $user->favorites()->detach($id);
+    // Menghapus favorite dari user yang login
+    $user->favorites()->detach($id);
 
-        return redirect()->back()->with('favorite', 'Skripsi berhasil dihapus dari favorite.')
+    return redirect()->back()->with('favorite', 'Skripsi berhasil dihapus dari favorite.')
         ->with('favorite_type', 'remove'); // Tambahkan tipe aksi
-
-    }
+}
 }

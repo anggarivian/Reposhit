@@ -328,57 +328,54 @@ class SkripsiController extends Controller
 
     // Get Data Skripsi ----------------------------------------------------------------------------------------------
     public function detailskripsi($id){
-        $user = Auth::user();
-        $skripsi = Skripsi::find($id);
-        $data = Skripsi::findOrFail($id);
-        $comment = Comment::where('skripsi_id', $id)
-            ->whereNull('parent_id')
-            ->join('users', 'comments.id_user', '=', 'users.id')
-            ->select('comments.*', 'users.name as user_name') // select the required fields
-            ->get();
+    $user = Auth::user();
+    $skripsi = Skripsi::findOrFail($id);
+    $comment = Comment::where('skripsi_id', $id)
+        ->whereNull('parent_id')
+        ->join('users', 'comments.id_user', '=', 'users.id')
+        ->select('comments.*', 'users.name as user_name')
+        ->get();
 
-        $childcomments = Comment::where('skripsi_id', $id)
-            ->join('users', 'comments.id_user', '=', 'users.id')
-            ->select('comments.*', 'users.name as user_name') // select the required fields
-            ->get();
-        $comments = collect();
+    $childcomments = Comment::where('skripsi_id', $id)
+        ->join('users', 'comments.id_user', '=', 'users.id')
+        ->select('comments.*', 'users.name as user_name')
+        ->get();
 
-        // Mengecek apakah riwayat sudah ada untuk pengguna ini
-            $existingHistory = riwayat_skripsi::where('id_user', $user->id)
-            ->where('id_skripsi', $id)
-            ->exists();
-                // Jika belum ada, tambahkan riwayat baru
-                if (!$existingHistory) {
-                    riwayat_skripsi::create([
-                        'id_user' => $user->id,
-                        'id_skripsi' => $id,
-                    ]);
-                }
-                foreach ($childcomments as $comment) {
-                    if ($comment->parent_id === null) {
-                        // This is a top-level comment
-                        $comments->put($comment->id, [
-                            'comment' => $comment,
-                            'replies' => collect()  // Initialize replies as a collection
-                        ]);
-                    } else {
-                        // This is a reply
-                        if ($comments->has($comment->parent_id)) {
-                            // Add reply to its parent comment's 'replies' collection
-                            $comments->get($comment->parent_id)['replies']->push($comment);
-                        }
-                    }
-                }
+    $comments = collect();
 
-                // dd($comments);
+    // Mengecek apakah riwayat sudah ada untuk pengguna ini
+    $existingHistory = riwayat_skripsi::where('id_user', $user->id)
+        ->where('id_skripsi', $id)
+        ->exists();
 
-            
-                $skripsi->increment('views');
+    if (!$existingHistory) {
+        // Tambahkan riwayat baru
+        riwayat_skripsi::create([
+            'id_user' => $user->id,
+            'id_skripsi' => $id,
+        ]);
 
+        // Tambahkan 1 pada jumlah views
+        $skripsi->increment('views');
+    }
 
-                // Mengirim data PDF, data user, dan data skripsi ke view 'detail'
-                return view('detail', compact( 'user', 'skripsi', 'comments'));
+    foreach ($childcomments as $comment) {
+        if ($comment->parent_id === null) {
+            $comments->put($comment->id, [
+                'comment' => $comment,
+                'replies' => collect(),
+            ]);
+        } else {
+            if ($comments->has($comment->parent_id)) {
+                $comments->get($comment->parent_id)['replies']->push($comment);
+            }
+        }
+    }
+
+    // Mengirim data ke view 'detail'
+    return view('detail', compact('user', 'skripsi', 'comments'));
 }
+
 
     
 
@@ -470,43 +467,66 @@ class SkripsiController extends Controller
         return view('skripsi2', compact('skripsi'));
     }
 
-    public function searchSkripsi(Request $req) {
-        // Membuat query awal dengan kondisi status verifikasi = 1
-        $query = Skripsi::query();
-        $query->select('skripsis.id', 'skripsis.judul', 'skripsis.penulis', 'skripsis.rilis', 'skripsis.dospem', 'skripsis.halaman', 'skripsis.views', 'users.prodi')
-              ->join('users', 'skripsis.penulis', '=', 'users.name')
-              ->where('skripsis.status', 1); // Hanya skripsi yang sudah diverifikasi
-    
-        // Menambahkan kondisi pencarian berdasarkan judul jika tersedia
-        if (!empty($req->input('judul'))) {
-            $judulKeywords = explode(' ', strtolower($req->input('judul')));
-            $query->where(function ($subQuery) use ($judulKeywords) {
-                foreach ($judulKeywords as $word) {
-                    $subQuery->orWhereRaw('LOWER(skripsis.judul) LIKE ?', ['%' . $word . '%']);
-                }
-            });
+    public function searchSkripsi(Request $request){
+        $query = Skripsi::query()
+            ->join('users', 'skripsis.penulis', '=', 'users.name')
+            ->where('skripsis.status', 1);
+        
+        // Apply filters if they exist
+        if ($request->filled('judul')) {
+            $query->where('skripsis.judul', 'like', '%' . $request->judul . '%');
         }
-    
-        // Menambahkan kondisi pencarian berdasarkan penulis jika tersedia
-        if (!empty($req->input('penulis'))) {
-            $query->whereRaw('LOWER(skripsis.penulis) LIKE ?', ['%' . strtolower($req->input('penulis')) . '%']);
+        
+        if ($request->filled('penulis')) {
+            $query->where('skripsis.penulis', 'like', '%' . $request->penulis . '%');
         }
-    
-        // Menambahkan kondisi pencarian berdasarkan rilis jika tersedia
-        if (!empty($req->input('rilis'))) {
-            $query->whereRaw('LOWER(skripsis.rilis) LIKE ?', ['%' . strtolower($req->input('rilis')) . '%']);
+        
+        if ($request->filled('rilis')) {
+            $query->where('skripsis.rilis', $request->rilis);
         }
-    
-        // Mengurutkan hasil pencarian berdasarkan tanggal pembuatan terbaru
-        $query->orderBy('skripsis.created_at', 'desc');
-    
-        // Mengambil hasil pencarian dengan paginasi
-        $skripsi = $query->paginate(10);
-    
-        // Mengembalikan tampilan dengan data pencarian
+        
+        if ($request->filled('prodi')) {
+            $query->where('users.prodi', $request->prodi);
+        }
+        
+        // Select all fields from skripsi table and the prodi from users
+        $query->select('skripsis.*', 'users.prodi');
+        
+        if ($request->has('mirip') && $request->mirip == 1) {
+            // Any special similarity search logic here
+        }
+        
+        // Get results
+        $skripsi = $query->orderBy('skripsis.created_at', 'desc')->get(); 
+        
         return view('skripsi2', compact('skripsi'));
     }
 
+public function findSkripsi(Request $request)
+{
+    $query = Skripsi::query();
+    $query->select('skripsis.id', 'skripsis.judul', 'skripsis.penulis', 'skripsis.abstrak', 'skripsis.rilis', 'skripsis.dospem', 'skripsis.halaman', 'skripsis.views', 'users.prodi')
+          ->join('users', 'skripsis.penulis', '=', 'users.name')
+          ->where('skripsis.status', 1);
+
+    // Filter berdasarkan parameter
+    if ($request->filled('judul')) {
+        $query->where('skripsis.judul', 'LIKE', '%' . $request->judul . '%');
+    }
+    if ($request->filled('penulis')) {
+        $query->where('skripsis.penulis', 'LIKE', '%' . $request->penulis . '%');
+    }
+    if ($request->filled('rilis')) {
+        $query->where('skripsis.rilis', 'LIKE', '%' . $request->rilis . '%');
+    }
+    if ($request->filled('prodi')) {
+        $query->where('users.prodi', $request->prodi);
+    }
+
+    $skripsi = $query->orderBy('skripsis.created_at', 'desc')->paginate(10);
+
+    return view('skripsi2', compact('skripsi'));
+}
 // public function showMetadataPdf($id)
 // {
 //     $skripsi = DB::table('skripsis')

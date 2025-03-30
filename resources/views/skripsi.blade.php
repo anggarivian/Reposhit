@@ -65,9 +65,6 @@
                                     <i class="fas fa-trash-alt"> Hapus</i> <!-- Ikon untuk Hapus Favorite -->
                                 </button>
                             </div>
-                            <a href="{{ asset('storage/skripsi_files/' . $skripsis->file_skripsi) }}" target="_blank"
-                                        class="btn btn-info btn-sm">Lihat File Skripsi</a>
-
                         </td>
                     </tr>
                     @endforeach

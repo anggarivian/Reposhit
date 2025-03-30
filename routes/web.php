@@ -80,6 +80,7 @@ Route::middleware('auth','is_mahasiswa')->group(function () {
     Route::get('/home/skripsi/detail/{id}', [SkripsiController::class, 'detailskripsi']);
     // Route::get('/home/skripsi/cariYangMirip', [SkripsiController::class, 'cariYangMirip'])->name('cariYangMirip');
     Route::get('/home/skripsi/search', [SkripsiController::class, 'searchSkripsi'])->name('searchSkripsi');
+    Route::get('/home/skripsi/find', [SkripsiController::class, 'findSkripsi'])->name('findSkripsi');
     // route::get('/home/skripsi/detail/{id}', [SkripsiController::class, 'showDetail'])->name('skripsi.detail');
     Route::get('/metadata/{id}', [SkripsiController::class, 'showMetadataPdf'])->name('metadata');
     Route::get('/home/riwayat', [RiwayatSkripsiController::class, 'showHistory'])->name('riwayatskripsi');
@@ -105,6 +106,9 @@ Route::middleware('auth','is_mahasiswa')->group(function () {
      Route::get('/mahasiswa/skripsi/hapus/{id}', [SkripsiController::class, 'hapus'])->name('hapus.skripsi');
      Route::get('/mahasiswa/skripsi/detail/{id}', [SkripsiController::class, 'detailskripsi']);
      route::get('/home/skripsi/cariYangMirip', [SkripsiController::class, 'cariYangMirip'])->name('cariYangMirip');
+     // Add these routes to your web.php file
+Route::delete('/riwayat-skripsi/{id}', [RiwayatSkripsiController::class, 'deleteHistory'])->name('deleteHistory');
+Route::delete('/riwayat-skripsi', [RiwayatSkripsiController::class, 'deleteAllHistory'])->name('deleteAllHistory');
 });
 
 // View File PDF -----------------------------------------------------------------------------------

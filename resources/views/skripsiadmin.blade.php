@@ -12,7 +12,7 @@
         <div class="card-body">
             <div class="d-flex justify-content-between mb-3">
             </div>
-            <table id="table-data" class="table table-stripped text-center">
+            <table id="table-data" class="table table-striped text-center">
                 <thead>
                     <tr class="text-center">
                         <th>No</th>
@@ -39,9 +39,9 @@
                         <td>{{$skripsis->rilis}}</td>
                         <td>
                             @if ($skripsis->status == 0)
-                                <a class="btn btn-sm btn-warning">Belum Diverifikasi</a>
-                            @elseif ($skripsis->status == 1)
-                                <a class="btn btn-sm btn-success">Sudah Diverifikasi</a>
+                                <span class="badge badge-warning">Belum Diverifikasi</span>
+                            @else
+                                <span class="badge badge-success">Sudah Diverifikasi</span>
                             @endif
                         </td>
                         <td>{{$skripsis->halaman}}</td>
@@ -53,10 +53,9 @@
                                           <i class="fas fa-eye"> Lihat Skripsi</i> 
                                     </button>
                                 </a>
-                                <button type="button" id="btn-edit-skripsi" class="btn btn-sm btn-success" 
-                                    data-toggle="modal" data-target="#edit" data-id="{{ $skripsis->id }}">
-                                    <i class="fas fa-edit"> Edit </i>
-                                </button>
+                                <button id="btn-edit-skripsi" class="btn btn-success btn-sm" data-toggle="modal" data-target="#edit" data-id="{{ $skripsis->id }}">
+                                    <i class="fas fa-edit"> Edit</i>
+                                </button>  
                                 <button type="button" class="btn btn-sm btn-danger" onclick="deleteConfirmation('{{$skripsis->id}}' , '{{$skripsis->judul}}' )">
                                     <i class="fas fa-trash-alt"> Hapus </i>
                                 </button>

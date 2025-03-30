@@ -7,8 +7,7 @@ use App\Models\Skripsi;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
-class CommentController extends Controller
-{
+class CommentController extends Controller{
     public function index()
     {
         $comments = Comment::all();
@@ -86,26 +85,26 @@ class CommentController extends Controller
 
         return redirect()->back()->with('success', 'Komentar berhasil dihapus.');
     }
-    public function postBalasan(Request $request){
-        // dd($request);
-    // Validasi input
-    $request->validate([
-        'content' => 'required',
-        'id_skripsi' => 'required',
-        'parent_id' => 'required',
-    ]);
-
-    // Membuat objek baru untuk balasan komentar
-    $balasan = new Comment();
-    $balasan->content = $request->input('content');
-    $balasan->skripsi_id = $request->input('id_skripsi');
-    $balasan->id_user = auth()->user()->id;
-    $balasan->parent_id = $request->input('parent_id');
-    $balasan->save();
-
-    // Redirect kembali ke halaman sebelumnya dengan notifikasi
-    return redirect()->back()->with('success', 'Balasan berhasil ditambahkan');
+    public function postBalasan(Request $request) {
+        // Validasi input
+        $request->validate([
+            'content' => 'required',
+            'id_skripsi' => 'required',
+            'parent_id' => 'required|exists:comments,id', // Harus ada komentar induk
+        ]);
+    
+        // Membuat objek baru untuk balasan komentar
+        $balasan = new Comment();
+        $balasan->content = $request->input('content');
+        $balasan->skripsi_id = $request->input('id_skripsi');
+        $balasan->id_user = auth()->user()->id;
+        $balasan->parent_id = $request->input('parent_id'); // Mendukung komentar bersarang
+        $balasan->save();
+    
+        // Redirect kembali ke halaman sebelumnya dengan notifikasi
+        return redirect()->back()->with('success', 'Balasan berhasil ditambahkan');
     }
+    
     public function postBalasan1(Request $request){
         // dd($request);
     // Validasi input
