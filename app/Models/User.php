@@ -27,9 +27,8 @@ class User extends Authenticatable
     protected $guarded = [];
 
     public function findForPassport($username) {
-        return $this->orWhere('email', $username)->orWhere('npm', $username)->first();
+        return $this->where('npm', $username)->first();
     }
-
     public function isAdmin()
     {
         return $this->role === 'admin'; // Sesuaikan dengan kolom dan nilai di database Anda
@@ -39,6 +38,21 @@ class User extends Authenticatable
     {
         return $this->belongsToMany(Skripsi::class, 'favorites', 'id_user', 'id_skripsi')->withTimestamps();
     }
+    public function skripsis()
+    {
+        return $this->hasMany(Skripsi::class, 'user_id');
+    }
+
+    public function comments()
+    {
+        return $this->hasMany(Comment::class, 'id_user');
+    }
+
+    public function riwayatSkripsis()
+    {
+        return $this->belongsToMany(Skripsi::class, 'riwayat_skripsis', 'id_user', 'id_skripsi')->withTimestamps();
+    }
+
 
 
     /**

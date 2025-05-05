@@ -183,14 +183,14 @@
                 </div>
                 <div class="card-body p-0">
                     <div id="pdf-container" style="position: relative;">
-                        <iframe 
-                            id="pdfFrame" 
-                            src="{{ asset('storage/skripsi_files/' . $skripsi->file_skripsi) }}#toolbar=0" 
-                            width="100%" 
-                            height="600px" 
-                            style="border: none;">
-                            <p>Your browser does not support iframes.</p>
-                        </iframe>
+                            <iframe 
+                                id="pdfFrame" 
+                                src="{{ asset('storage/skripsi_files/' . $skripsi->file_skripsi) }}#toolbar=0" 
+                                width="100%" 
+                                height="600px" 
+                                style="border: none;">
+                                <p>Your browser does not support iframes.</p>
+                            </iframe>
                         <div class="pdf-controls" style="position: absolute; top: 10px; right: 10px;">
                             <button id="fullscreenButton" class="btn btn-secondary btn-sm">
                                 <i class="fas fa-expand"></i> Layar Penuh

@@ -49,6 +49,7 @@ Route::middleware('is_admin')->group(function () {
     Route::patch('/admin/mahasiswa/ubah', [MahasiswaController::class, 'ubah'])->name('ubah.mahasiswa');
     Route::get('admin/ajaxadmin/dataMahasiswa/{id}', [MahasiswaController::class, 'getDataMahasiswa']);
     Route::get('/admin/mahasiswa/hapus/{id}', [MahasiswaController::class,'hapus'])->name('hapus.mahasiswa');
+    Route::post('/admin/mahasiswa/reset-password', [MahasiswaController::class, 'resetPassword'])->name('reset.password.mahasiswa');
     // Route::get('/admin/mahasiswa/toggle-verifikasi/{id}', [MahasiswaController::class, 'toggleVerifikasi'])->name('toggle.verifikasi');
 
     // Route Skripsi ------------------------------------------------------------------------------
@@ -56,7 +57,7 @@ Route::middleware('is_admin')->group(function () {
     Route::patch('/admin/skripsi/edit', [SkripsiController::class, 'edit'])->name('edit.skripsi');
     Route::get('admin/ajaxskripsi/dataSkripsi/{id}', [SkripsiController::class, 'getDataSkripsi']);
     Route::get('/admin/skripsi/hapus/{id}', [SkripsiController::class, 'hapus1'])->name('hapus.skripsi');
-    Route::get('/admin/skripsi/detail/{id}', [SkripsiController::class, 'showPdf'])->name('pdf.show');
+    Route::get('/skripsi/detail/{id}', [SkripsiController::class, 'showPdf'])->name('pdf.show');
     Route::get('/admin/skripsi/verifikasi/{id}', [SkripsiController::class,'verifikasi'])->name('verifikasi');
 
     // Route Komentar ------------------------------------------------------------------------------
@@ -68,7 +69,7 @@ Route::middleware('is_admin')->group(function () {
     // Route Import -------------------------------------------------------------------------------
     Route::post('/admin/mahasiswa/import', [MahasiswaController::class,'import'])->name('mahasiswa.import');
     Route::post('/admin/dosen/import', [DosenController::class,'import'])->name('dosen.import');
-    Route::get('/admin/skripsi/detail/{id}', [SkripsiController::class, 'showPdf'])->name('pdf.show');
+    // Route::get('/admin/skripsi/detail/{id}', [SkripsiController::class, 'showPdf'])->name('pdf.show');
 });
 
 
@@ -84,8 +85,9 @@ Route::middleware('auth','is_mahasiswa')->group(function () {
     // route::get('/home/skripsi/detail/{id}', [SkripsiController::class, 'showDetail'])->name('skripsi.detail');
     Route::get('/metadata/{id}', [SkripsiController::class, 'showMetadataPdf'])->name('metadata');
     Route::get('/home/riwayat', [RiwayatSkripsiController::class, 'showHistory'])->name('riwayatskripsi');
-    Route::get('home/ubah', [MahasiswaController::class, 'ubahPassword'])->name('ubah.password');
-    Route::post('home/ubah', [MahasiswaController::class, 'updatePassword']);
+// Untuk Laravel 8 ke atas
+Route::get('/home/ubah', [App\Http\Controllers\MahasiswaController::class, 'ubahPassword'])->name('mahasiswa.ubahPassword');
+Route::post('/home/update-password', [App\Http\Controllers\MahasiswaController::class, 'updatePassword'])->name('mahasiswa.updatePassword');
 
     // Route Komentar ---------------------------------------------------------------------------
     Route::post('/home/comment/detail', [CommentController::class, 'postkomentar'])->name('postkomentar');

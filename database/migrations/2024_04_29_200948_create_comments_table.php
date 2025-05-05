@@ -15,12 +15,16 @@ class CreateCommentsTable extends Migration
     {
         Schema::create('comments', function (Blueprint $table) {
             $table->id();
-            $table->string('skripsi_id');
-            $table->string('id_user');
+            $table->unsignedBigInteger('skripsi_id'); // Change to unsignedBigInteger
+            $table->unsignedBigInteger('id_user');    // Change to unsignedBigInteger
             $table->text('content');
-            $table->string('parent_id')->nullable();
+            $table->unsignedBigInteger('parent_id')->nullable(); // Change to unsignedBigInteger
             $table->timestamps();
-
+    
+            // Add foreign key constraints
+            $table->foreign('skripsi_id')->references('id')->on('skripsis')->onDelete('cascade');
+            $table->foreign('id_user')->references('id')->on('users')->onDelete('cascade');
+            $table->foreign('parent_id')->references('id')->on('comments')->onDelete('cascade');
         });
     }
 

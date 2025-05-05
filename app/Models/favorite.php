@@ -15,6 +15,10 @@ class favorite extends Model
     {
         return $this->belongsTo(Skripsi::class, 'id_skripsi');
     }
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'id_user');
+    }
 
     // public function favoriteSkripsi()
     // {

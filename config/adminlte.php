@@ -360,12 +360,6 @@ return [
             'icon' => 'fas fa-fw fa-user',
             'can'  => 'isAdmin',
         ],
-        [
-            'text' => 'Data Password Mahasiswa',
-            'url'  => 'admin/password',
-            'icon' => 'fas fa-fw fa-key', // icon kunci
-            'can'  => 'isAdmin',
-        ],
     ],
 
     /*

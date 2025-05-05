@@ -14,6 +14,10 @@ class Comment extends Model
     {
         return $this->belongsTo(User::class);
     }
+    public function skripsi()
+    {
+        return $this->belongsTo(Skripsi::class, 'skripsi_id');
+    }
     // Relasi ke komentar induk
     public function replies()
     {
