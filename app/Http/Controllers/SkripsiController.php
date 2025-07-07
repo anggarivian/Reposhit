@@ -15,6 +15,7 @@ use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Barryvdh\DomPDF\Facade\Pdf; // Correctly import the Pdf facade
 use Illuminate\Support\Facades\View;
+use App\Models\Notifikasi;
 
 class SkripsiController extends Controller
 {
@@ -263,67 +264,34 @@ class SkripsiController extends Controller
         ->join('users', 'comments.id_user', '=', 'users.id')
         ->select('comments.*', 'users.name as user_name') // select the required fields
         ->get();
-
-    $childcomments = Comment::where('skripsi_id', $id)
-        ->join('users', 'comments.id_user', '=', 'users.id')
-        ->select('comments.*', 'users.name as user_name') // select the required fields
-        ->get();
-    $comments = collect();
-
-    foreach ($childcomments as $comment) {
-        if ($comment->parent_id === null) {
-            // This is a top-level comment
-            $comments->put($comment->id, [
-                'comment' => $comment,
-                'replies' => collect()  // Initialize replies as a collection
-            ]);
-        } else {
-            // This is a reply
-            if ($comments->has($comment->parent_id)) {
-                // Add reply to its parent comment's 'replies' collection
-                $comments->get($comment->parent_id)['replies']->push($comment);
+    
+        $childcomments = Comment::where('skripsi_id', $id)
+            ->join('users', 'comments.id_user', '=', 'users.id')
+            ->select('comments.*', 'users.name as user_name') // select the required fields
+            ->get();
+        $comments = collect();
+    
+        foreach ($childcomments as $comment) {
+            if ($comment->parent_id === null) {
+                // This is a top-level comment
+                $comments->put($comment->id, [
+                    'comment' => $comment,
+                    'replies' => collect()  // Initialize replies as a collection
+                ]);
+            } else {
+                // This is a reply
+                if ($comments->has($comment->parent_id)) {
+                    // Add reply to its parent comment's 'replies' collection
+                    $comments->get($comment->parent_id)['replies']->push($comment);
+                }
             }
         }
-    }
-
-    // dd($comments);
-        // Menyusun path untuk setiap file PDF yang ingin diambil
-        $pdfPaths = [
-            'cover' => storage_path('app/public/cover_skripsi/' . $data->cover),
-            'pengesahan' => storage_path('app/public/pengesahan_skripsi/' . $data->pengesahan),
-            'daftarisi' => storage_path('app/public/daftarisi_skripsi/' . $data->daftarisi),
-            'daftargambar' => storage_path('app/public/daftargambar_skripsi/' . $data->daftargambar),
-            'daftarlampiran' => storage_path('app/public/daftarlampiran_skripsi/' . $data->daftarlampiran),
-            'bab1' => storage_path('app/public/bab1_skripsi/' . $data->bab1),
-            'bab2' => storage_path('app/public/bab2_skripsi/' . $data->bab2),
-            'bab3' => storage_path('app/public/bab3_skripsi/' . $data->bab3),
-            'bab4' => storage_path('app/public/bab4_skripsi/' . $data->bab4),
-            'bab5' => storage_path('app/public/bab5_skripsi/' . $data->bab5),
-            'dapus' => storage_path('app/public/dapus_skripsi/' . $data->dapus),
-            // 'lampiran' => storage_path('app/public/lampiran_skripsi/' . $data->lampiran),
-        ];
-
-        // Memeriksa apakah setiap file PDF ada di storage
-        foreach ($pdfPaths as $attribute => $pdfPath) {
-            if (!Storage::exists('public/' . $attribute . '_skripsi/' . $data->$attribute)) {
-                abort(404);
-            }
-        }
-
-        // Mengambil konten setiap file PDF
-        $pdfContents = [];
-        foreach ($pdfPaths as $attribute => $pdfPath) {
-            $pdfContents[$attribute] = Storage::get('public/' . $attribute . '_skripsi/' . $data->$attribute);
-        }
-
-        // Mengubah konten setiap file PDF menjadi base64
-        $pdfs = [];
-        foreach ($pdfContents as $attribute => $pdfContent) {
-            $pdfs[$attribute] = base64_encode($pdfContent);
-        }
-
-        // Mengirim data PDF, data user, dan data skripsi ke view 'detail'
-        return view('detailskripsimahasiswa', compact('pdfs', 'user', 'skripsi','comments'));
+        
+        // Check if the user is an admin
+        $isAdmin = $user->role === 'admin';
+        
+        // Mengirim data PDF, data user, data skripsi, dan status admin ke view 'detail'
+        return view('detailskripsimahasiswa', compact('user', 'skripsi', 'comments', 'isAdmin'));
     }
 
     // Get Data Skripsi ----------------------------------------------------------------------------------------------
@@ -385,66 +353,88 @@ class SkripsiController extends Controller
         $skripsi = Skripsi::find($id);
         $data = Skripsi::findOrFail($id);
 
-        // Menyusun path untuk setiap file PDF yang ingin diambil
-        $pdfPaths = [
-            'cover' => storage_path('app/public/cover_skripsi/' . $data->cover),
-            'pengesahan' => storage_path('app/public/pengesahan_skripsi/' . $data->pengesahan),
-            'daftarisi' => storage_path('app/public/daftarisi_skripsi/' . $data->daftarisi),
-            'daftargambar' => storage_path('app/public/daftargambar_skripsi/' . $data->daftargambar),
-            'daftarlampiran' => storage_path('app/public/daftarlampiran_skripsi/' . $data->daftarlampiran),
-            'bab1' => storage_path('app/public/bab1_skripsi/' . $data->bab1),
-            'bab2' => storage_path('app/public/bab2_skripsi/' . $data->bab2),
-            'bab3' => storage_path('app/public/bab3_skripsi/' . $data->bab3),
-            'bab4' => storage_path('app/public/bab4_skripsi/' . $data->bab4),
-            'bab5' => storage_path('app/public/bab5_skripsi/' . $data->bab5),
-            'dapus' => storage_path('app/public/dapus_skripsi/' . $data->dapus),
-            // 'lampiran' => storage_path('app/public/lampiran_skripsi/' . $data->lampiran),
-        ];
-
-        // Memeriksa apakah setiap file PDF ada di storage
-        foreach ($pdfPaths as $attribute => $pdfPath) {
-            if (!Storage::exists('public/' . $attribute . '_skripsi/' . $data->$attribute)) {
-                abort(404);
-            }
-        }
-
-        // Mengambil konten setiap file PDF
-        $pdfContents = [];
-        foreach ($pdfPaths as $attribute => $pdfPath) {
-            $pdfContents[$attribute] = Storage::get('public/' . $attribute . '_skripsi/' . $data->$attribute);
-        }
-
-        // Mengubah konten setiap file PDF menjadi base64
-        $pdfs = [];
-        foreach ($pdfContents as $attribute => $pdfContent) {
-            $pdfs[$attribute] = base64_encode($pdfContent);
-        }
-
         // Mengirim data PDF, data user, dan data skripsi ke view 'detail'
-        return view('welcomeskripsi', compact('pdfs', 'user', 'skripsi'));
+        return view('welcomeskripsi', compact( 'user', 'skripsi'));
     }
 
     public function verifikasi($id) {
+    try {
         $skripsi = Skripsi::find($id);
 
-        // Toggle status verifikasi
-        if ($skripsi->status == 0) {
+        if (!$skripsi) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Skripsi tidak ditemukan',
+            ], 404);
+        }
+
+        // Ubah status
+        if ($skripsi->status == 0 || $skripsi->status == 2) {
             $skripsi->status = 1;
-            $message = "Verifikasi skripsi berhasil diverifikasi";
-        } else {
+            $message = "Skripsi berhasil diverifikasi";
+        } elseif ($skripsi->status == 1) {
             $skripsi->status = 0;
-            $message = "Verifikasi skripsi berhasil dibatalkan verifikasinya";
+            $message = "Verifikasi skripsi dibatalkan";
+        } else {
+            return response()->json([
+                'success' => false,
+                'message' => 'Status skripsi tidak valid',
+            ], 400);
         }
 
         $skripsi->save();
 
-        $success = true;
+        // Notifikasi (jika mahasiswa_id tersedia)
+        if ($skripsi->mahasiswa_id) {
+            \App\Models\Notifikasi::create([
+                'skripsi_id' => $skripsi->id,
+                'mahasiswa_id' => $skripsi->mahasiswa_id,
+                'deskripsi' => $message,
+            ]);
+        }
 
         return response()->json([
-            'success' => $success,
+            'success' => true,
             'message' => $message,
         ]);
+    } catch (\Exception $e) {
+        return response()->json([
+            'success' => false,
+            'message' => 'Terjadi kesalahan: ' . $e->getMessage(),
+        ], 500);
     }
+}
+
+    public function tolakVerifikasi($id)
+{
+    $skripsi = Skripsi::find($id);
+
+    if (!$skripsi) {
+        return response()->json([
+            'success' => false,
+            'message' => 'Skripsi tidak ditemukan.',
+        ], 404);
+    }
+
+    // Set status ditolak
+    $skripsi->status = 2;
+    $skripsi->save();
+
+    // Ambil ID mahasiswa (user_id jika itu foreign key-nya)
+    $mahasiswaId = $skripsi->user_id;
+
+    // Simpan notifikasi ke mahasiswa
+    Notifikasi::create([
+        'skripsi_id' => $skripsi->id,
+        'mahasiswa_id' => $mahasiswaId,
+        'deskripsi' => 'Skripsi Anda ditolak. Silakan revisi dan unggah ulang.',
+    ]);
+
+    return response()->json([
+        'success' => true,
+        'message' => 'Skripsi berhasil ditolak dan notifikasi telah dikirim.',
+    ]);
+}
 
     public function cariYangMirip(Request $request)
     {

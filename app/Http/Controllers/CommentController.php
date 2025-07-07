@@ -37,54 +37,62 @@ class CommentController extends Controller{
         return redirect()->back()->with('success', 'Komentar berhasil ditambahkan');
     }
 
+    // Admin function to delete any comment
     public function delete($id)
-{
-    // Temukan komentar berdasarkan ID
-    $comment = Comment::find($id);
-
-    if ($comment) {
-        // Hapus semua balasan yang terkait dengan komentar ini
-        $comment->replies()->delete();
-
-        // Hapus komentar itu sendiri
-        $comment->delete();
-
-        return redirect()->back()->with('success', 'Komentar dan balasan berhasil dihapus');
-    } else {
-        return redirect()->back()->with('error', 'Komentar tidak ditemukan');
-    }
-}
-    public function deletekomentar($id)
-{
-    $reply = Comment::find($id);
-
-    if (!$reply) {
-        return redirect()->back()->with('error', 'Balasan tidak ditemukan');
-    }
-
-    // Periksa apakah pengguna yang login adalah admin atau pemilik balasan
-    if (auth()->user()->role == 'is_admin' || auth()->user()->id == $reply->id_user) {
-        $reply->delete();
-        return redirect()->back()->with('success', 'Balasan berhasil dihapus');
-    } else {
-        return redirect()->back()->with('error', 'Anda tidak memiliki izin untuk menghapus balasan ini');
-    }
-}
-    public function deletekomentar1($id)
     {
-        $comment = Comment::findOrFail($id);
+        $comment = Comment::find($id);
 
-        // Jika komentar ini memiliki balasan, hapus juga semua balasan terkait
-        $replies = Comment::where('parent_id', $comment->id)->get();
-        foreach ($replies as $reply) {
-            $reply->delete();
+        if (!$comment) {
+            return redirect()->back()->with('error', 'Komentar tidak ditemukan');
         }
 
-        // Hapus komentar utama
+        // Hapus semua balasan yang terkait dengan komentar ini jika ini adalah komentar utama
+        if (!$comment->parent_id) {
+            Comment::where('parent_id', $comment->id)->delete();
+        }
+        
         $comment->delete();
-
-        return redirect()->back()->with('success', 'Komentar berhasil dihapus.');
+        return redirect()->back()->with('success', 'Komentar berhasil dihapus');
     }
+
+    // Regular user - delete only their own comments
+    public function deletekomentar($id)
+    {
+        $comment = Comment::find($id);
+
+        if (!$comment) {
+            return redirect()->back()->with('error', 'Komentar tidak ditemukan');
+        }
+
+        // Periksa apakah pengguna yang login adalah admin atau pemilik komentar
+        if (auth()->user()->role == 'admin' || auth()->user()->id == $comment->id_user) {
+            // Hapus semua balasan yang terkait dengan komentar ini jika ini adalah komentar utama
+            if (!$comment->parent_id) {
+                Comment::where('parent_id', $comment->id)->delete();
+            }
+            
+            $comment->delete();
+            return redirect()->back()->with('success', 'Komentar berhasil dihapus');
+        } else {
+            return redirect()->back()->with('error', 'Anda tidak memiliki izin untuk menghapus komentar ini');
+        }
+    }
+    // public function deletekomentar1($id)
+    // {
+    //     $comment = Comment::findOrFail($id);
+
+    //     // Jika komentar ini memiliki balasan, hapus juga semua balasan terkait
+    //     $replies = Comment::where('parent_id', $comment->id)->get();
+    //     foreach ($replies as $reply) {
+    //         $reply->delete();
+    //     }
+
+    //     // Hapus komentar utama
+    //     $comment->delete();
+
+    //     return redirect()->back()->with('success', 'Komentar berhasil dihapus.');
+    // }
+    
     public function postBalasan(Request $request) {
         // Validasi input
         $request->validate([
@@ -106,24 +114,23 @@ class CommentController extends Controller{
     }
     
     public function postBalasan1(Request $request){
-        // dd($request);
-    // Validasi input
-    $request->validate([
-        'content' => 'required',
-        'id_skripsi' => 'required',
-        'parent_id' => 'required',
-    ]);
+        // Validasi input
+        $request->validate([
+            'content' => 'required',
+            'id_skripsi' => 'required',
+            'parent_id' => 'required',
+        ]);
 
-    // Membuat objek baru untuk balasan komentar
-    $balasan = new Comment();
-    $balasan->content = $request->input('content');
-    $balasan->skripsi_id = $request->input('id_skripsi');
-    $balasan->id_user = auth()->user()->id;
-    $balasan->parent_id = $request->input('parent_id');
-    $balasan->save();
+        // Membuat objek baru untuk balasan komentar
+        $balasan = new Comment();
+        $balasan->content = $request->input('content');
+        $balasan->skripsi_id = $request->input('id_skripsi');
+        $balasan->id_user = auth()->user()->id;
+        $balasan->parent_id = $request->input('parent_id');
+        $balasan->save();
 
-    // Redirect kembali ke halaman sebelumnya dengan notifikasi
-    return redirect()->back()->with('success', 'Balasan berhasil ditambahkan');
+        // Redirect kembali ke halaman sebelumnya dengan notifikasi
+        return redirect()->back()->with('success', 'Balasan berhasil ditambahkan');
     }
 
     // ADMIN KOMENTAR
@@ -132,18 +139,12 @@ class CommentController extends Controller{
         $request->validate([
             'content' => 'required',
         ]);
-        // dd($request->id_skripsi);
+        
         $comment = new Comment();
-        $comment->skripsi_id = $request->id_skripsi; // Pastikan user memiliki atribut skripsi_id atau relasi
+        $comment->skripsi_id = $request->id_skripsi;
         $comment->id_user = auth()->id();
         $comment->content = $request->content;
         $comment->save();
-
-
-         // Ambil ulang daftar komentar yang terkait dengan skripsi ini, urutkan berdasarkan waktu pembuatan (terbaru ke terlama)
-        $comment = Comment::where('skripsi_id', $request->id_skripsi)
-                            ->orderBy('created_at', 'desc')
-                            ->get();
 
         return redirect()->back()->with('success', 'Komentar berhasil ditambahkan');
     }
@@ -154,18 +155,18 @@ class CommentController extends Controller{
             'content' => 'required|string',
         ]);
 
-        $comment = comment::find($id);
+        $comment = Comment::find($id);
         if ($comment) {
             $comment->content = $request->input('content');
             $comment->save();
 
-            return redirect()->back()->with('success', 'Balasan berhasil diperbarui!');
+            return redirect()->back()->with('success', 'Komentar berhasil diperbarui!');
         }
 
-        return redirect()->back()->with('error', 'Balasan tidak ditemukan!');
+        return redirect()->back()->with('error', 'Komentar tidak ditemukan!');
     }
-public function update(Request $request, $id)
-{
+
+    public function update(Request $request, $id){
     // Validasi input
     $request->validate([
         'content' => 'required|string|max:1000',

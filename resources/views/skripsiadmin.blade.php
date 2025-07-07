@@ -38,29 +38,33 @@
                         <td>{{$skripsis->dospem}}</td>
                         <td>{{$skripsis->rilis}}</td>
                         <td>
-                            @if ($skripsis->status == 0)
-                                <span class="badge badge-warning">Belum Diverifikasi</span>
-                            @else
-                                <span class="badge badge-success">Sudah Diverifikasi</span>
-                            @endif
+                        @if ($skripsis->status == 0)
+                            <span class="badge badge-warning">Belum Diverifikasi</span>
+                        @elseif ($skripsis->status == 1)
+                            <span class="badge badge-success">Sudah Diverifikasi</span>
+                        @elseif ($skripsis->status == 2)
+                            <span class="badge badge-danger">Ditolak</span>
+                        @else
+                            <span class="badge badge-secondary">Status Tidak Diketahui</span>
+                        @endif
                         </td>
                         <td>{{$skripsis->halaman}}</td>
                         <td>{{ $skripsis->created_at->format('Y-m-d') }}</td>
                         <td>
                             <div class="form-group" role="group" aria-label="Basic example">
-                                <a href="/admin/skripsi/detail/{{$skripsis->id}}">
+                                <a href="{{ route('admin.skripsi.detail', $skripsis->id ) }}">
                                     <button class="btn btn-sm btn-info">
-                                          <i class="fas fa-eye"> Lihat Skripsi</i> 
+                                        <i class="fas fa-eye"> Lihat Skripsi</i> 
                                     </button>
                                 </a>
-                                <button id="btn-edit-skripsi" class="btn btn-success btn-sm" data-toggle="modal" data-target="#edit" data-id="{{ $skripsis->id }}">
+                                {{-- <button id="btn-edit-skripsi" class="btn btn-success btn-sm" data-toggle="modal" data-target="#edit" data-id="{{ $skripsis->id }}">
                                     <i class="fas fa-edit"> Edit</i>
-                                </button>  
+                                </button>   --}}
                                 <button type="button" class="btn btn-sm btn-danger" onclick="deleteConfirmation('{{$skripsis->id}}' , '{{$skripsis->judul}}' )">
                                     <i class="fas fa-trash-alt"> Hapus </i>
                                 </button>
-                                <button type="button" class="btn btn-sm btn-info" onclick="verifikasiConfirmation('{{$skripsis->id}}' , '{{$skripsis->judul}}' )">
-                                    <i class="fas fa-check-circle"> Verifikasi</i>
+                                <button type="button" class="btn btn-sm btn-info" onclick="verifikasiAtauTolak('{{$skripsis->id}}', '{{$skripsis->judul}}')">
+                                    <i class="fas fa-check-circle"> Verifikasi / Tolak</i>
                                 </button>
                             </div>
                         </td>
@@ -73,7 +77,7 @@
 </div>
 
     <!-- Modal Edit -->
-    <div class="modal fade" id="edit" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    {{-- <div class="modal fade" id="edit" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-xl">
             <div class="modal-content">
                 <div class="modal-header">
@@ -135,7 +139,7 @@
                 </form>
             </div>
         </div>
-    </div>
+    </div> --}}
 @stop
 
 @section('js')
@@ -209,39 +213,57 @@
         })
     }
 
-    function verifikasiConfirmation(id,name) {
-        swal.fire({
-            title: "Verifikasi akun Skripsi?",
-            type: 'warning',
-            text: "Apakah anda ingin memverifikasi skripsi tersebut " +name+"?",
-            showCancelButton: !0,
-            confirmButtonText: "Ya, lakukan!",
-            cancelButtonText: "Tidak, batalkan!",
-        }).then (function (e) {
-            if (e.value === true) {
-                var CSRF_TOKEN = $('meta[name="csrf-token"]').attr('content');
-                $.ajax({
-                    type: 'GET',
-                    url: "{{url('/admin/skripsi/verifikasi')}}/"+id,
-                    data: {_token: CSRF_TOKEN},
-                    dataType: 'JSON',
-                    success: function (results) {
-                        if (results.success === true) {
-                            swal.fire("Done!", results.message, "success");
-                            setTimeout(function(){
-                                location.reload();
-                            },1000);
-                        } else {
-                            swal.fire("Error!", results.message, "error");
-                        }
+    function verifikasiAtauTolak(id, name) {
+    Swal.fire({
+        title: 'Verifikasi atau Tolak?',
+        text: 'Apa yang ingin Anda lakukan pada skripsi: ' + name + '?',
+        icon: 'question',
+        showCancelButton: true,
+        showDenyButton: true,
+        confirmButtonText: 'Verifikasi',
+        denyButtonText: 'Tolak Verifikasi',
+        cancelButtonText: 'Batal'
+    }).then((result) => {
+        var CSRF_TOKEN = $('meta[name="csrf-token"]').attr('content');
+
+        if (result.isConfirmed) {
+            // Jika klik Verifikasi
+            $.ajax({
+                type: 'GET',
+                url: "/admin/skripsi/verifikasi/" + id,
+                data: {_token: CSRF_TOKEN},
+                dataType: 'JSON',
+                success: function (results) {
+                    if (results.success === true) {
+                        Swal.fire("Berhasil!", results.message, "success");
+                        setTimeout(function () {
+                            location.reload();
+                        }, 1000);
+                    } else {
+                        Swal.fire("Gagal!", results.message, "error");
                     }
-                });
-            } else {
-                e.dismiss;
-            }
-        }, function (dismiss) {
-            return false;
-        })
-    }
+                }
+            });
+        } else if (result.isDenied) {
+            // Jika klik Tolak
+            $.ajax({
+                type: 'GET',
+                url: "/admin/skripsi/tolak/" + id,
+                data: {_token: CSRF_TOKEN},
+                dataType: 'JSON',
+                success: function (results) {
+                    if (results.success === true) {
+                        Swal.fire("Ditolak!", results.message, "success");
+                        setTimeout(function () {
+                            location.reload();
+                        }, 1000);
+                    } else {
+                        Swal.fire("Gagal!", results.message, "error");
+                    }
+                }
+            });
+        }
+    });
+}
 </script>
 @stop

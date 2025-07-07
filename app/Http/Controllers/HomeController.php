@@ -8,7 +8,7 @@ use App\Models\Skripsi;
 use App\Models\Mahasiswa;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-
+use App\Models\Notifikasi;
 class HomeController extends Controller
 {
     /**
@@ -31,43 +31,65 @@ class HomeController extends Controller
     //     }
     // }
 
-    public function index()
-    {
-        $user = Auth::user();
-        $jumlahDosen = Dosen::count();
+  public function index()
+{
+    $user = Auth::user();
+    $jumlahDosen = Dosen::count();
+    $jumlahMahasiswa = User::where('roles_id', 2)->count();
+    $jumlahSkripsi = Skripsi::count();
+
+    $notifikasis = [];
+    $notifikasiCount = 0;
+
+    // Karena semua mahasiswa ada di tabel users
+    if ($user->roles_id == 2) {
+        $mahasiswaId = $user->id;
+
+$notifikasis = Notifikasi::where('mahasiswa_id', $mahasiswaId)->latest()->get();
+
+
+        $notifikasiCount = \App\Models\Notifikasi::where('mahasiswa_id', $mahasiswaId)->count();
+    }
+
+    return view('home', compact(
+        'user',
+        'jumlahDosen',
+        'jumlahMahasiswa',
+        'jumlahSkripsi',
+        'notifikasis',
+        'notifikasiCount'
+    ));
+}
+
+
+    public function welcome(Request $req)
+{
+    // Search functionality for skripsi
+    $query = Skripsi::query();
+    $query->select('id','judul','penulis','rilis','dospem','halaman');
+    
+    if(!empty($req->judul)){
+        $query->where('judul', 'LIKE', '%' . $req->judul . '%');
+    }
+    if(!empty($req->penulis)){
+        $query->where('penulis', 'LIKE', '%' . $req->penulis . '%');
+    }
+    if(!empty($req->rilis)){
+        $query->where('rilis', 'LIKE', '%' . $req->rilis . '%');
+    }
+    
+    $query->orderBy('created_at','desc');
+    $skripsi = $query->paginate(10);
+    
+    // Get total number of students
         $jumlahMahasiswa = User::where('roles_id', 2)->count();
-        $jumlahSkripsi = Skripsi::count();
-        // $jumlahSkripsiBelumDiverifikasi = Skripsi::where('status', 0)->count();
-        // $jumlahSkripsiDiverifikasi = Skripsi::where('status', 1)->count();
-
-        // if($user->roles_id == 2 && $user->status == 0){
-        //     Auth::logout();
-        //     $notification = array(
-        //         'message' =>'Anda Belum Verifikasi', 'alert-type' =>'warning'
-        //     );
-        //     return redirect()->route('welcome')->with($notification);
-        // }
-
-        return view('home', compact('user', 'jumlahDosen', 'jumlahMahasiswa', 'jumlahSkripsi'));
-    }
-
-    public function welcome(Request $req){
-
-        $query = Skripsi::query();
-        $query->select('id','judul','penulis','rilis','dospem','halaman');
-        if(!empty($req->judul)){
-            $query->where('judul', 'LIKE', '%' . $req->judul . '%');
-        }
-        if(!empty($req->penulis)){
-            $query->where('penulis', 'LIKE', '%' . $req->penulis . '%');
-        }
-        if(!empty($req->rilis)){
-            $query->where('rilis', 'LIKE', '%' . $req->rilis . '%');
-        }
-        $query->orderBy('created_at','desc');
-        //End Searching
-        $skripsi = $query->paginate(10);
-
-        return view('welcome', compact('skripsi'));
-    }
+    
+    // Get total number of lecturers
+    $jumlahDosen = Dosen::count(); // Replace 'Dosen' with your actual model name
+    
+    // Get total number of skripsi for statistics
+    $jumlahSkripsi = Skripsi::count();
+    
+    return view('welcome', compact('skripsi', 'jumlahMahasiswa', 'jumlahDosen', 'jumlahSkripsi'));
+}
 }

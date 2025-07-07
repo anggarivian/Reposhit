@@ -27,7 +27,7 @@ class DosenController extends Controller
             // 'jabatan' => 'required|string|max:15',
             'kontak' => 'required|string|max:12',
             // 'alamat' => 'required|string|max:255',
-            'tgl_lahir' => 'required|date',
+            // 'tgl_lahir' => 'required|date',
             'program_studi' => 'required|string|max:40',
             // 'password' => 'required|string|min:8|max:255',
         ]);
@@ -55,7 +55,7 @@ class DosenController extends Controller
         // $dosen->jabatan = $req->get('jabatan');
         $dosen->kontak = $req->get('kontak');
         // $dosen->alamat = $req->get('alamat');
-        $dosen->tgl_lahir = $req->get('tgl_lahir');
+        // $dosen->tgl_lahir = $req->get('tgl_lahir');
         $dosen->program_studi = $req->get('program_studi');
         // $dosen->password = Hash::make($req->get('password'));
 
@@ -84,7 +84,7 @@ class DosenController extends Controller
             // 'jabatan' => 'required|string|max:15',
             'kontak' => 'required|string|max:12',
             // 'alamat' => 'required|string|max:255',
-            'tgl_lahir' => 'required|date',
+            // 'tgl_lahir' => 'required|date',
             'program_studi' => 'required|string|max:40',
         ]);
 
@@ -97,7 +97,7 @@ class DosenController extends Controller
         // $dosen->jabatan = $req->get('jabatan');
         $dosen->kontak = $req->get('kontak');
         // $dosen->alamat = $req->get('alamat');
-        $dosen->tgl_lahir = $req->get('tgl_lahir');
+        // $dosen->tgl_lahir = $req->get('tgl_lahir');
         $dosen->program_studi = $req->get('program_studi');
 
         $dosen->save();

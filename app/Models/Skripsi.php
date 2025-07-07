@@ -18,17 +18,21 @@ class Skripsi extends Model
         return $this->belongsToMany(User::class, 'favorites', 'id_skripsi', 'id_skripsi')->withTimestamps();
     }
 
-    public function user()
-{
-    return $this->belongsTo(User::class, 'user_id');
-}
-    public function comments()
-        {
-            return $this->hasMany(Comment::class, 'skripsi_id');
-        }
+    public function user(){
 
-        public function riwayatUsers()
-        {
-            return $this->belongsToMany(User::class, 'riwayat_skripsis', 'id_skripsi', 'id_user')->withTimestamps();
-        }
+        return $this->belongsTo(User::class, 'user_id');
+    }
+    public function comments(){
+        
+        return $this->hasMany(Comment::class, 'skripsi_id');
+    }
+
+    public function riwayatUsers(){
+
+        return $this->belongsToMany(User::class, 'riwayat_skripsis', 'id_skripsi', 'id_user')->withTimestamps();
+    }
+    public function mahasiswa(){
+
+        return $this->belongsTo(User::class, 'user_id');
+    }
 }

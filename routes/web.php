@@ -27,9 +27,7 @@ Route::get('/', function () {
 
 // Auth::routes();
 
-Route::get('/home', function() {
-    return view('home');
-})->name('home')->middleware('auth');
+Route::get('/home', [HomeController::class, 'index'])->name('home')->middleware('auth');
 
 Auth::routes();
 
@@ -57,10 +55,11 @@ Route::middleware('is_admin')->group(function () {
     Route::patch('/admin/skripsi/edit', [SkripsiController::class, 'edit'])->name('edit.skripsi');
     Route::get('admin/ajaxskripsi/dataSkripsi/{id}', [SkripsiController::class, 'getDataSkripsi']);
     Route::get('/admin/skripsi/hapus/{id}', [SkripsiController::class, 'hapus1'])->name('hapus.skripsi');
-    Route::get('/skripsi/detail/{id}', [SkripsiController::class, 'showPdf'])->name('pdf.show');
     Route::get('/admin/skripsi/verifikasi/{id}', [SkripsiController::class,'verifikasi'])->name('verifikasi');
+    Route::get('/admin/skripsi/tolak/{id}', [SkripsiController::class, 'tolakVerifikasi']);
+    Route::get('/admin/skripsi/detail/{id}', [SkripsiController::class, 'showPdf'])->name('admin.skripsi.detail');
 
-    // Route Komentar ------------------------------------------------------------------------------
+    // Route Komentar Admin ------------------------------------------------------------------------------
     Route::post('admin//comment/detail', [CommentController::class, 'postkomentar1'])->name('postkomentar1');
     Route::delete('/admin/comment/delete/{id}', [CommentController::class, 'delete'])->name('deletekomentar1');
     Route::put('admin/comment/updatekomentar/{id}', [CommentController::class, 'update1'])->name('updatekomentar1');

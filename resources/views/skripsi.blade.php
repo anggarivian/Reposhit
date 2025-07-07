@@ -47,11 +47,15 @@
                         <td>{{$skripsis->dospem}}</td>
                         <td>{{$skripsis->rilis}}</td>
                         <td>
-                            @if ($skripsis->status == 0)
-                                <span class="badge badge-warning">Belum Diverifikasi</span>
-                            @else
-                                <span class="badge badge-success">Sudah Diverifikasi</span>
-                            @endif
+                        @if ($skripsis->status == 0)
+                            <span class="badge badge-warning">Belum Diverifikasi</span>
+                        @elseif ($skripsis->status == 1)
+                            <span class="badge badge-success">Sudah Diverifikasi</span>
+                        @elseif ($skripsis->status == 2)
+                            <span class="badge badge-danger">Ditolak</span>
+                        @else
+                            <span class="badge badge-secondary">Status Tidak Diketahui</span>
+                        @endif
                         </td>
                         <td>{{$skripsis->halaman}}</td>
                         <td>
@@ -120,7 +124,7 @@
                         </div>
                         <div class="form-group">
                             <label for="file_skripsi">Pilih File Skripsi (PDF, Maks. 10 MB):</label>
-                            <input type="file" class="form-control" name="file_skripsi" id="file_skripsi" required>
+                            <input type="file" class="form-control" name="file_skripsi" id="file_skripsi" accept=".pdf" required>
                         </div>
                     </div>
                     <div class="modal-footer">

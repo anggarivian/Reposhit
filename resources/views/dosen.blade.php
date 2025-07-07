@@ -84,12 +84,10 @@
                                 <label for="nip">NIDN</label>
                                 <input type="text" class="form-control" name="nip" id="nip" required placeholder="Harus 18 Nomor">
                             </div>
-                            <div class="form-group col-md-6">
+                            {{-- <div class="form-group col-md-6">
                                 <label for="tgl_lahir">Tanggal Lahir</label>
                                 <input type="date" class="form-control" name="tgl_lahir" id="tgl_lahir" required>
-                            </div>
-                        </div>
-                        <div class="d-flex">
+                            </div> --}}
                             <div class="form-group col-md-6">
                                 <label for="program_studi">Program Studi</label>
                                 <select name="program_studi" class="form-control" id="program_studi" >
@@ -99,11 +97,11 @@
                                     <option value="Pemanfaatan Sumberdaya Perikanan">Pemanfaatan Sumberdaya Perikanan</option>
                                 </select>
                             </div>
-                            <div class="form-group col-md-6">
+                        </div>
+                            <div class="form-group">
                                 <label for="kontak">Kontak</label>
                                 <input type="text" class="form-control" name="kontak" id="kontak" required placeholder="Maksimal 12 Nomor">
                             </div>
-                        </div>
                         {{-- <div class="d-flex">
                             <div class="form-group col-md-6">
                                 <label for="jabatan">Jabatan</label>
@@ -150,14 +148,12 @@
                         <div class="d-flex">
                             <div class="form-group col-md-6">
                                 <label for="nip">NIDN </label>
-                                <input type="text" class="form-control" name="nip" id="edit-nip" required placeholder="Maksimal 18 Nomor">
+                                <input type="text" class="form-control" name="nip" id="edit-nip" required placeholder="Maksimal 18 Nomor" readonly>
                             </div>
-                            <div class="form-group col-md-6">
+                            {{-- <div class="form-group col-md-6">
                                 <label for="tgl_lahir">Tanggal Lahir</label>
                                 <input type="date" class="form-control" name="tgl_lahir" id="edit-tgl_lahir" required>
-                            </div>
-                        </div>
-                        <div class="d-flex">
+                            </div> --}}
                             <div class="form-group col-md-6">
                                 <label for="program_studi">Program Studi</label>
                                 <select name="program_studi" class="form-control" id="program_studi" >
@@ -167,11 +163,11 @@
                                     <option value="Pemanfaatan Sumberdaya Perikanan">Pemanfaatan Sumberdaya Perikanan</option>
                                 </select>
                             </div>
-                            <div class="form-group col-md-6">
+                        </div>
+                            <div class="form-group">
                                 <label for="kontak">Kontak</label>
                                 <input type="text" class="form-control" name="kontak" id="edit-kontak" required placeholder="Maksimal 12 Nomor">
                             </div>
-                        </div>
                         {{-- <div class="d-flex">
                             <div class="form-group col-md-6">
                                 <label for="jabatan">Jabatan</label>
@@ -242,7 +238,6 @@
                         $('#edit-id').val(res.id);
                         $('#edit-nip').val(res.nip);
                         $('#edit-jabatan').val(res.jabatan);
-                        $('#edit-tgl_lahir').val(res.tgl_lahir);
                         $('#edit-program_studi').val(res.program_studi);
                     },
                 });

@@ -181,10 +181,6 @@
                                                 <button class="btn btn-outline-info btn-sm" onclick="location.href='{{ route('searchSkripsi') }}?judul={{ $skripsis->judul }}&penulis=&rilis=&mirip=1'">
                                                     <i class="fas fa-clone"></i> Dokumen Yang Mirip
                                                 </button>
-                                                
-                                                <a href="/home/skripsi/detail/{{$skripsis->id}}" class="btn btn-primary btn-sm">
-                                                    <i class="fas fa-book-reader"></i> Lihat Detail
-                                                </a>
                                             </div>
                                         </div>
                                     </div>

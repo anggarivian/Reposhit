@@ -248,10 +248,10 @@
                 <h4><i class="fas fa-comments"></i> Diskusi Akademik</h4>
                 <div class="btn-group filter-comments mt-2">
                     <a href="{{ request()->fullUrlWithQuery(['order' => 'terbaru']) }}" class="btn btn-primary btn-sm mr-2 {{ request('order') == 'terbaru' || !request('order') ? 'active' : '' }}">
-                        Komentar Terlama
+                        Komentar Terbaru
                     </a>
                     <a href="{{ request()->fullUrlWithQuery(['order' => 'terlama']) }}" class="btn btn-primary btn-sm {{ request('order') == 'terlama' ? 'active' : '' }}">
-                        Komentar Terbaru
+                        Komentar Terlama
                     </a>
                 </div>
             </div>

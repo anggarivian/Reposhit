@@ -53,7 +53,19 @@
             <td>{{$mahasiswas->angkatan}}</td>
             <td>{{$mahasiswas->prodi}}</td>
             <td>{{$mahasiswas->alamat}}</td>
-            <td>{{$mahasiswas->password_text ?? 'Tidak tersedia'}}</td>
+            <td>
+                <!-- Password dengan toggle visibility -->
+                <div class="d-flex align-items-center justify-content-center">
+                    <span class="password-text" id="password-{{$mahasiswas->id}}">
+                        •••••••••
+                    </span>
+                    <button class="btn btn-sm btn-outline-secondary ml-2 toggle-password" 
+                            data-password="{{$mahasiswas->password_text ?? 'Tidak tersedia'}}" 
+                            data-target="password-{{$mahasiswas->id}}">
+                        <i class="fas fa-eye"></i>
+                    </button>
+                </div>
+            </td>
             <td>
                 <div class="form-group" role="group" aria-label="Basic example">
                     <button type="button" id="btn-edit-mahasiswa" class="btn btn-sm btn-success" data-toggle="modal" data-target="#edit" data-id="{{ $mahasiswas->id }}">
@@ -62,6 +74,10 @@
                     <button type="button" class="btn btn-sm btn-danger" onclick="deleteConfirmation('{{$mahasiswas->id}}' , '{{$mahasiswas->name}}' )">
                         <i class="fas fa-trash-alt"> Hapus </i>
                     </button>
+                    <!-- Tambahkan tombol reset password -->
+                    {{-- <button type="button" class="btn btn-sm btn-warning" data-toggle="modal" data-target="#resetPassword" onclick="setResetUser('{{$mahasiswas->id}}', '{{$mahasiswas->name}}')">
+                        <i class="fas fa-key"> Reset</i>
+                    </button> --}}
                 </div>
             </td>
         </tr>
@@ -190,40 +206,6 @@
         </div>
     </div>
 </div>
-
-<!-- Modal Reset Password -->
-<div class="modal fade" id="resetPassword" tabindex="-1" aria-labelledby="resetPasswordLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="resetPasswordLabel">Reset Password Mahasiswa</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <form method="post" action="{{ route('reset.password.mahasiswa') }}" enctype="multipart/form-data">
-                @csrf
-                <div class="modal-body">
-                    <input type="hidden" name="id" id="reset-id">
-                    <div class="form-group">
-                        <label for="reset-name">Nama Mahasiswa</label>
-                        <input type="text" class="form-control" id="reset-name" readonly>
-                    </div>
-                    <div class="form-group">
-                        <label for="reset-password">Password Baru</label>
-                        <input type="text" class="form-control" name="password" id="reset-password" required placeholder="Minimal 8 karakter">
-                        <small class="form-text text-muted">Password ini akan diberikan kepada mahasiswa.</small>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Batal</button>
-                    <button type="submit" class="btn btn-warning">Reset Password</button>
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
-
 <!-- import -->
 <div class="modal fade" id="import" tabindex="-1" aria-labelledby="importLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
@@ -250,6 +232,21 @@
         </div>
     </div>
 </div>
+
+<!-- CSS untuk Password Toggle -->
+<style>
+    .password-text {
+        display: inline-block;
+        min-width: 80px;
+    }
+    .toggle-password {
+        cursor: pointer;
+    }
+    .toggle-password:focus {
+        outline: none;
+        box-shadow: none;
+    }
+</style>
 
 @stop
 
@@ -279,12 +276,6 @@
             });
         });
     });
-
-    function setResetUser(id, name) {
-        $('#reset-id').val(id);
-        $('#reset-name').val(name);
-    }
-
     function deleteConfirmation(id, name) {
         swal.fire({
             title: "Hapus?",
@@ -324,5 +315,25 @@
             }
         });
     }
+    
+    // Script untuk password toggle
+    $(document).ready(function() {
+        // Event handler untuk toggle password
+        $('.toggle-password').on('click', function() {
+            const targetId = $(this).data('target');
+            const passwordText = $(this).data('password');
+            const $passwordElement = $('#' + targetId);
+            const $icon = $(this).find('i');
+            
+            // Toggle password visibility
+            if ($passwordElement.text().includes('•')) {
+                $passwordElement.text(passwordText);
+                $icon.removeClass('fa-eye').addClass('fa-eye-slash');
+            } else {
+                $passwordElement.text('•••••••••');
+                $icon.removeClass('fa-eye-slash').addClass('fa-eye');
+            }
+        });
+    });
 </script>
 @stop

@@ -52,7 +52,16 @@ class User extends Authenticatable
     {
         return $this->belongsToMany(Skripsi::class, 'riwayat_skripsis', 'id_user', 'id_skripsi')->withTimestamps();
     }
+    // Mahasiswa.php
+public function notifikasis()
+{
+    return $this->hasMany(Notifikasi::class);
+}
 
+public function mahasiswa()
+{
+    return $this->hasOne(Mahasiswa::class, 'id', 'mahasiswa_id');
+}
 
 
     /**
