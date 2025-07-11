@@ -22,7 +22,7 @@ class CreateNotifikasisTable extends Migration
 
             // Relasi jika diperlukan
             $table->foreign('skripsi_id')->references('id')->on('skripsis')->onDelete('cascade');
-            $table->foreign('mahasiswa_id')->references('id')->on('mahasiswas')->onDelete('cascade');
+            $table->foreign('mahasiswa_id')->references('id')->on('users')->onDelete('cascade');
         });
     }
 

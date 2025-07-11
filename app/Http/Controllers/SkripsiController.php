@@ -85,6 +85,7 @@ class SkripsiController extends Controller
         $skripsi->dospem = $req->get('dospem');
         $skripsi->rilis = $req->get('rilis');
         $skripsi->halaman = $req->get('halaman');
+        $skripsi->user_id = Auth::id();;
     
         // Upload File Skripsi
         function uploadFile($req, $fieldName, $storagePath) {
@@ -369,12 +370,15 @@ class SkripsiController extends Controller
         }
 
         // Ubah status
-        if ($skripsi->status == 0 || $skripsi->status == 2) {
+        if ($skripsi->status == 0) {
             $skripsi->status = 1;
             $message = "Skripsi berhasil diverifikasi";
         } elseif ($skripsi->status == 1) {
-            $skripsi->status = 0;
-            $message = "Verifikasi skripsi dibatalkan";
+            // $skripsi->status = 0;
+            $message = "Skripsi sudah diverifikasi";
+        } elseif ($skripsi->status == 2) {
+            // $skripsi->status = 0;
+            $message = "Skripsi gagal diverifikasi";
         } else {
             return response()->json([
                 'success' => false,
@@ -383,13 +387,11 @@ class SkripsiController extends Controller
         }
 
         $skripsi->save();
-
-        // Notifikasi (jika mahasiswa_id tersedia)
-        if ($skripsi->mahasiswa_id) {
-            \App\Models\Notifikasi::create([
+        if ($skripsi->user_id && $skripsi->status == 0) {
+            Notifikasi::create([
                 'skripsi_id' => $skripsi->id,
-                'mahasiswa_id' => $skripsi->mahasiswa_id,
-                'deskripsi' => $message,
+                'mahasiswa_id' => $skripsi->user_id,
+                'deskripsi' => 'Skripsi Anda Diverifikasi',
             ]);
         }
 
@@ -406,35 +408,53 @@ class SkripsiController extends Controller
 }
 
     public function tolakVerifikasi($id)
-{
-    $skripsi = Skripsi::find($id);
+    {
+    try{
+        $skripsi = Skripsi::find($id);
 
-    if (!$skripsi) {
+        if (!$skripsi) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Skripsi tidak ditemukan.',
+            ], 404);
+        }
+
+        // Set status ditolak
+        if ($skripsi->status == 0) {
+            $skripsi->status = 2;
+            $message = "Skripsi berhasil diverifikasi";
+        } elseif ($skripsi->status == 1) {
+            // $skripsi->status = 0;
+            $message = "Skripsi sudah diverifikasi, dan tidak bisa ditolak";
+        } elseif ($skripsi->status == 2) {
+            // $skripsi->status = 0;
+            $message = "Skripsi gagal diverifikasi";
+        } else {
+            return response()->json([
+                'success' => false,
+                'message' => 'Status skripsi tidak valid',
+            ], 400);
+        }
+
+        if ($skripsi->user_id && $skripsi->status == 0) {
+            Notifikasi::create([
+                'skripsi_id' => $skripsi->id,
+                'mahasiswa_id' => $skripsi->user_id,
+                'deskripsi' => 'Skripsi Anda Tolak, Segera Revisi Dengan Upload Ulang',
+            ]);
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => $message,
+        ]);   
+    } catch (\Exception $e) {
         return response()->json([
             'success' => false,
-            'message' => 'Skripsi tidak ditemukan.',
-        ], 404);
+            'message' => 'Terjadi kesalahan: ' . $e->getMessage(),
+        ], 500);
     }
-
-    // Set status ditolak
-    $skripsi->status = 2;
-    $skripsi->save();
-
-    // Ambil ID mahasiswa (user_id jika itu foreign key-nya)
-    $mahasiswaId = $skripsi->user_id;
-
-    // Simpan notifikasi ke mahasiswa
-    Notifikasi::create([
-        'skripsi_id' => $skripsi->id,
-        'mahasiswa_id' => $mahasiswaId,
-        'deskripsi' => 'Skripsi Anda ditolak. Silakan revisi dan unggah ulang.',
-    ]);
-
-    return response()->json([
-        'success' => true,
-        'message' => 'Skripsi berhasil ditolak dan notifikasi telah dikirim.',
-    ]);
-}
+    }
 
     public function cariYangMirip(Request $request)
     {

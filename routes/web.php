@@ -8,6 +8,7 @@ use App\Http\Controllers\SkripsiController;
 use App\Http\Controllers\MahasiswaController;
 use App\Http\Controllers\CommentController;
 use App\Http\Controllers\RiwayatSkripsiController;
+use App\Http\Controllers\NotifikasiController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -33,6 +34,8 @@ Auth::routes();
 
 Route::get('/home', [HomeController::class, 'index'])->name('home')->middleware('auth');
 
+Route::get('/notifikasi/fetch', [NotifikasiController::class, 'fetch']);
+
 Route::middleware('is_admin')->group(function () {
     // Route Kelola Dosen -------------------------------------------------------------------------
     Route::get('/admin/dosen', [DosenController::class, 'index'])->name('dosen');
@@ -56,7 +59,7 @@ Route::middleware('is_admin')->group(function () {
     Route::get('admin/ajaxskripsi/dataSkripsi/{id}', [SkripsiController::class, 'getDataSkripsi']);
     Route::get('/admin/skripsi/hapus/{id}', [SkripsiController::class, 'hapus1'])->name('hapus.skripsi');
     Route::get('/admin/skripsi/verifikasi/{id}', [SkripsiController::class,'verifikasi'])->name('verifikasi');
-    Route::get('/admin/skripsi/tolak/{id}', [SkripsiController::class, 'tolakVerifikasi']);
+    Route::get('/admin/skripsi/tolak/{id}', [SkripsiController::class, 'tolakVerifikasi'])->name('tolakVerifikasi');
     Route::get('/admin/skripsi/detail/{id}', [SkripsiController::class, 'showPdf'])->name('admin.skripsi.detail');
 
     // Route Komentar Admin ------------------------------------------------------------------------------

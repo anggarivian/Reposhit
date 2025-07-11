@@ -13,13 +13,13 @@ protected $fillable = [
     'deskripsi',
 ];
 
-    public function skripsi()
-    {
-        return $this->belongsTo(Skripsi::class);
-    }
+    // public function skripsi()
+    // {
+    //     return $this->belongsTo(Skripsi::class);
+    // }
 
-    public function mahasiswa()
-    {
-        return $this->belongsTo(Mahasiswa::class);
-    }
+    // public function mahasiswa()
+    // {
+    //     return $this->belongsTo(Mahasiswa::class);
+    // }
 }

@@ -32,34 +32,19 @@ class HomeController extends Controller
     // }
 
   public function index()
-{
-    $user = Auth::user();
-    $jumlahDosen = Dosen::count();
-    $jumlahMahasiswa = User::where('roles_id', 2)->count();
-    $jumlahSkripsi = Skripsi::count();
-
-    $notifikasis = [];
-    $notifikasiCount = 0;
-
-    // Karena semua mahasiswa ada di tabel users
-    if ($user->roles_id == 2) {
-        $mahasiswaId = $user->id;
-
-$notifikasis = Notifikasi::where('mahasiswa_id', $mahasiswaId)->latest()->get();
-
-
-        $notifikasiCount = \App\Models\Notifikasi::where('mahasiswa_id', $mahasiswaId)->count();
+    {
+        $user = Auth::user();
+        $jumlahDosen = Dosen::count();
+        $jumlahMahasiswa = User::where('roles_id', 2)->count();
+        $jumlahSkripsi = Skripsi::count();
+        
+        return view('home', compact(
+            'user',
+            'jumlahDosen',
+            'jumlahMahasiswa',
+            'jumlahSkripsi',
+        ));
     }
-
-    return view('home', compact(
-        'user',
-        'jumlahDosen',
-        'jumlahMahasiswa',
-        'jumlahSkripsi',
-        'notifikasis',
-        'notifikasiCount'
-    ));
-}
 
 
     public function welcome(Request $req)
