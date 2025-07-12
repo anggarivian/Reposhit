@@ -147,6 +147,7 @@ class SkripsiController extends Controller
         $skripsi->dospem = $req->dospem;
         $skripsi->rilis = $req->rilis;
         $skripsi->halaman = $req->halaman;
+        $skripsi->status = 0;
         
         $skripsi->save();
         $notification = array(
@@ -387,7 +388,7 @@ class SkripsiController extends Controller
         }
 
         $skripsi->save();
-        if ($skripsi->user_id && $skripsi->status == 0) {
+        if ($skripsi) {
             Notifikasi::create([
                 'skripsi_id' => $skripsi->id,
                 'mahasiswa_id' => $skripsi->user_id,
@@ -424,10 +425,8 @@ class SkripsiController extends Controller
             $skripsi->status = 2;
             $message = "Skripsi berhasil diverifikasi";
         } elseif ($skripsi->status == 1) {
-            // $skripsi->status = 0;
             $message = "Skripsi sudah diverifikasi, dan tidak bisa ditolak";
         } elseif ($skripsi->status == 2) {
-            // $skripsi->status = 0;
             $message = "Skripsi gagal diverifikasi";
         } else {
             return response()->json([
@@ -436,11 +435,12 @@ class SkripsiController extends Controller
             ], 400);
         }
 
-        if ($skripsi->user_id && $skripsi->status == 0) {
+        $skripsi->save();
+        if ($skripsi) {
             Notifikasi::create([
                 'skripsi_id' => $skripsi->id,
                 'mahasiswa_id' => $skripsi->user_id,
-                'deskripsi' => 'Skripsi Anda Tolak, Segera Revisi Dengan Upload Ulang',
+                'deskripsi' => 'Skripsi Anda Ditolak',
             ]);
         }
 
