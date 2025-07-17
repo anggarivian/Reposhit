@@ -14,6 +14,8 @@
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Custom CSS -->
+            <!-- favicon -->
+        <link rel="icon" type="image/png" href="{{asset('vendor/adminlte/dist/img/unsur.png')}}">
     <style>
         :root {
             --primary-color: #2c3e50;

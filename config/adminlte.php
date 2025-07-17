@@ -306,6 +306,12 @@ return [
             'icon' => 'fas fa-fw fa-book',
             'can'  => 'isAdmin',
         ],
+                [
+            'text' => 'Data Jurusan',
+            'url'  => 'admin/jurusan',
+            'icon' => 'fas fa-fw fa-user',
+            'can'  => 'isAdmin',
+        ],
         [
             'header' => 'KELOLA DATA LAPORAN',
             'can'    => 'isMahasiswa',

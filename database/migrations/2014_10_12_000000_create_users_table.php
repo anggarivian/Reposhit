@@ -22,7 +22,8 @@ class CreateUsersTable extends Migration
             $table->string('tgl_lahir');
             $table->string('alamat');
             $table->string('angkatan');
-            $table->string('prodi');
+            $table->foreignId('jurusan_id')->constrained('jurusans')->onDelete('cascade');
+            // $table->string('prodi');
             $table->string('password');
             $table->foreignId('roles_id')->constrained();
             $table->rememberToken();

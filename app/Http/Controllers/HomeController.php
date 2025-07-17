@@ -37,12 +37,17 @@ class HomeController extends Controller
         $jumlahDosen = Dosen::count();
         $jumlahMahasiswa = User::where('roles_id', 2)->count();
         $jumlahSkripsi = Skripsi::count();
-        
+        $status = Skripsi::where('user_id', Auth()->user()->id)->first();
+if (!$status) {
+    $status = null;
+}
+
         return view('home', compact(
             'user',
             'jumlahDosen',
             'jumlahMahasiswa',
             'jumlahSkripsi',
+            'status'
         ));
     }
 

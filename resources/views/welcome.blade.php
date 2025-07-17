@@ -13,6 +13,8 @@
     <link href="https://fonts.googleapis.com/css?family=Lato:400,700,400italic,700italic" rel="stylesheet" type="text/css" />
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet">
+        <!-- favicon -->
+        <link rel="icon" type="image/png" href="{{asset('vendor/adminlte/dist/img/unsur.png')}}">
     <!-- Custom CSS -->
     <style>
         :root {
@@ -361,7 +363,7 @@
                             <i class="fas fa-check-circle fa-2x text-white"></i>
                         </div>
                         <h4 class="fw-bold mb-2">{{ isset($jumlahSkripsi) ? $jumlahSkripsi : $skripsi->count() }}</h4>
-                        <p class="text-muted mb-0">Terverifikasi</p>
+                        <p class="text-muted mb-0">Total Skripsi</p>
                     </div>
                 </div>
             </div>

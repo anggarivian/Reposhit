@@ -53,15 +53,32 @@ class User extends Authenticatable
         return $this->belongsToMany(Skripsi::class, 'riwayat_skripsis', 'id_user', 'id_skripsi')->withTimestamps();
     }
     // Mahasiswa.php
-public function notifikasis()
-{
-    return $this->hasMany(Notifikasi::class);
-}
+    public function notifikasis()
+    {
+        return $this->hasMany(Notifikasi::class);
+    }
 
-public function mahasiswa()
-{
-    return $this->hasOne(Mahasiswa::class, 'id', 'mahasiswa_id');
-}
+    public function mahasiswa()
+    {
+        return $this->hasOne(Mahasiswa::class, 'id', 'mahasiswa_id');
+    }
+
+    public function jurusan()
+    {
+        return $this->belongsTo(Jurusan::class);
+    }
+    public function passwordHistories()
+    {
+        return $this->hasMany(PasswordHistory::class);
+    }
+
+    /** 
+     * Mengambil password_text terakhir dari history
+     */
+    public function getLatestPasswordTextAttribute()
+    {
+        return optional($this->passwordHistories()->latest('created_at')->first())->password_text ?? null;
+    }
 
 
     /**

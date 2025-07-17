@@ -50,16 +50,18 @@
                                             <label>Tahun</label>
                                             <input type="text" name="rilis" class="form-control" placeholder="Tahun publikasi" value="{{ request('rilis') }}">
                                         </div>
-                                        <div class="form-group">
-                                            <label>Program Studi</label>
-                                            <select name="prodi" class="form-control">
-                                                <option value="">Semua Program Studi</option>
-                                                <option value="Agribisnis" {{ request('prodi') == 'Agribisnis' ? 'selected' : '' }}>Agribisnis</option>
-                                                <option value="Agroteknologi" {{ request('prodi') == 'Agroteknologi' ? 'selected' : '' }}>Agroteknologi</option>
-                                                <option value="Administrasi Bisnis Internasional" {{ request('prodi') == 'Administrasi Bisnis Internasional' ? 'selected' : '' }}>Administrasi Bisnis Internasional</option>
-                                                <option value="Pemanfaatan Sumberdaya Perikanan" {{ request('prodi') == 'Pemanfaatan Sumberdaya Perikanan' ? 'selected' : '' }}>Pemanfaatan Sumberdaya Perikanan</option>
-                                            </select>
-                                        </div>
+                                            <div class="form-group">
+                                                <label>Program Studi</label>
+                                                <select name="prodi" class="form-control">
+                                                    <option value="">Semua Program Studi</option>
+                                                    @foreach($jurusans as $jurusan)
+                                                        <option value="{{ $jurusan->nama_jurusan }}"
+                                                            {{ request('prodi') == $jurusan->nama_jurusan ? 'selected' : '' }}>
+                                                            {{ $jurusan->nama_jurusan }}
+                                                        </option>
+                                                    @endforeach
+                                                </select>
+                                            </div>
                                         <button type="submit" class="btn btn-primary btn-block">
                                             Terapkan Filter
                                         </button>
@@ -101,95 +103,155 @@
                 </div>
             @else
                 <!-- Skripsi List -->
-                <div class="skripsi-list">
-                    @foreach($skripsi as $skripsis)
-                        <div class="skripsi-item">
-                            <div class="row mb-4">
-                                <div class="col-md-1 text-center">
+                {{-- Nav Tabs --}}
+                <ul class="nav nav-tabs mb-4" id="prodiTabs" role="tablist">
+                    @php
+                        $tabs = collect(['Semua' => 'semua'])
+                            ->merge($jurusans->pluck('id', 'nama_jurusan')->mapWithKeys(function($id, $nama) {
+                                return [$nama => Str::slug($nama, '_')];
+                            }));
+                    @endphp
+
+                @foreach($tabs as $label => $id)
+                    <li class="nav-item">
+                    <a
+                        class="nav-link {{ $loop->first ? 'active' : '' }}"
+                        id="{{ $id }}-tab"
+                        data-toggle="tab"
+                        href="#{{ $id }}"
+                        role="tab"
+                        aria-controls="{{ $id }}"
+                        aria-selected="{{ $loop->first ? 'true' : 'false' }}"
+                    >{{ $label }}</a>
+                    </li>
+                @endforeach
+                </ul>
+
+                {{-- Tab Panes --}}
+                <div class="tab-content" id="prodiTabsContent">
+                    @foreach($tabs as $label => $id)
+                        <div
+                        class="tab-pane fade {{ $loop->first ? 'show active' : '' }}"
+                        id="{{ $id }}"
+                        role="tabpanel"
+                        aria-labelledby="{{ $id }}-tab"
+                        >
+                        @php
+                            // Untuk tab "Semua", tidak di-filter; untuk yang lain, filter berdasarkan prodi
+                            $filtered = $id === 'semua'
+                                ? $skripsi
+                                : $skripsi->filter(function ($item) use ($label) {
+                                    return optional($item->mahasiswa->jurusan)->nama_jurusan === $label;
+                                });
+                        @endphp
+
+                        @if($filtered->isEmpty())
+                            <p class="text-muted">Belum ada skripsi untuk {{ strtolower($label) }}.</p>
+                        @else
+                            <div class="skripsi-list">
+                            @foreach($filtered as $skripsis)
+                                <div class="skripsi-item">
+                                <div class="row mb-4">
+                                    <div class="col-md-1 text-center">
                                     <div class="skripsi-icon">
                                         <i class="fas fa-book fa-3x text-primary"></i>
                                         <div class="year-badge">{{ $skripsis->rilis }}</div>
                                     </div>
-                                </div>
-                                <div class="col-md-11">
+                                    </div>
+                                    <div class="col-md-11">
                                     <div class="card shadow-sm">
                                         <div class="card-body">
-                                            <div class="d-flex justify-content-between">
-                                                <div>
-                                                    <h5 class="author-name">
-                                                        <i class="fas fa-user-graduate text-muted mr-1"></i>
-                                                        {{$skripsis->penulis}} 
-                                                        <span class="badge badge-pill badge-light">{{$skripsis->prodi}}</span>
-                                                    </h5>
-                                                </div>
-                                                <div>
-                                                    <span class="views-badge">
-                                                        <i class="fas fa-eye"></i> {{ $skripsis->views }} views
+                                        <div class="d-flex justify-content-between">
+                                            <div>
+                                                <h5 class="author-name">
+                                                    <i class="fas fa-user-graduate text-muted mr-1"></i>
+                                                    {{ $skripsis->penulis }}
+                                                    <span class="badge badge-pill badge-light">
+                                                        {{ $skripsis->mahasiswa->jurusan->nama_jurusan ?? '-' }}
                                                     </span>
-                                                </div>
+                                                </h5>
                                             </div>
-                                            
-                                            <h4 class="skripsi-title mt-2">
-                                                <a href="/home/skripsi/detail/{{$skripsis->id}}">{{$skripsis->judul}}</a>
-                                            </h4>
-                                            
-                                            <div class="skripsi-abstract">
-                                                {{ Str::limit($skripsis->abstrak, 180) }}
-                                                @if(strlen($skripsis->abstrak) > 180)
-                                                    <a href="#" data-toggle="modal" data-target="#abstrakModal{{ $skripsis->id }}" class="text-primary">
-                                                        Baca Selengkapnya
-                                                    </a>
-                                                @endif
-                                            </div>
-                                            
-                                            <div class="skripsi-info mt-2">
-                                                <span class="badge badge-light">
-                                                    <i class="fas fa-university"></i> Universitas Suryakancana
-                                                </span>
-                                                <span class="badge badge-light">
-                                                    <i class="fas fa-calendar-alt"></i> {{$skripsis->rilis}}
-                                                </span>
-                                            </div>
-                                            
-                                            <div class="skripsi-actions mt-3">
-                                                <!-- Action Buttons -->
-                                                @if(auth()->user()->favorites()->where('id_skripsi', $skripsis->id)->exists())
-                                                    <form action="{{ route('removeFavorite1', $skripsis->id) }}" method="POST" style="display:inline;">
-                                                        @csrf
-                                                    @method('DELETE')
-                                                        <button type="submit" class="btn btn-outline-danger btn-sm">
-                                                            <i class="fas fa-star"></i> Hapus dari Favorite
-                                                        </button>
-                                                    </form>
-                                                @else
-                                                    <form action="{{ route('addFavorite', $skripsis->id) }}" method="POST" style="display:inline;">
-                                                        @csrf
-                                                        <button type="submit" class="btn btn-outline-warning btn-sm">
-                                                            <i class="fas fa-star"></i> Tambah ke Favorite
-                                                        </button>
-                                                    </form>
-                                                @endif
-                                                
-                                                <button class="btn btn-outline-secondary btn-sm" data-toggle="modal" data-target="#metadataModal{{ $skripsis->id }}">
-                                                    <i class="fas fa-info-circle"></i> Metadata
-                                                </button>
-                                                
-                                                <button class="btn btn-outline-primary btn-sm" data-toggle="modal" data-target="#abstrakModal{{ $skripsis->id }}">
-                                                    <i class="fas fa-file-alt"></i> Abstrak
-                                                </button>
-                                                
-                                                <button class="btn btn-outline-info btn-sm" onclick="location.href='{{ route('searchSkripsi') }}?judul={{ $skripsis->judul }}&penulis=&rilis=&mirip=1'">
-                                                    <i class="fas fa-clone"></i> Dokumen Yang Mirip
-                                                </button>
+                                        <div>
+                                            <span class="views-badge">
+                                                <i class="fas fa-eye"></i> {{ $skripsis->views }} views
+                                            </span>
                                             </div>
                                         </div>
+
+                                        <h4 class="skripsi-title mt-2">
+                                            <a href="/home/skripsi/detail/{{ $skripsis->id }}">{{ $skripsis->judul }}</a>
+                                        </h4>
+
+                                        <div class="skripsi-abstract">
+                                            {{ Str::limit($skripsis->abstrak, 180) }}
+                                            @if(strlen($skripsis->abstrak) > 180)
+                                            <a href="#" data-toggle="modal" data-target="#abstrakModal{{ $skripsis->id }}" class="text-primary">
+                                                Baca Selengkapnya
+                                            </a>
+                                            @endif
+                                        </div>
+                                        <div class="d-flex align-items-center flex-wrap gap-2">
+                                            <span class="badge badge-light">
+                                                <i class="fas fa-university"></i> Universitas Suryakancana
+                                            </span>
+                                            <span class="badge badge-light mr-2">
+                                                <i class="fas fa-calendar-alt"></i> {{ $skripsis->rilis }}
+                                            </span>
+                                                @if($skripsis->katakunci)
+                                                    @foreach(explode(',', $skripsis->katakunci) as $tag)
+                                                        <a href="{{ route('searchSkripsi', ['judul' => trim($tag)]) }}" class="badge badge-info ml-1" style="text-decoration:none;">
+                                                            <i class="fas fa-tag"></i> {{ trim($tag) }}
+                                                        </a>
+                                                    @endforeach
+                                                @endif
+                                        </div>
+                                        <div class="skripsi-actions mt-3">
+                                            @if(auth()->user()->favorites()->where('id_skripsi', $skripsis->id)->exists())
+                                            <form action="{{ route('removeFavorite1', $skripsis->id) }}" method="POST" style="display:inline;">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit" class="btn btn-outline-danger btn-sm">
+                                                <i class="fas fa-star"></i> Hapus dari Favorite
+                                                </button>
+                                            </form>
+                                            @else
+                                            <form action="{{ route('addFavorite', $skripsis->id) }}" method="POST" style="display:inline;">
+                                                @csrf
+                                                <button type="submit" class="btn btn-outline-warning btn-sm">
+                                                <i class="fas fa-star"></i> Tambah ke Favorite
+                                                </button>
+                                            </form>
+                                            @endif
+
+                                            <button class="btn btn-outline-secondary btn-sm" data-toggle="modal" data-target="#metadataModal{{ $skripsis->id }}">
+                                            <i class="fas fa-info-circle"></i> Metadata
+                                            </button>
+
+                                            <button class="btn btn-outline-primary btn-sm" data-toggle="modal" data-target="#abstrakModal{{ $skripsis->id }}">
+                                            <i class="fas fa-file-alt"></i> Abstrak
+                                            </button>
+
+                                            <button class="btn btn-outline-info btn-sm" onclick="location.href='{{ route('searchSkripsi') }}?judul={{ urlencode($skripsis->judul) }}&penulis=&rilis=&mirip=1'">
+                                            <i class="fas fa-clone"></i> Dokumen Yang Mirip
+                                            </button>
+                                            <button class="btn btn-outline-dark btn-sm" data-toggle="modal" data-target="#dapusModal{{ $skripsis->id }}">
+                                                <i class="fas fa-book"></i> Daftar Pustaka
+                                            </button>
+                                            <button class="btn btn-outline-success btn-sm" data-toggle="modal" data-target="#abstrakPdfModal{{ $skripsis->id }}">
+                                                <i class="fas fa-file-pdf"></i> Lihat PDF Abstrak
+                                            </button>
+                                        </div>
+                                        </div>
+                                    </div>
                                     </div>
                                 </div>
+                                </div>
+                            @endforeach
                             </div>
+                        @endif
                         </div>
                     @endforeach
                 </div>
-                
                 <!-- Pagination -->
                 {{-- <div class="d-flex justify-content-center mt-4">
                     {{ $skripsi->appends(request()->query())->links() }}
@@ -199,85 +261,165 @@
     </div>
 </div>
 
-<!-- Modal untuk Tampilan PDF Abstrak - Mengikuti struktur asli -->
+<!-- Modal untuk Tampilan Abstrak - Mengikuti struktur asli -->
 @foreach($skripsi as $skripsis)
-<div class="modal fade" id="abstrakModal{{ $skripsis->id }}" tabindex="-1" role="dialog" aria-labelledby="abstrakModalLabel{{ $skripsis->id }}" aria-hidden="true">
-    <div class="modal-dialog modal-lg" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h6>Universitas Suryakancana</h6>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="modal-body">
-                <div class="header">
-                    <h5 class="modal-title" id="abstrakModalLabel{{ $skripsis->id }}">{{ $skripsis->judul }}</h5>
-                    <h6 class="modal-title penulis">{{ $skripsis->penulis }}, author</h6>
-                    <hr class="dashed-line">
+    <div class="modal fade" id="abstrakModal{{ $skripsis->id }}" tabindex="-1" role="dialog" aria-labelledby="abstrakModalLabel{{ $skripsis->id }}" aria-hidden="true">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h6>Universitas Suryakancana</h6>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
                 </div>
-                <p>Abstrak</p>
-                <p class="abstrak-text">{{ $skripsis->abstrak }}</p>
+                <div class="modal-body">
+                    <div class="header">
+                        <h5 class="modal-title" id="abstrakModalLabel{{ $skripsis->id }}">{{ $skripsis->judul }}</h5>
+                        <h6 class="modal-title penulis">{{ $skripsis->penulis }}, author</h6>
+                        <hr class="dashed-line">
+                    </div>
+                    <p>Abstrak</p>
+                    <p class="abstrak-text">{{ $skripsis->abstrak }}</p>
+                </div>
             </div>
         </div>
     </div>
-</div>
 
-<!-- Modal untuk Tampilan Metadata - Mengikuti struktur asli -->
-<div class="modal fade" id="metadataModal{{ $skripsis->id }}" tabindex="-1" role="dialog" aria-labelledby="metadataLabel{{ $skripsis->id }}" aria-hidden="true">
-    <div class="modal-dialog modal-lg" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h6>Universitas Suryakancana</h6>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="modal-body">
-                <h1>Universitas Suryakancana Library</h1>
+    <!-- Modal untuk Tampilan Metadata - Mengikuti struktur asli -->
+    <div class="modal fade" id="metadataModal{{ $skripsis->id }}" tabindex="-1" role="dialog" aria-labelledby="metadataLabel{{ $skripsis->id }}" aria-hidden="true">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h6>Universitas Suryakancana</h6>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <h1>Universitas Suryakancana Library</h1>
 
-                <div class="utama">
-                    <div class="judul">
-                        <strong>Judul:</strong>
-                    </div>
-                    <div class="isi">
-                        <p>{{ $skripsis->judul }}</p>
-                    </div>
-                    <div class="judul">
-                        <strong>Pengarang:</strong>
+                    <div class="utama">
+                        <div class="judul">
+                            <strong>Judul:</strong>
+                        </div>
+                        <div class="isi">
+                            <p>{{ $skripsis->judul }}</p>
+                        </div>
+                        <div class="judul">
+                            <strong>Pengarang:</strong>
+                            
+                        </div>
+                        <div class="isi">
+                            <p>{{ $skripsis->penulis }}</p>
+                        </div>
+                        <div class="judul">
+                            <strong>Penerbitan:</strong>
+                        </div>
+                        <div class="isi">
+                            <p>{{ $skripsis->mahasiswa->jurusan->nama_jurusan ?? '-' }} Universitas Suryakancana</p>
+                        </div>
                         
-                    </div>
-                    <div class="isi">
-                        <p>{{ $skripsis->penulis }}</p>
-                    </div>
-                    <div class="judul">
-                        <strong>Penerbitan:</strong>
-                    </div>
-                    <div class="isi">
-                        <p>{{ $skripsis->prodi }} Universitas Suryakancana</p>
+                        <div class="judul">
+                            <strong>Link Terkait:</strong>
+                            <ul>
+                                <li><a href="/home/skripsi/detail/{{$skripsis->id}}">Deskripsi Bibliografi</a></li>
+                                <li>
+                                    <a href="{{ route('searchSkripsi') }}?judul={{ $skripsis->judul }}&penulis=&rilis=">
+                                        Dokumen Yang Mirip
+                                    </a>
+                                </li>
+                                <li><a href="/home/skripsi">Universitas Suryakancana Library</a></li>
+                            </ul>
+                        </div>
                     </div>
 
-                    <div class="judul">
-                        <strong>Link Terkait:</strong>
-                        <ul>
-                            <li><a href="/home/skripsi/detail/{{$skripsis->id}}">Deskripsi Bibliografi</a></li>
-                            <li>
-                                <a href="{{ route('searchSkripsi') }}?judul={{ $skripsis->judul }}&penulis=&rilis=">
-                                    Dokumen Yang Mirip
-                                </a>
-                            </li>
-                            <li><a href="/home/skripsi">Universitas Suryakancana Library</a></li>
-                        </ul>
+                    <div class="footer">
+                        <p>&copy; {{ date('Y') }} Universitas Suryakancana Library. All Rights Reserved.</p>
                     </div>
-                </div>
-
-                <div class="footer">
-                    <p>&copy; {{ date('Y') }} Universitas Suryakancana Library. All Rights Reserved.</p>
                 </div>
             </div>
         </div>
     </div>
+
+    <!-- Modal Daftar Pustaka dengan Tampilan PDF Non-Download -->
+<div class="modal fade" id="dapusModal{{ $skripsis->id }}" tabindex="-1" role="dialog" aria-labelledby="dapusModalLabel{{ $skripsis->id }}" aria-hidden="true">
+    <div class="modal-dialog modal-xl" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h6 class="modal-title" id="dapusModalLabel{{ $skripsis->id }}">Daftar Pustaka - {{ $skripsis->judul }}</h6>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Tutup">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+
+            <div class="modal-body">
+                @if($skripsis->file_dapus)
+                    <div class="card">
+                        <div class="card-header bg-light">
+                            <h5 class="mb-0">
+                                <i class="fas fa-file-pdf text-danger mr-2"></i>Dokumen Daftar Pustaka
+                            </h5>
+                        </div>
+                        <div class="card-body p-0">
+                            <div id="pdf-container-{{ $skripsis->id }}" style="position: relative;">
+                                <iframe 
+                                    id="pdfFrame{{ $skripsis->id }}"
+                                    src="{{ asset('storage/daftar_pustaka_files/' . $skripsis->file_dapus) }}#toolbar=0&navpanes=0&scrollbar=0" 
+                                    width="100%" 
+                                    height="600px" 
+                                    style="border: none;">
+                                </iframe>
+                                {{-- <div class="pdf-controls" style="position: absolute; top: 10px; right: 10px;">
+                                    <button class="btn btn-secondary btn-sm" onclick="openFullscreen('pdf-container-{{ $skripsis->id }}')">
+                                        <i class="fas fa-expand"></i> Layar Penuh
+                                    </button>
+                                </div> --}}
+                            </div>
+                        </div>
+                    </div>
+                @else
+                    <p class="text-danger">File daftar pustaka tidak tersedia.</p>
+                @endif
+            </div>
+        </div>
+    </div>
 </div>
+<!-- Modal Abstrak PDF dengan Tampilan Non-Download -->
+<div class="modal fade" id="abstrakPdfModal{{ $skripsis->id }}" tabindex="-1" role="dialog" aria-labelledby="abstrakPdfModalLabel{{ $skripsis->id }}" aria-hidden="true">
+    <div class="modal-dialog modal-xl" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h6 class="modal-title" id="abstrakPdfModalLabel{{ $skripsis->id }}">Abstrak PDF - {{ $skripsis->judul }}</h6>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Tutup">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+
+            <div class="modal-body">
+                @if($skripsis->file_abstrak)
+                    <div class="card">
+                        <div class="card-header bg-light">
+                            <h5 class="mb-0">
+                                <i class="fas fa-file-pdf text-danger mr-2"></i>Dokumen Abstrak PDF
+                            </h5>
+                        </div>
+                        <div class="card-body p-0">
+                            <iframe 
+                                src="{{ asset('storage/abstrak_files/' . $skripsis->file_abstrak) }}#toolbar=0&navpanes=0&scrollbar=0" 
+                                width="100%" 
+                                height="600px" 
+                                style="border: none;">
+                            </iframe>
+                        </div>
+                    </div>
+                @else
+                    <p class="text-danger">File abstrak tidak tersedia.</p>
+                @endif
+            </div>
+        </div>
+    </div>
+</div>
+
 @endforeach
 @stop
 
@@ -453,61 +595,61 @@
 
 @section('js')
 <script>
-    // Add this to your JS section
-$(document).ready(function() {
-    // Prevent dropdown from closing when clicking inside
-    $('.dropdown-menu').on('click', function(e) {
-        e.stopPropagation();
-    });
-    
-    // Ensure dropdown remains open when selecting from the prodi dropdown
-    $('select[name="prodi"]').on('change', function(e) {
-        e.stopPropagation();
-    });
-    
-    // Prevent form submission when clicking inside dropdown
-    $('.dropdown-menu input, .dropdown-menu select').on('click', function(e) {
-        e.stopPropagation();
-    });
-    
-    // Keep the remaining notification and animation code
-    // Fade out no-skripsi message
-    setTimeout(function() {
-        $('#no-skripsi-message').fadeOut('slow');
-    }, 10000);
-    
-    // Notification handling
-    let notificationMessage = "{{ session('favorite') }}";
-    let notificationType = "{{ session('favorite_type') }}";
+        // Add this to your JS section
+    $(document).ready(function() {
+        // Prevent dropdown from closing when clicking inside
+        $('.dropdown-menu').on('click', function(e) {
+            e.stopPropagation();
+        });
+        
+        // Ensure dropdown remains open when selecting from the prodi dropdown
+        $('select[name="prodi"]').on('change', function(e) {
+            e.stopPropagation();
+        });
+        
+        // Prevent form submission when clicking inside dropdown
+        $('.dropdown-menu input, .dropdown-menu select').on('click', function(e) {
+            e.stopPropagation();
+        });
+        
+        // Keep the remaining notification and animation code
+        // Fade out no-skripsi message
+        setTimeout(function() {
+            $('#no-skripsi-message').fadeOut('slow');
+        }, 10000);
+        
+        // Notification handling
+        let notificationMessage = "{{ session('favorite') }}";
+        let notificationType = "{{ session('favorite_type') }}";
 
-    if (notificationMessage) {
-        let notificationClass = notificationType === 'add' ? 'notification-success' : 'notification-danger';
+        if (notificationMessage) {
+            let notificationClass = notificationType === 'add' ? 'notification-success' : 'notification-danger';
 
-        $('#notification')
-            .removeClass('notification-success notification-danger')
-            .addClass(notificationClass)
-            .text(notificationMessage)
-            .fadeIn(500);
+            $('#notification')
+                .removeClass('notification-success notification-danger')
+                .addClass(notificationClass)
+                .text(notificationMessage)
+                .fadeIn(500);
 
-        setTimeout(() => {
-            $('#notification').fadeOut(500);
-        }, 5000);
-    }
-    
-    // Add animation to cards on page load
-    $('.skripsi-item').each(function(index) {
-        $(this).css({
-            'animation': 'fadeInUp 0.5s ease forwards',
-            'animation-delay': index * 0.1 + 's',
-            'opacity': '0'
+            setTimeout(() => {
+                $('#notification').fadeOut(500);
+            }, 5000);
+        }
+        
+        // Add animation to cards on page load
+        $('.skripsi-item').each(function(index) {
+            $(this).css({
+                'animation': 'fadeInUp 0.5s ease forwards',
+                'animation-delay': index * 0.1 + 's',
+                'opacity': '0'
+            });
+        });
+        
+        // Ensure modals work correctly
+        $('.modal').on('shown.bs.modal', function () {
+            $(this).find('[autofocus]').focus();
         });
     });
-    
-    // Ensure modals work correctly
-    $('.modal').on('shown.bs.modal', function () {
-        $(this).find('[autofocus]').focus();
-    });
-});
 </script>
 <style>
     @keyframes fadeInUp {

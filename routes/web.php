@@ -9,6 +9,7 @@ use App\Http\Controllers\MahasiswaController;
 use App\Http\Controllers\CommentController;
 use App\Http\Controllers\RiwayatSkripsiController;
 use App\Http\Controllers\NotifikasiController;
+use App\Http\Controllers\JurusanController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -43,6 +44,14 @@ Route::middleware('is_admin')->group(function () {
     Route::patch('/admin/dosen/ubah', [DosenController::class, 'ubah'])->name('ubah.dosen');
     Route::get('admin/ajaxadmin/dataDosen/{id}', [DosenController::class, 'getDataDosen']);
     Route::get('/admin/dosen/hapus/{id}', [DosenController::class, 'hapus'])->name('hapus.dosen');
+
+    // Route KelolaJurusan -------------------------------------------------------------------------
+    Route::get('/admin/jurusan', [JurusanController::class, 'index'])->name('jurusan');
+    Route::post('/admin/jurusan/store', [JurusanController::class, 'store'])->name('jurusan.store');
+    Route::patch('/admin/jurusan/update', [JurusanController::class, 'update'])->name('jurusan.update');
+    Route::get('/admin/jurusan/hapus/{id}', [JurusanController::class, 'destroy']);
+    Route::get('/admin/ajaxadmin/dataJurusan/{id}', [JurusanController::class, 'getData']);
+
 
     // Route Kelola Mahasiswa ---------------------------------------------------------------------
     Route::get('/admin/mahasiswa', [MahasiswaController::class, 'index'])->name('mahasiswa');
@@ -85,7 +94,7 @@ Route::middleware('auth','is_mahasiswa')->group(function () {
     Route::get('/home/skripsi/search', [SkripsiController::class, 'searchSkripsi'])->name('searchSkripsi');
     Route::get('/home/skripsi/find', [SkripsiController::class, 'findSkripsi'])->name('findSkripsi');
     // route::get('/home/skripsi/detail/{id}', [SkripsiController::class, 'showDetail'])->name('skripsi.detail');
-    Route::get('/metadata/{id}', [SkripsiController::class, 'showMetadataPdf'])->name('metadata');
+    // Route::get('/metadata/{id}', [SkripsiController::class, 'showMetadataPdf'])->name('metadata');
     Route::get('/home/riwayat', [RiwayatSkripsiController::class, 'showHistory'])->name('riwayatskripsi');
 // Untuk Laravel 8 ke atas
 Route::get('/home/ubah', [App\Http\Controllers\MahasiswaController::class, 'ubahPassword'])->name('mahasiswa.ubahPassword');

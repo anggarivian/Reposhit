@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use App\Models\PasswordHistory;
+use App\Models\Jurusan;
 use Illuminate\Http\Request;
 use App\Imports\MahasiswaImport;
 use Illuminate\Support\Facades\Hash;
@@ -13,18 +14,22 @@ use Illuminate\Support\Facades\Auth;
 class MahasiswaController extends Controller
 {
         // Read Data Mahasiswa ----------------------------------------------------------------------------------------------
-        public function index() {
+         public function index() {
+             $jurusans = Jurusan::all(); // untuk dropdown
             // Mengambil data mahasiswa dengan password asli mereka
-            $mahasiswa = User::where('roles_id', 2)
-                ->select('users.*')
+            $mahasiswa = User::with(['jurusan']) // relasi jurusan
+                ->where('roles_id', 2)
                 ->leftJoin('password_histories', function($join) {
                     $join->on('users.id', '=', 'password_histories.user_id')
-                        ->whereRaw('password_histories.id = (SELECT MAX(id) FROM password_histories WHERE user_id = users.id)');
+                        ->whereRaw('password_histories.id = (
+                            SELECT MAX(id) FROM password_histories 
+                            WHERE user_id = users.id
+                        )');
                 })
-                ->addSelect('password_histories.password_text')
-                ->paginate(6); // paginate 6 per halaman
+                ->select('users.*', 'password_histories.password_text')
+                ->paginate(6);
                 
-            return view('mahasiswa', compact('mahasiswa'));
+            return view('mahasiswa', compact('mahasiswa','jurusans'));
         }
     
         // Tambah Data Mahasiswa ----------------------------------------------------------------------------------------------
@@ -39,7 +44,7 @@ class MahasiswaController extends Controller
                 'alamat' => 'required|string|max:255',
                 'angkatan' => 'required|string|max:4|min:4',
                 'password' => 'required|string|min:8|max:255',
-                'prodi' => 'required|string|max:40',
+                'jurusan_id' => 'required|exists:jurusans,id',
             ]);
     
             // Create Data Mahasiswa ------------------------------------------------------------------
@@ -51,7 +56,7 @@ class MahasiswaController extends Controller
             $mahasiswa->tgl_lahir = $req->get('tgl_lahir');
             $mahasiswa->alamat = $req->get('alamat');
             $mahasiswa->angkatan = $req->get('angkatan');
-            $mahasiswa->prodi = $req->get('prodi');
+            $mahasiswa->jurusan_id = $req->get('jurusan_id');
             $mahasiswa->password = Hash::make($req->get('password'));
             $mahasiswa->roles_id = 2;
     
@@ -73,6 +78,7 @@ class MahasiswaController extends Controller
     // Get Data Mahasiswa ----------------------------------------------------------------------------------------------
     public function getDataMahasiswa($id){
         $mahasiswa = User::find($id);
+        return User::with('jurusan')->find($id);
         return response()->json($mahasiswa);
     }
 
@@ -87,7 +93,7 @@ class MahasiswaController extends Controller
             'tgl_lahir' => 'required|date',
             'alamat' => 'required|string|max:255',
             'angkatan' => 'required|string|max:4|min:4',
-            'prodi' => 'required|string|max:40',
+            'jurusan_id' => 'required|exists:jurusans,id',
         ]);
 
         // Update Data Mahasiswa ------------------------------------------------------------------
@@ -99,7 +105,7 @@ class MahasiswaController extends Controller
         $mahasiswa->tgl_lahir = $req->get('tgl_lahir');
         $mahasiswa->alamat = $req->get('alamat');
         $mahasiswa->angkatan = $req->get('angkatan');
-        $mahasiswa->prodi = $req->get('prodi');
+        $mahasiswa->jurusan_id = $req->get('jurusan_id');
 
         $mahasiswa->save();
 

@@ -14,4 +14,8 @@ class Dosen extends Model
     public function findForPassport($username) {
         return $this->orWhere('email', $username)->orWhere('npm', $username)->first();
     }
+    public function jurusan(){
+    
+        return $this->belongsTo(Jurusan::class);
+    }
 }

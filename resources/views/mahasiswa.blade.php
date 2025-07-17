@@ -36,7 +36,7 @@
             <th>Nama</th>
             <th>Tanggal Lahir</th>
             <th>Angkatan</th>
-            <th>Prodi</th>
+            <th>Jurusan</th>
             <th>Alamat</th>
             <th>Password</th>
             <th>Opsi</th>
@@ -51,7 +51,7 @@
             <td>{{$mahasiswas->name}}</td>
             <td>{{$mahasiswas->tgl_lahir}}</td>
             <td>{{$mahasiswas->angkatan}}</td>
-            <td>{{$mahasiswas->prodi}}</td>
+            <td>{{ $mahasiswas->jurusan->nama_jurusan ?? '-' }}</td>
             <td>{{$mahasiswas->alamat}}</td>
             <td>
                 <!-- Password dengan toggle visibility -->
@@ -128,11 +128,11 @@
                     <div class="d-flex">
                         <div class="form-group col-md-12">
                             <label for="prodi">Program Studi</label>
-                            <select name="prodi" class="form-control" id="prodi">
-                                <option disabled selected >Pilih</option>
-                                <option value="Agribisnis">Agribisnis</option>
-                                <option value="Agroteknologi">Agroteknologi</option>
-                                <option value="Pemanfaatan Sumberdaya Perikanan">Pemanfaatan Sumberdaya Perikanan</option>
+                            <select name="jurusan_id" class="form-control" id="prodi" required>
+                                <option disabled selected>Pilih Jurusan</option>
+                                @foreach($jurusans as $jur)
+                                    <option value="{{ $jur->id }}">{{ $jur->nama_jurusan }}</option>
+                                @endforeach
                             </select>
                         </div>
                     </div>
@@ -185,11 +185,11 @@
                         </div>
                         <div class="form-group col-md-6">
                             <label for="prodi">Program Studi</label>
-                            <select name="prodi" class="form-control" id="edit-prodi">
-                                <option disabled >Pilih</option>
-                                <option value="Agribisnis">Agribisnis</option>
-                                <option value="Agroteknologi">Agroteknologi</option>
-                                <option value="Pemanfaatan Sumberdaya Perikanan">Pemanfaatan Sumberdaya Perikanan</option>
+                            <select name="jurusan_id" id="edit-jurusan" class="form-control" required>
+                                <option disabled selected>Pilih Jurusan</option>
+                                @foreach($jurusans as $jur)
+                                    <option value="{{ $jur->id }}">{{ $jur->nama_jurusan }}</option>
+                                @endforeach
                             </select>
                         </div>
                     </div>
@@ -270,8 +270,9 @@
                     $('#edit-npm').val(res.npm);
                     $('#edit-angkatan').val(res.angkatan);
                     $('#edit-tgl_lahir').val(res.tgl_lahir);
-                    $('#edit-jurusan').val(res.jurusan);
-                    $('#edit-prodi').val(res.prodi);
+                    // $('#edit-jurusan').val(res.jurusan);
+                    // $('#edit-jurusan').val(res.jurusan_id);
+                    $('#edit-jurusan').val(res.jurusan_id);
                 },
             });
         });

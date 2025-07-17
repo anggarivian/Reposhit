@@ -42,7 +42,7 @@
                         <td>{{$no++}}</td>
                         <td>{{$dosens->nama}}</td>
                         <td>{{$dosens->nip}}</td>
-                        <td>{{$dosens->program_studi}}</td>
+                        <td>{{ $dosens->jurusan->nama_jurusan ?? '-' }}</td>
                         <td>{{$dosens->kontak}}</td>
                         <td>
                             <div class="form-group" role="group" aria-label="Basic example">
@@ -90,11 +90,11 @@
                             </div> --}}
                             <div class="form-group col-md-6">
                                 <label for="program_studi">Program Studi</label>
-                                <select name="program_studi" class="form-control" id="program_studi" >
+                                <select name="jurusan_id" class="form-control" id="program_studi" required>
                                     <option disabled selected>Pilih</option>
-                                    <option value="Agribisnis">Agribisnis</option>
-                                    <option value="Agroteknologi">Agroteknologi</option>
-                                    <option value="Pemanfaatan Sumberdaya Perikanan">Pemanfaatan Sumberdaya Perikanan</option>
+                                    @foreach($jurusan as $item)
+                                        <option value="{{ $item->id }}">{{ $item->nama_jurusan }}</option>
+                                    @endforeach
                                 </select>
                             </div>
                         </div>
@@ -156,11 +156,11 @@
                             </div> --}}
                             <div class="form-group col-md-6">
                                 <label for="program_studi">Program Studi</label>
-                                <select name="program_studi" class="form-control" id="program_studi" >
+                                <select name="jurusan_id" class="form-control" id="edit-program_studi" required>
                                     <option disabled>Pilih</option>
-                                    <option value="Agribisnis">Agribisnis</option>
-                                    <option value="Agroteknologi">Agroteknologi</option>
-                                    <option value="Pemanfaatan Sumberdaya Perikanan">Pemanfaatan Sumberdaya Perikanan</option>
+                                    @foreach($jurusan as $item)
+                                        <option value="{{ $item->id }}">{{ $item->nama_jurusan }}</option>
+                                    @endforeach
                                 </select>
                             </div>
                         </div>
@@ -238,7 +238,7 @@
                         $('#edit-id').val(res.id);
                         $('#edit-nip').val(res.nip);
                         $('#edit-jabatan').val(res.jabatan);
-                        $('#edit-program_studi').val(res.program_studi);
+                        $('#edit-program_studi').val(res.jurusan_id);
                     },
                 });
             });

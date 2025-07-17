@@ -21,7 +21,10 @@ class CreateSkripsisTable extends Migration
             $table->string('rilis');
             $table->string('halaman');
             $table->longText('abstrak');
+            $table->string('katakunci');
             $table->string('file_skripsi');
+            $table->string('file_dapus');
+            $table->string('file_abstrak');
             $table->boolean('status')->nullable();
             $table->integer('views')->default(0);
             $table->unsignedBigInteger('user_id')->nullable(); // Add user_id to link to users table
