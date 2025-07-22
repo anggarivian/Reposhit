@@ -32,9 +32,9 @@
                 </thead>
                 <tbody>
                     @php $no = 1; @endphp
-                    @foreach($jurusans as $jurusan)
+                    @foreach($jurusans as $index => $jurusan)
                     <tr>
-                        <td>{{ $no++ }}</td>
+                        <td>{{ $jurusans->firstItem() + $index }}</td>
                         <td>{{ $jurusan->nama_jurusan }}</td>
                         <td>{{ $jurusan->kode_jurusan }}</td>
                         <td>

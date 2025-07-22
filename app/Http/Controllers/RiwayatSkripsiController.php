@@ -9,20 +9,20 @@ use App\Models\Skripsi; // Make sure this model exists
 
 class RiwayatSkripsiController extends Controller
 {
-public function showHistory()
-{
-    $userId = auth()->user()->id;
+    public function showHistory()
+    {
+        $userId = auth()->user()->id;
 
-    $history = DB::table('riwayat_skripsis')
-        ->join('skripsis', 'skripsis.id', '=', 'riwayat_skripsis.id_skripsi')
-        ->join('users', 'skripsis.penulis', '=', 'users.name')
-        ->leftJoin('jurusans', 'users.jurusan_id', '=', 'jurusans.id') // Tambahan join ke jurusan
-        ->where('riwayat_skripsis.id_user', $userId)
-        ->select('skripsis.*', 'jurusans.nama_jurusan as prodi') // Ubah dari users.prodi ke jurusans.nama_jurusan
-        ->get();
+        $history = DB::table('riwayat_skripsis')
+            ->join('skripsis', 'skripsis.id', '=', 'riwayat_skripsis.id_skripsi')
+            ->join('users', 'skripsis.penulis', '=', 'users.name')
+            ->leftJoin('jurusans', 'users.jurusan_id', '=', 'jurusans.id') // Tambahan join ke jurusan
+            ->where('riwayat_skripsis.id_user', $userId)
+            ->select('skripsis.*', 'jurusans.nama_jurusan as prodi') // Ubah dari users.prodi ke jurusans.nama_jurusan
+            ->get();
 
-    return view('riwayatskripsi', compact('history'));
-}
+        return view('riwayatskripsi', compact('history'));
+    }
 
     public function showDetail($id)
     {

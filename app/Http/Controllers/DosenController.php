@@ -14,7 +14,7 @@ use Maatwebsite\Excel\Facades\Excel;
 class DosenController extends Controller
 {
     public function index() {
-        $dosen = Dosen::with('jurusan')->get();
+$dosen = Dosen::with('jurusan')->paginate(6);
         $jurusan = Jurusan::all();
         return view('dosen', compact('dosen', 'jurusan'));
     }

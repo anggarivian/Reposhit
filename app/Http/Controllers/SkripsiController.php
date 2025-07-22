@@ -44,12 +44,13 @@ class SkripsiController extends Controller
         return view('skripsi', compact('skripsi', 'namaDospem', 'namaPenulis'));
     }
     
-    public function index1() {
-        $skripsi = Skripsi::All();
-        $namaDospem = Dosen::All();
-        $namaPenulis = User::where('roles_id', 2)->get();
-        return view('skripsiadmin', compact('skripsi', 'namaDospem', 'namaPenulis'));
-    }
+public function index1() {
+    $skripsi = Skripsi::orderBy('created_at', 'desc')->paginate(10);
+    $namaDospem = Dosen::all();
+    $namaPenulis = User::where('roles_id', 2)->get();
+
+    return view('skripsiadmin', compact('skripsi', 'namaDospem', 'namaPenulis'));
+}
 
     public function mahasiswa()
     {

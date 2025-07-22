@@ -24,7 +24,8 @@
                     </button>
                 </div>
             </div>
-            <table id="table-data" class="table table-stripped text-center">
+ <!-- Tabel Data Dosen -->
+            <table class="table table-striped text-center">
                 <thead>
                     <tr class="text-center">
                         <th>No.</th>
@@ -36,28 +37,30 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @php $no=1; @endphp
-                    @foreach($dosen as $dosens)
-                    <tr>
-                        <td>{{$no++}}</td>
-                        <td>{{$dosens->nama}}</td>
-                        <td>{{$dosens->nip}}</td>
-                        <td>{{ $dosens->jurusan->nama_jurusan ?? '-' }}</td>
-                        <td>{{$dosens->kontak}}</td>
-                        <td>
-                            <div class="form-group" role="group" aria-label="Basic example">
-                                <button type="button" id="btn-edit-dosen" class="btn btn-sm btn-success" data-toggle="modal" data-target="#edit" data-id="{{ $dosens->id }}">
-                                    <i class="fas fa-edit"> Edit</i> <!-- Ikon untuk Edit -->
+                    @foreach($dosen as $index => $dosens)
+                        <tr>
+                            <td>{{ $dosen->firstItem() + $index }}</td>
+                            <td>{{ $dosens->nama }}</td>
+                            <td>{{ $dosens->nip }}</td>
+                            <td>{{ $dosens->jurusan->nama_jurusan ?? '-' }}</td>
+                            <td>{{ $dosens->kontak }}</td>
+                            <td>
+                                <button type="button" id="btn-edit-dosen" class="btn btn-sm btn-success" data-toggle="modal" data-target="#modalEdit" data-id="{{ $dosens->id }}">
+                                    <i class="fas fa-edit"></i> Edit
                                 </button>
-                                <button type="button" class="btn btn-sm btn-danger" onclick="deleteConfirmation('{{$dosens->id}}' , '{{$dosens->nama}}' )">
-                                    <i class="fas fa-trash-alt"> Hapus </i> <!-- Ikon untuk Hapus Favorite -->
+                                <button type="button" class="btn btn-sm btn-danger" onclick="deleteConfirmation('{{ $dosens->id }}' , '{{ $dosens->nama }}')">
+                                    <i class="fas fa-trash-alt"></i> Hapus
                                 </button>
-                            </div>
-                        </td>
-                    </tr>
+                            </td>
+                        </tr>
                     @endforeach
                 </tbody>
             </table>
+
+            <!-- Pagination -->
+            <div class="d-flex justify-content-center">
+                {{ $dosen->links('pagination::bootstrap-4') }}
+            </div>
         </div>
     </div>
 </div>

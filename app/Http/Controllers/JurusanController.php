@@ -7,9 +7,9 @@ use App\Models\Jurusan;
 
 class JurusanController extends Controller
 {
-        public function index()
+    public function index()
     {
-        $jurusans = Jurusan::all();
+        $jurusans = Jurusan::orderBy('created_at', 'desc')->paginate(10);
         return view('jurusan', compact('jurusans'));
     }
 

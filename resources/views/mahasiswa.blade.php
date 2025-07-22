@@ -9,7 +9,7 @@
 @section('content')
 <div class="container-fluid">
     <div class="card card-default">
-    <div class="card-header">{{__('Pengelolaan Mahasiswa')}}</div>
+        <div class="card-header">{{ __('Pengelolaan Mahasiswa') }}</div>
         <div class="card-body">
             <div class="w-100 d-flex justify-content-between" style="margin-right: 10px">
                 <div class="tombol">
@@ -25,65 +25,68 @@
                 </div>
             </div>
             <hr>
-<!-- Modifikasi pada mahasiswa.blade.php -->
 
-<!-- Bagian yang perlu diubah pada tabel -->
-<table id="table-data" class="table table-stripped text-center">
-    <thead>
-        <tr class="text-center">
-            <th>No</th>
-            <th>NPM</th>
-            <th>Nama</th>
-            <th>Tanggal Lahir</th>
-            <th>Angkatan</th>
-            <th>Jurusan</th>
-            <th>Alamat</th>
-            <th>Password</th>
-            <th>Opsi</th>
-        </tr>
-    </thead>
-    <tbody>
-        @php $no=1; @endphp
-        @foreach($mahasiswa as $mahasiswas)
-        <tr>
-            <td>{{$no++}}</td>
-            <td>{{$mahasiswas->npm}}</td>
-            <td>{{$mahasiswas->name}}</td>
-            <td>{{$mahasiswas->tgl_lahir}}</td>
-            <td>{{$mahasiswas->angkatan}}</td>
-            <td>{{ $mahasiswas->jurusan->nama_jurusan ?? '-' }}</td>
-            <td>{{$mahasiswas->alamat}}</td>
-            <td>
-                <!-- Password dengan toggle visibility -->
-                <div class="d-flex align-items-center justify-content-center">
-                    <span class="password-text" id="password-{{$mahasiswas->id}}">
-                        •••••••••
-                    </span>
-                    <button class="btn btn-sm btn-outline-secondary ml-2 toggle-password" 
-                            data-password="{{$mahasiswas->password_text ?? 'Tidak tersedia'}}" 
-                            data-target="password-{{$mahasiswas->id}}">
-                        <i class="fas fa-eye"></i>
-                    </button>
-                </div>
-            </td>
-            <td>
-                <div class="form-group" role="group" aria-label="Basic example">
-                    <button type="button" id="btn-edit-mahasiswa" class="btn btn-sm btn-success" data-toggle="modal" data-target="#edit" data-id="{{ $mahasiswas->id }}">
-                        <i class="fas fa-edit"> Edit </i>
-                    </button>
-                    <button type="button" class="btn btn-sm btn-danger" onclick="deleteConfirmation('{{$mahasiswas->id}}' , '{{$mahasiswas->name}}' )">
-                        <i class="fas fa-trash-alt"> Hapus </i>
-                    </button>
-                    <!-- Tambahkan tombol reset password -->
-                    {{-- <button type="button" class="btn btn-sm btn-warning" data-toggle="modal" data-target="#resetPassword" onclick="setResetUser('{{$mahasiswas->id}}', '{{$mahasiswas->name}}')">
-                        <i class="fas fa-key"> Reset</i>
-                    </button> --}}
-                </div>
-            </td>
-        </tr>
-        @endforeach
-    </tbody>
-</table>
+            <!-- Tabel Data Mahasiswa -->
+            <table class="table table-striped text-center">
+                <thead>
+                    <tr class="text-center">
+                        <th>No</th>
+                        <th>NPM</th>
+                        <th>Nama</th>
+                        <th>Tanggal Lahir</th>
+                        <th>Angkatan</th>
+                        <th>Jurusan</th>
+                        <th>Alamat</th>
+                        <th>Password</th>
+                        <th>Opsi</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach($mahasiswa as $index => $mahasiswas)
+                        <tr>
+                            <td>{{ $mahasiswa->firstItem() + $index }}</td>
+                            <td>{{ $mahasiswas->npm }}</td>
+                            <td>{{ $mahasiswas->name }}</td>
+                            <td>{{ $mahasiswas->tgl_lahir }}</td>
+                            <td>{{ $mahasiswas->angkatan }}</td>
+                            <td>{{ $mahasiswas->jurusan->nama_jurusan ?? '-' }}</td>
+                            <td>{{ $mahasiswas->alamat }}</td>
+                            <td>
+                                <!-- Password dengan toggle visibility -->
+                                <div class="d-flex align-items-center justify-content-center">
+                                    <span class="password-text" id="password-{{ $mahasiswas->id }}">
+                                        •••••••••
+                                    </span>
+                                    <button class="btn btn-sm btn-outline-secondary ml-2 toggle-password" 
+                                            data-password="{{ $mahasiswas->password_text ?? 'Tidak tersedia' }}" 
+                                            data-target="password-{{ $mahasiswas->id }}">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="form-group" role="group" aria-label="Basic example">
+                                    <button type="button" id="btn-edit-mahasiswa" class="btn btn-sm btn-success" data-toggle="modal" data-target="#edit" data-id="{{ $mahasiswas->id }}">
+                                        <i class="fas fa-edit"> Edit </i>
+                                    </button>
+                                    <button type="button" class="btn btn-sm btn-danger" onclick="deleteConfirmation('{{ $mahasiswas->id }}' , '{{ $mahasiswas->name }}')">
+                                        <i class="fas fa-trash-alt"> Hapus </i>
+                                    </button>
+                                    <!-- Tombol reset password bisa ditambahkan kembali -->
+                                    {{-- <button type="button" class="btn btn-sm btn-warning" data-toggle="modal" data-target="#resetPassword" onclick="setResetUser('{{ $mahasiswas->id }}', '{{ $mahasiswas->name }}')">
+                                        <i class="fas fa-key"> Reset</i>
+                                    </button> --}}
+                                </div>
+                            </td>
+                        </tr>
+                    @endforeach
+                </tbody>
+            </table>
+
+            <!-- Pagination -->
+            <div class="d-flex justify-content-center">
+                {{ $mahasiswa->links('pagination::bootstrap-4') }}
+            </div>
         </div>
     </div>
 </div>
@@ -149,6 +152,7 @@
         </div>
     </div>
 </div>
+
 <!-- Modal Edit -->
 <div class="modal fade" id="edit" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog">
@@ -166,12 +170,12 @@
                     <input type="text" class="form-control" name="id" id="edit-id" hidden required>
                     <div class="form-group col-md-12">
                         <label for="name">Nama Lengkap</label>
-                        <input type="text" class="form-control" name="name" id="edit-name" required placeholder="Masukan Nama Mahasiswa"readonly>
+                        <input type="text" class="form-control" name="name" id="edit-name" required placeholder="Masukan Nama Mahasiswa" readonly>
                     </div>
                     <div class="d-flex">
                         <div class="form-group col-md-6">
                             <label for="npm">NPM</label>
-                            <input type="text" class="form-control" name="npm" id="edit-npm" required placeholder="Harus 10 Nomor"readonly>
+                            <input type="text" class="form-control" name="npm" id="edit-npm" required placeholder="Harus 10 Nomor" readonly>
                         </div>
                         <div class="form-group col-md-6">
                             <label for="tgl_lahir">Tanggal Lahir</label>
@@ -206,7 +210,8 @@
         </div>
     </div>
 </div>
-<!-- import -->
+
+<!-- Modal Import -->
 <div class="modal fade" id="import" tabindex="-1" aria-labelledby="importLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
@@ -221,7 +226,7 @@
                 <div class="modal-body">
                     <div class="form-group col-md-12">
                         <label for="file">File</label>
-                        <input type="file"class="form-control p-1" name="file" id="edit-file" required/>
+                        <input type="file" class="form-control p-1" name="file" id="edit-file" required/>
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -247,11 +252,9 @@
         box-shadow: none;
     }
 </style>
-
 @stop
 
 @section('js')
-
 <script>
     $(function(){
         $(document).on('click','#btn-edit-mahasiswa', function(){
@@ -270,13 +273,12 @@
                     $('#edit-npm').val(res.npm);
                     $('#edit-angkatan').val(res.angkatan);
                     $('#edit-tgl_lahir').val(res.tgl_lahir);
-                    // $('#edit-jurusan').val(res.jurusan);
-                    // $('#edit-jurusan').val(res.jurusan_id);
                     $('#edit-jurusan').val(res.jurusan_id);
                 },
             });
         });
     });
+
     function deleteConfirmation(id, name) {
         swal.fire({
             title: "Hapus?",
@@ -287,7 +289,6 @@
             cancelButtonText: "Tidak, batalkan!",
         }).then(function(e) {
             if (e.value === true) {
-                // Add CSRF token to headers
                 $.ajaxSetup({
                     headers: {
                         'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
@@ -316,17 +317,15 @@
             }
         });
     }
-    
+
     // Script untuk password toggle
     $(document).ready(function() {
-        // Event handler untuk toggle password
         $('.toggle-password').on('click', function() {
             const targetId = $(this).data('target');
             const passwordText = $(this).data('password');
             const $passwordElement = $('#' + targetId);
             const $icon = $(this).find('i');
             
-            // Toggle password visibility
             if ($passwordElement.text().includes('•')) {
                 $passwordElement.text(passwordText);
                 $icon.removeClass('fa-eye').addClass('fa-eye-slash');

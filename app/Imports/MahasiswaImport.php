@@ -5,6 +5,7 @@
 namespace App\Imports;
 
 use App\Models\User;
+use App\Models\Jurusan;
 use App\Models\PasswordHistory;
 use Maatwebsite\Excel\Concerns\ToModel;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
@@ -22,47 +23,53 @@ class MahasiswaImport implements ToModel, WithHeadingRow, WithEvents
      *
      * @return \Illuminate\Database\Eloquent\Model|null
      */
-    public function model(array $row)
+      public function model(array $row)
     {
-        // Simpan user baru
+        // Pastikan kolom jurusan tersedia
+        if (!isset($row['jurusan'])) {
+            throw new \Exception("Kolom 'jurusan' tidak ditemukan di file Excel.");
+        }
+
+        // Cari jurusan berdasarkan nama
+        $jurusan = Jurusan::where('nama_jurusan', trim($row['jurusan']))->first();
+
+        if (!$jurusan) {
+            throw new \Exception("Jurusan '{$row['jurusan']}' tidak ditemukan di database.");
+        }
+
+        // Buat user baru
         $user = new User([
-            'npm' => $row['npm'],
-            'name' => $row['name'],
-            // 'status' => $row['status'],
-            'tgl_lahir' => $row['tgl_lahir'],
-            'alamat' => $row['alamat'],
-            'angkatan' => $row['angkatan'],
-            'prodi' => $row['prodi'],
-            'password' => Hash::make($row['password']),
-            'roles_id' => 2,
+            'npm'        => $row['npm'],
+            'name'       => $row['name'],
+            'tgl_lahir'  => $row['tgl_lahir'],
+            'alamat'     => $row['alamat'],
+            'angkatan'   => $row['angkatan'],
+            'jurusan_id' => $jurusan->id,
+            'password'   => Hash::make($row['password']),
+            'roles_id'   => 2, // Mahasiswa
         ]);
-        
-        // Simpan password asli untuk diproses nanti
+
+        // Simpan password asli untuk dicatat
         $this->userPasswords[] = [
-            'user' => $user,
+            'user'     => $user,
             'password' => $row['password']
         ];
-        
+
         return $user;
     }
-    
-    /**
-     * Menyimpan password asli setelah import selesai
-     */
+
     public function registerEvents(): array
     {
         return [
             AfterImport::class => function(AfterImport $event) {
                 foreach ($this->userPasswords as $data) {
                     $user = $data['user'];
-                    
-                    // Pastikan user sudah memiliki ID (sudah tersimpan di database)
+
                     if ($user && $user->id) {
-                        // Simpan password asli ke tabel password_histories
                         PasswordHistory::create([
-                            'user_id' => $user->id,
+                            'user_id'       => $user->id,
                             'password_text' => $data['password'],
-                            'created_by' => auth()->id() ?? 1, // ID admin yang melakukan import
+                            'created_by'    => auth()->id() ?? 1,
                         ]);
                     }
                 }

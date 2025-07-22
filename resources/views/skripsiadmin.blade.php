@@ -11,7 +11,9 @@
     <div class="card card-default">
         <div class="card-body">
             <div class="d-flex justify-content-between mb-3">
+                <!-- Jika ingin menambahkan tombol lain, taruh di sini -->
             </div>
+
             <table id="table-data" class="table table-striped text-center">
                 <thead>
                     <tr class="text-center">
@@ -28,27 +30,27 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @php $no=1; @endphp
                     @foreach($skripsi as $skripsis)
                     <tr>
-                        <td>{{$no++}}</td>
+                        <!-- Nomor urut dengan pagination -->
+                        <td>{{ $dosen->firstItem() + $index }}</td>
                         <td>{{ Str::limit($skripsis->judul, 20) }}</td>
-                        <td>{{$skripsis->penulis}}</td>
+                        <td>{{ $skripsis->penulis }}</td>
                         <td>{{ Str::limit($skripsis->abstrak, 20) }}</td>
-                        <td>{{$skripsis->dospem}}</td>
-                        <td>{{$skripsis->rilis}}</td>
+                        <td>{{ $skripsis->dospem }}</td>
+                        <td>{{ $skripsis->rilis }}</td>
                         <td>
-                        @if ($skripsis->status == 0)
-                            <span class="badge badge-warning">Belum Diverifikasi</span>
-                        @elseif ($skripsis->status == 1)
-                            <span class="badge badge-success">Sudah Diverifikasi</span>
-                        @elseif ($skripsis->status == 2)
-                            <span class="badge badge-danger">Ditolak</span>
-                        @else
-                            <span class="badge badge-secondary">Status Tidak Diketahui</span>
-                        @endif
+                            @if ($skripsis->status == 0)
+                                <span class="badge badge-warning">Belum Diverifikasi</span>
+                            @elseif ($skripsis->status == 1)
+                                <span class="badge badge-success">Sudah Diverifikasi</span>
+                            @elseif ($skripsis->status == 2)
+                                <span class="badge badge-danger">Ditolak</span>
+                            @else
+                                <span class="badge badge-secondary">Status Tidak Diketahui</span>
+                            @endif
                         </td>
-                        <td>{{$skripsis->halaman}}</td>
+                        <td>{{ $skripsis->halaman }}</td>
                         <td>{{ $skripsis->created_at->format('Y-m-d') }}</td>
                         <td>
                             <div class="form-group" role="group" aria-label="Basic example">
@@ -57,13 +59,10 @@
                                         <i class="fas fa-eye"> Lihat Skripsi</i> 
                                     </button>
                                 </a>
-                                {{-- <button id="btn-edit-skripsi" class="btn btn-success btn-sm" data-toggle="modal" data-target="#edit" data-id="{{ $skripsis->id }}">
-                                    <i class="fas fa-edit"> Edit</i>
-                                </button>   --}}
-                                <button type="button" class="btn btn-sm btn-danger" onclick="deleteConfirmation('{{$skripsis->id}}' , '{{$skripsis->judul}}' )">
+                                <button type="button" class="btn btn-sm btn-danger" onclick="deleteConfirmation('{{ $skripsis->id }}' , '{{ $skripsis->judul }}')">
                                     <i class="fas fa-trash-alt"> Hapus </i>
                                 </button>
-                                <button type="button" class="btn btn-sm btn-info" onclick="verifikasiAtauTolak('{{$skripsis->id}}', '{{$skripsis->judul}}')">
+                                <button type="button" class="btn btn-sm btn-info" onclick="verifikasiAtauTolak('{{ $skripsis->id }}', '{{ $skripsis->judul }}')">
                                     <i class="fas fa-check-circle"> Verifikasi / Tolak</i>
                                 </button>
                             </div>
@@ -72,74 +71,82 @@
                     @endforeach
                 </tbody>
             </table>
+
+            <!-- Pagination -->
+            <div class="d-flex justify-content-center">
+                {{ $skripsi->links('pagination::bootstrap-4') }}
+            </div>
         </div>
     </div>
 </div>
 
-    <!-- Modal Edit -->
-    {{-- <div class="modal fade" id="edit" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-xl">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLabel">Edit Data Skripsi</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <form method="post" action="{{ route('edit.skripsi') }}" enctype="multipart/form-data">
-                    @csrf
-                    @method('PATCH')
-                    <div class="modal-body">
-                        <input type="hidden" class="form-control" name="id" id="edit-id">
-                        <div class="form-group">
-                            <label for="judul">Judul</label>
-                            <input type="text" class="form-control" name="judul" id="edit-judul" required placeholder="Masukkan Judul Skripsi">
-                        </div>
-                        <div class="form-group">
-                            <label for="abstrak">Abstrak</label>
-                            <textarea class="form-control" name="abstrak" id="edit-abstrak" required placeholder="Masukkan Abstrak"></textarea>
-                        </div>
-                        <div class="d-flex" style="margin: -7px">
-                            <div class="form-group col-md-3">
-                                <label for="penulis">Penulis</label>
-                                <input type="text" class="form-control" name="penulis" id="penulis" value="{{ Auth::user()->name }}" readonly>
-                            </div>
-                            <div class="form-group col-md-3">
-                                <label for="dospem">Dosen Pembimbing</label>
-                                <select name="dospem" class="form-control" id="edit-dospem">
-                                    <option selected>Pilih</option>
-                                    @foreach ($namaDospem as $nama)
-                                        <option value="{{$nama->nama}}">{{$nama->nama}}</option>
-                                    @endforeach
-                                </select>
-                            </div>
-                            <div class="form-group col-md-3">
-                                <label for="rilis">Rilis Pada Tahun</label>
-                                <input type="text" class="form-control" name="rilis" id="edit-rilis" required placeholder="Harus 4 Angka">
-                            </div>
-                            <div class="form-group col-md-3">
-                                <label for="halaman">Halaman</label>
-                                <input type="text" class="form-control" name="halaman" id="edit-halaman" required placeholder="Masukkan Jumlah Halaman">
-                            </div>
-                        </div>
-                        <!-- Form untuk Mengganti File Skripsi -->
-                        <div id="file-upload-area" class="mb-3" style="display:none;">
-                            <label for="edit-file_skripsi" class="form-label">Pilih File Skripsi Baru</label>
-                            <input type="file" class="form-control" id="edit-file_skripsi" name="file_skripsi">
-                        </div>
-                        <!-- Status File Skripsi -->
-                        <div id="file_skripsi-area" class="mb-3">
-                            <!-- Teks ini akan diubah oleh JavaScript berdasarkan status file -->
-                        </div>
-                        <div class="modal-footer">
-                            <input type="text" name="old_file_skripsi" id="edit-old-file_skripsi" hidden />
-                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                            <button type="submit" class="btn btn-primary">Ubah Data</button>
-                        </div>
-                </form>
+<!-- Modal Edit -->
+{{-- Modal Edit tetap ada, hanya dikomentari jika tidak digunakan --}}
+{{-- 
+<div class="modal fade" id="edit" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Edit Data Skripsi</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
             </div>
+            <form method="post" action="{{ route('edit.skripsi') }}" enctype="multipart/form-data">
+                @csrf
+                @method('PATCH')
+                <div class="modal-body">
+                    <input type="hidden" class="form-control" name="id" id="edit-id">
+                    <div class="form-group">
+                        <label for="judul">Judul</label>
+                        <input type="text" class="form-control" name="judul" id="edit-judul" required placeholder="Masukkan Judul Skripsi">
+                    </div>
+                    <div class="form-group">
+                        <label for="abstrak">Abstrak</label>
+                        <textarea class="form-control" name="abstrak" id="edit-abstrak" required placeholder="Masukkan Abstrak"></textarea>
+                    </div>
+                    <div class="d-flex" style="margin: -7px">
+                        <div class="form-group col-md-3">
+                            <label for="penulis">Penulis</label>
+                            <input type="text" class="form-control" name="penulis" id="penulis" value="{{ Auth::user()->name }}" readonly>
+                        </div>
+                        <div class="form-group col-md-3">
+                            <label for="dospem">Dosen Pembimbing</label>
+                            <select name="dospem" class="form-control" id="edit-dospem">
+                                <option selected>Pilih</option>
+                                @foreach ($namaDospem as $nama)
+                                    <option value="{{$nama->nama}}">{{$nama->nama}}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="form-group col-md-3">
+                            <label for="rilis">Rilis Pada Tahun</label>
+                            <input type="text" class="form-control" name="rilis" id="edit-rilis" required placeholder="Harus 4 Angka">
+                        </div>
+                        <div class="form-group col-md-3">
+                            <label for="halaman">Halaman</label>
+                            <input type="text" class="form-control" name="halaman" id="edit-halaman" required placeholder="Masukkan Jumlah Halaman">
+                        </div>
+                    </div>
+                    <!-- Form untuk Mengganti File Skripsi -->
+                    <div id="file-upload-area" class="mb-3" style="display:none;">
+                        <label for="edit-file_skripsi" class="form-label">Pilih File Skripsi Baru</label>
+                        <input type="file" class="form-control" id="edit-file_skripsi" name="file_skripsi">
+                    </div>
+                    <!-- Status File Skripsi -->
+                    <div id="file_skripsi-area" class="mb-3">
+                        <!-- Teks ini akan diubah oleh JavaScript -->
+                    </div>
+                    <div class="modal-footer">
+                        <input type="text" name="old_file_skripsi" id="edit-old-file_skripsi" hidden />
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-primary">Ubah Data</button>
+                    </div>
+            </form>
         </div>
-    </div> --}}
+    </div>
+</div>
+--}}
 @stop
 
 @section('js')
@@ -147,8 +154,8 @@
     $(function(){
         $(document).on('click', '#btn-edit-skripsi', function () {
             let id = $(this).data('id');
-            $('#file_skripsi-area').empty(); // Kosongkan elemen sebelum diisi ulang
-            $('#file-upload-area').hide(); // Sembunyikan area upload file saat modal dibuka
+            $('#file_skripsi-area').empty(); 
+            $('#file-upload-area').hide(); 
 
             $.ajax({
                 type: "GET",
@@ -163,10 +170,9 @@
                     $('#edit-halaman').val(res.halaman);
                     $('#edit-old-file_skripsi').val(res.file_skripsi);
 
-                    // Menampilkan status file skripsi
                     if (res.file_skripsi) {
                         $('#file_skripsi-area').html('<span class="text-success">File Tersedia: ' + res.file_skripsi + '</span>');
-                        $('#file-upload-area').show(); // Menampilkan form upload file jika file tersedia
+                        $('#file-upload-area').show();
                     } else {
                         $('#file_skripsi-area').html('<span class="text-danger">File Tidak Tersedia</span>');
                     }
@@ -214,56 +220,54 @@
     }
 
     function verifikasiAtauTolak(id, name) {
-    Swal.fire({
-        title: 'Verifikasi atau Tolak?',
-        text: 'Apa yang ingin Anda lakukan pada skripsi: ' + name + '?',
-        icon: 'question',
-        showCancelButton: true,
-        showDenyButton: true,
-        confirmButtonText: 'Verifikasi',
-        denyButtonText: 'Tolak Verifikasi',
-        cancelButtonText: 'Batal'
-    }).then((result) => {
-        var CSRF_TOKEN = $('meta[name="csrf-token"]').attr('content');
+        Swal.fire({
+            title: 'Verifikasi atau Tolak?',
+            text: 'Apa yang ingin Anda lakukan pada skripsi: ' + name + '?',
+            icon: 'question',
+            showCancelButton: true,
+            showDenyButton: true,
+            confirmButtonText: 'Verifikasi',
+            denyButtonText: 'Tolak Verifikasi',
+            cancelButtonText: 'Batal'
+        }).then((result) => {
+            var CSRF_TOKEN = $('meta[name="csrf-token"]').attr('content');
 
-        if (result.isConfirmed) {
-            // Jika klik Verifikasi
-            $.ajax({
-                type: 'GET',
-                url: "/admin/skripsi/verifikasi/" + id,
-                data: {_token: CSRF_TOKEN},
-                dataType: 'JSON',
-                success: function (results) {
-                    if (results.success === true) {
-                        Swal.fire("Berhasil!", results.message, "success");
-                        setTimeout(function () {
-                            location.reload();
-                        }, 1000);
-                    } else {
-                        Swal.fire("Gagal!", results.message, "error");
+            if (result.isConfirmed) {
+                $.ajax({
+                    type: 'GET',
+                    url: "/admin/skripsi/verifikasi/" + id,
+                    data: {_token: CSRF_TOKEN},
+                    dataType: 'JSON',
+                    success: function (results) {
+                        if (results.success === true) {
+                            Swal.fire("Berhasil!", results.message, "success");
+                            setTimeout(function () {
+                                location.reload();
+                            }, 1000);
+                        } else {
+                            Swal.fire("Gagal!", results.message, "error");
+                        }
                     }
-                }
-            });
-        } else if (result.isDenied) {
-            // Jika klik Tolak
-            $.ajax({
-                type: 'GET',
-                url: "/admin/skripsi/tolak/" + id,
-                data: {_token: CSRF_TOKEN},
-                dataType: 'JSON',
-                success: function (results) {
-                    if (results.success === true) {
-                        Swal.fire("Ditolak!", results.message, "success");
-                        setTimeout(function () {
-                            location.reload();
-                        }, 1000);
-                    } else {
-                        Swal.fire("Gagal!", results.message, "error");
+                });
+            } else if (result.isDenied) {
+                $.ajax({
+                    type: 'GET',
+                    url: "/admin/skripsi/tolak/" + id,
+                    data: {_token: CSRF_TOKEN},
+                    dataType: 'JSON',
+                    success: function (results) {
+                        if (results.success === true) {
+                            Swal.fire("Ditolak!", results.message, "success");
+                            setTimeout(function () {
+                                location.reload();
+                            }, 1000);
+                        } else {
+                            Swal.fire("Gagal!", results.message, "error");
+                        }
                     }
-                }
-            });
-        }
-    });
-}
+                });
+            }
+        });
+    }
 </script>
 @stop

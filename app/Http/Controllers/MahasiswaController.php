@@ -182,18 +182,19 @@ class MahasiswaController extends Controller
         $request->validate([
             'file' => 'required|mimes:xlsx,xls',
         ]);
-        
+
         try {
-            // Import data mahasiswa
             Excel::import(new MahasiswaImport, $request->file('file'));
-            
+
             return redirect()->route('mahasiswa')->with([
-                'message' => 'Data Mahasiswa berhasil diimport', 
+                'message' => 'Data Mahasiswa berhasil diimport',
                 'alert-type' => 'success'
             ]);
         } catch (\Exception $e) {
+            \Log::error('Import Mahasiswa Error: ' . $e->getMessage());
+
             return redirect()->route('mahasiswa')->with([
-                'message' => 'Gagal import data: ' . $e->getMessage(), 
+                'message' => 'Gagal import data: ' . $e->getMessage(),
                 'alert-type' => 'error'
             ]);
         }

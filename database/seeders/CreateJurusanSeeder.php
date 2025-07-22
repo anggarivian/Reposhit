@@ -17,7 +17,7 @@ class CreateJurusanSeeder extends Seeder
         ['id' => 1, 'nama_jurusan' => 'Agribisnis', 'kode_jurusan' => 'AGR'],
         ['id' => 2, 'nama_jurusan' => 'Agroteknologi', 'kode_jurusan' => 'AGT'],
         ['id' => 3, 'nama_jurusan' => 'Pemanfaatan Sumberdaya Perikanan', 'kode_jurusan' => 'PSP'],
-        ['id' => 4, 'nama_jurusan' => 'Administrasi Bisnis Internasional', 'kode_jurusan' => 'ADI'],
+        ['id' => 4, 'nama_jurusan' => 'Administrasi Bisnis Internasional', 'kode_jurusan' => 'ABI'],
     ]);
     }
 }
