@@ -4,19 +4,20 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use App\Models\Dosen;
-use App\Models\Skripsi;
-// use App\Models\Comment;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Storage;
 use App\Models\Comment;
+// use App\Models\Comment;
 use App\Models\Jurusan;
+use App\Models\Skripsi;
+use App\Models\Metadata;
+use App\Models\Notifikasi;
+use Illuminate\Http\Request;
 use App\Models\riwayat_skripsi;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
-use Barryvdh\DomPDF\Facade\Pdf; // Correctly import the Pdf facade
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\View;
-use App\Models\Notifikasi;
+use Illuminate\Support\Facades\Storage;
+use Barryvdh\DomPDF\Facade\Pdf; // Correctly import the Pdf facade
 
 class SkripsiController extends Controller
 {
@@ -32,39 +33,42 @@ class SkripsiController extends Controller
     //     return view('skripsi', compact('skripsi', 'namaDospem', 'namaPenulis'));
     // }
 
-    public function index() {
-       $skripsi = Skripsi::where('user_id', Auth::user()->id)->get();
-        $namaDospem = Dosen::all();
-        $namaPenulis = User::where('roles_id', 2)->get();
+        public function index()
+        {
+            // Ambil satu skripsi milik user + eager load metadata
+            $skripsi = Skripsi::with('metadata')
+                        ->where('user_id', Auth::id())
+                        ->first();      // ambil 1 record, bukan collection
 
-        if ($skripsi->isEmpty()) {
-            $skripsi = null;
+            $namaDospem = Dosen::all();
+
+            $notifikasi = Notifikasi::where('mahasiswa_id', Auth::id())->latest()->first();
+
+            return view('skripsi', compact('skripsi', 'namaDospem', 'notifikasi'));
         }
-        // dd($skripsi); // hanya untuk debugging, hapus saat produksi
-        return view('skripsi', compact('skripsi', 'namaDospem', 'namaPenulis'));
-    }
-    
-public function index1() {
-    $skripsi = Skripsi::orderBy('created_at', 'desc')->paginate(10);
-    $namaDospem = Dosen::all();
-    $namaPenulis = User::where('roles_id', 2)->get();
 
-    return view('skripsiadmin', compact('skripsi', 'namaDospem', 'namaPenulis'));
-}
 
-    public function mahasiswa()
-    {
-        // Ambil semua jurusan untuk dropdown filter
-        $jurusans = Jurusan::orderBy('nama_jurusan')->get();
+        public function index1() {
+            $skripsi = Skripsi::orderBy('created_at', 'desc')->paginate(10);
+            $namaDospem = Dosen::all();
+            $namaPenulis = User::where('roles_id', 2)->get();
 
-        // Ambil skripsi yang sudah terverifikasi, plus relasi mahasiswa→jurusan
-        $skripsi = Skripsi::with('mahasiswa.jurusan')
-                    ->where('status', 1)
-                    ->orderBy('created_at', 'desc')
-                    ->get();
+            return view('skripsiadmin', compact('skripsi', 'namaDospem', 'namaPenulis'));
+        }
 
-        return view('skripsi2', compact('skripsi', 'jurusans'));
-    }
+    // public function mahasiswa()
+    // {
+    //     // Ambil semua jurusan untuk dropdown filter
+    //     $jurusans = Jurusan::orderBy('nama_jurusan')->get();
+
+    //     // Ambil skripsi yang sudah terverifikasi, plus relasi mahasiswa→jurusan
+    //     $skripsi = Skripsi::with('mahasiswa.jurusan')
+    //                 ->where('status', 1)
+    //                 ->orderBy('created_at', 'desc')
+    //                 ->get();
+
+    //     return view('skripsi2', compact('skripsi', 'jurusans'));
+    // }
 
     // Landing Page -----------------------------------------------------------------------------------------------------
     public function landingpage(Request $req) {
@@ -89,32 +93,38 @@ public function index1() {
     }
 
     // Tambah Data Skripsi ----------------------------------------------------------------------------------------------
-     public function tambah(Request $request)
+    public function tambah(Request $request)
     {
-        // Validasi Data Skripsi
+        // 1) Validasi semua input
         $request->validate([
-            'judul'         => 'required|string|max:200',
-            // penulis kita ambil dari Auth, jadi tidak perlu di-validate di sini
-            'abstrak'       => 'required|string',
-            'dospem'        => 'required|string|max:30',
-            'rilis'         => 'required|digits:4|integer|min:1900|max:'.date('Y'),
-            'halaman'       => 'required|integer|min:1',
-            'katakunci'     => 'required|string',
-            'file_skripsi'  => 'required|mimes:pdf|max:10240',   // max 10 MB
-            'file_dapus'    => 'required|mimes:pdf|max:10240',   // max 10 MB
-            'file_abstrak'    => 'required|mimes:pdf|max:10240',   // max 10 MB
+            // Skripsi
+            'title'         => 'required|string|max:200',
+            'description'   => 'required|string',
+            'contributor'   => 'required|string|max:100',
+            'date_issued'   => 'required|digits:4|integer|min:1900|max:' . date('Y'),
+            'coverage'      => 'required|integer|min:1',
+            'keywords'      => 'required|string',
+            // File uploads
+            'file_skripsi'  => 'required|mimes:pdf|max:10240',
+            'file_dapus'    => 'required|mimes:pdf|max:10240',
+            'file_abstrak'  => 'required|mimes:pdf|max:10240',
+            // Optional metadata
+            'identifier'    => 'nullable|string|max:100',
+            'source'        => 'nullable|string|max:100',
+            'rights'        => 'nullable|string|max:100',
         ]);
 
-        // Siapkan model
+        // 2) Simpan data skripsi
         $skripsi = new Skripsi;
-        $skripsi->judul       = $request->judul;
-        $skripsi->penulis     = Auth::user()->name;
-        $skripsi->abstrak     = $request->abstrak;
-        $skripsi->dospem      = $request->dospem;
-        $skripsi->rilis       = $request->rilis;
-        $skripsi->halaman     = $request->halaman;
-        $skripsi->katakunci   = $request->katakunci;
-        $skripsi->user_id     = Auth::id();
+        $skripsi->judul     = $request->title;
+        $skripsi->penulis   = Auth::user()->name;
+        $skripsi->abstrak   = $request->description;
+        $skripsi->dospem    = $request->contributor;
+        $skripsi->rilis     = $request->date_issued;
+        $skripsi->halaman   = $request->coverage;
+        $skripsi->katakunci = $request->keywords;
+        $skripsi->status    = 0 ;
+        $skripsi->user_id   = Auth::id();
 
         // Upload file helper
         $uploadFile = function($file, $folder, $prefix) {
@@ -140,68 +150,123 @@ public function index1() {
 
         $skripsi->save();
 
+        // 3) Simpan metadata
+        Metadata::create([
+            'skripsi_id'   => $skripsi->id,
+            'title'        => $request->title,
+            'creator'      => Auth::user()->name,
+            'contributor'  => $request->contributor,
+            'subject'      => Auth::user()->jurusan->nama_jurusan,
+            'description'  => $request->description,
+            'publisher'    => 'Universitas Suryakancana Fakultas Sains Terapan',
+            'date_issued'  => $request->date_issued,
+            'language'     => 'id',
+            'type'         => 'Skripsi',
+            'format'       => 'PDF',
+            'identifier'   => $request->identifier,
+            'source'       => $request->source,
+            'rights'       => $request->rights,
+            'keywords'     => $request->keywords,
+            'coverage'     => $request->coverage,
+        ]);
+
+        // 4) Redirect with pesan sukses
         return redirect()
             ->route('skripsi')
             ->with([
-                'message'    => 'Data Skripsi berhasil ditambahkan',
+                'message'    => 'Data Skripsi dan Metadata berhasil ditambahkan',
+                'alert-type' => 'success',
+            ]);
+    }
+    // Ubah Data Skripsi ----------------------------------------------------------------------------------------------
+    public function ubah(Request $request, $id)
+    {
+        // Validasi input
+        $request->validate([
+            'title' => 'required|string|max:200',
+            'description' => 'required|string',
+            'contributor' => 'required|string|max:100',
+            'date_issued' => 'required|digits:4|integer|min:1900|max:' . date('Y'),
+            'coverage' => 'required|integer|min:1',
+            'keywords' => 'required|string',
+            'file_skripsi' => 'nullable|mimes:pdf|max:10240',
+            'file_dapus' => 'nullable|mimes:pdf|max:10240',
+            'file_abstrak' => 'nullable|mimes:pdf|max:10240',
+        ]);
+
+        // Temukan skripsi yang akan diperbarui
+        $skripsi = Skripsi::findOrFail($id);
+
+        // Update data skripsi
+        $skripsi->judul = $request->title;
+        $skripsi->abstrak = $request->description;
+        $skripsi->dospem = $request->contributor;
+        $skripsi->rilis = $request->date_issued;
+        $skripsi->halaman = $request->coverage;
+        $skripsi->katakunci = $request->keywords;
+
+        // Reset status menjadi 0 (belum diverifikasi) setelah perbaikan
+        $skripsi->status = 0;
+
+        // Fungsi helper untuk upload file
+        $uploadFile = function($file, $folder, $prefix) {
+            $ext = $file->extension();
+            $name = "{$prefix}_" . time() . ".{$ext}";
+            $file->storeAs("public/{$folder}", $name);
+            return $name;
+        };
+
+        // Handle file uploads jika ada file baru
+        if ($request->hasFile('file_skripsi')) {
+            // Hapus file lama jika ada
+            if ($skripsi->file_skripsi) {
+                Storage::delete("public/skripsi_files/{$skripsi->file_skripsi}");
+            }
+            $skripsi->file_skripsi = $uploadFile($request->file('file_skripsi'), 'skripsi_files', 'skripsi');
+        }
+
+        if ($request->hasFile('file_dapus')) {
+            if ($skripsi->file_dapus) {
+                Storage::delete("public/daftar_pustaka_files/{$skripsi->file_dapus}");
+            }
+            $skripsi->file_dapus = $uploadFile($request->file('file_dapus'), 'daftar_pustaka_files', 'daftar_pustaka');
+        }
+
+        if ($request->hasFile('file_abstrak')) {
+            if ($skripsi->file_abstrak) {
+                Storage::delete("public/abstrak_files/{$skripsi->file_abstrak}");
+            }
+            $skripsi->file_abstrak = $uploadFile($request->file('file_abstrak'), 'abstrak_files', 'abstrak');
+        }
+
+        $skripsi->save();
+
+        // Update metadata jika ada perubahan
+        if ($skripsi->metadata) {
+            $metadata = $skripsi->metadata;
+            $metadata->title = $request->title;
+            $metadata->contributor = $request->contributor;
+            $metadata->description = $request->description;
+            $metadata->date_issued = $request->date_issued;
+            $metadata->keywords = $request->keywords;
+            $metadata->coverage = $request->coverage;
+            $metadata->save();
+        }
+
+        // Redirect dengan notifikasi sukses
+        return redirect()
+            ->route('skripsi')
+            ->with([
+                'message' => 'Data skripsi berhasil diperbarui. Silakan menunggu verifikasi ulang oleh admin.',
                 'alert-type' => 'success'
             ]);
     }
-    
-    // Ubah Data Skripsi ----------------------------------------------------------------------------------------------
-    public function ubah(Request $req) {
-        // Validasi Data Skripsi
-        $req->validate([
-            'judul' => 'required|string|max:200',
-            'penulis' => 'required|string|max:30',
-            'abstrak' => 'required|string',
-            'dospem' => 'required|string|max:30',
-            'rilis' => 'required|string',
-            'halaman' => 'required|integer',
-            'file_skripsi' => 'nullable|file|mimes:pdf|max:10240', // Validasi file (optional)
-            'file_dapus' => 'nullable|file|mimes:pdf|max:10240', // Validasi file (optional)
-            'file_abstrak' => 'nullable|file|mimes:pdf|max:10240', // Validasi file (optional)
-        ]);
-    // dd($req);
-        $skripsi = Skripsi::findOrFail($req->id);
-        
-        // Jika ada file baru yang diupload, hapus file lama dan simpan yang baru
-        if ($req->hasFile('file_skripsi')) {
-            // Hapus file lama jika ada
-            if ($skripsi->file_skripsi && file_exists(storage_path('app/public/skripsi_files/' . $skripsi->file_skripsi))) {
-                unlink(storage_path('app/public/skripsi_files/' . $skripsi->file_skripsi));
-            }
-    
-            // Simpan file baru
-            $file = $req->file('file_skripsi');
-            $fileName = time() . '_' . $file->getClientOriginalName();
-            $file->storeAs('public/skripsi_files', $fileName);
-    
-            $skripsi->file_skripsi = $fileName;
-        }
-    
-        // Update data skripsi lainnya
-        $skripsi->judul = $req->judul;
-        $skripsi->penulis = $req->penulis;
-        $skripsi->abstrak = $req->abstrak;
-        $skripsi->dospem = $req->dospem;
-        $skripsi->rilis = $req->rilis;
-        $skripsi->halaman = $req->halaman;
-        $skripsi->status = 0;
-        
-        $skripsi->save();
-        $notification = array(
-            'message' => 'Data Skripsi berhasil di edit', 'alert-type' => 'success'
-        );
-    
-        return redirect()->route('skripsi')->with($notification);
-    }
-    
+
         // Get Data Skripsi ----------------------------------------------------------------------------------------------
         public function getDataSkripsi($id)
         {
             $skripsi = Skripsi::find($id);
-        
+
             if ($skripsi) {
                 return response()->json([
                     'id' => $skripsi->id,
@@ -219,8 +284,8 @@ public function index1() {
             } else {
                 return response()->json(['error' => 'Data tidak ditemukan'], 404);
             }
-        }        
-    
+        }
+
     // Ubah Data Skripsi ----------------------------------------------------------------------------------------------
     public function edit(Request $req) {
         // Validasi Data Skripsi
@@ -233,24 +298,24 @@ public function index1() {
             'halaman' => 'required|integer',
             'file_skripsi' => 'nullable|file|mimes:pdf|max:10240', // Validasi file (optional)
         ]);
-    
+
         $skripsi = Skripsi::findOrFail($req->id);
-    
+
         // Jika ada file baru yang diupload, hapus file lama dan simpan yang baru
         if ($req->hasFile('file_skripsi')) {
             // Hapus file lama jika ada
             if ($skripsi->file_skripsi && file_exists(storage_path('app/public/skripsi_files/' . $skripsi->file_skripsi))) {
                 unlink(storage_path('app/public/skripsi_files/' . $skripsi->file_skripsi));
             }
-    
+
             // Simpan file baru
             $file = $req->file('file_skripsi');
             $fileName = time() . '_' . $file->getClientOriginalName();
             $file->storeAs('public/skripsi_files', $fileName);
-    
+
             $skripsi->file_skripsi = $fileName;
         }
-    
+
         // Update data skripsi lainnya, kecuali penulis
         $skripsi->judul = $req->judul;
         // Mengabaikan perubahan penulis, tetap dari data aslinya (dari mahasiswa yang mengupload)
@@ -258,17 +323,17 @@ public function index1() {
         $skripsi->dospem = $req->dospem;
         $skripsi->rilis = $req->rilis;
         $skripsi->halaman = $req->halaman;
-    
+
         // Menyimpan perubahan ke database
         $skripsi->save();
-    
+
         $notification = array(
             'message' => 'Data Skripsi berhasil diperbarui', 'alert-type' => 'success'
         );
-    
+
         return redirect()->route('skripsiadmin')->with($notification);
     }
-    
+
 
     // Hapus Data Skripsi ----------------------------------------------------------------------------------------------
     public function hapus($id){
@@ -309,13 +374,13 @@ public function index1() {
         ->join('users', 'comments.id_user', '=', 'users.id')
         ->select('comments.*', 'users.name as user_name') // select the required fields
         ->get();
-    
+
         $childcomments = Comment::where('skripsi_id', $id)
             ->join('users', 'comments.id_user', '=', 'users.id')
             ->select('comments.*', 'users.name as user_name') // select the required fields
             ->get();
         $comments = collect();
-    
+
         foreach ($childcomments as $comment) {
             if ($comment->parent_id === null) {
                 // This is a top-level comment
@@ -331,10 +396,10 @@ public function index1() {
                 }
             }
         }
-        
+
         // Check if the user is an admin
         $isAdmin = $user->role === 'admin';
-        
+
         // Mengirim data PDF, data user, data skripsi, dan status admin ke view 'detail'
         return view('detailskripsimahasiswa', compact('user', 'skripsi', 'comments', 'isAdmin'));
     }
@@ -390,7 +455,7 @@ public function index1() {
 }
 
 
-    
+
 
     // Get Data Skripsi ----------------------------------------------------------------------------------------------
     public function welcomeskripsi($id){
@@ -403,41 +468,98 @@ public function index1() {
     }
 
     public function verifikasi($id) {
+            try {
+                $skripsi = Skripsi::find($id);
+
+                if (!$skripsi) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Skripsi tidak ditemukan',
+                    ], 404);
+                }
+
+                // Ubah status
+                if ($skripsi->status == 0) {
+                    $skripsi->status = 1;
+                    $message = "Skripsi berhasil diverifikasi";
+                } elseif ($skripsi->status == 1) {
+                    // $skripsi->status = 0;
+                    $message = "Skripsi sudah diverifikasi";
+                } elseif ($skripsi->status == 2) {
+                    // $skripsi->status = 0;
+                    $message = "Skripsi gagal diverifikasi";
+                } else {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Status skripsi tidak valid',
+                    ], 400);
+                }
+
+                $skripsi->save();
+                if ($skripsi) {
+                    Notifikasi::create([
+                        'skripsi_id' => $skripsi->id,
+                        'mahasiswa_id' => $skripsi->user_id,
+                        'deskripsi' => 'Skripsi Anda Diverifikasi',
+                    ]);
+                }
+
+                return response()->json([
+                    'success' => true,
+                    'message' => $message,
+                ]);
+            } catch (\Exception $e) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Terjadi kesalahan: ' . $e->getMessage(),
+                ], 500);
+            }
+        }
+
+    public function tolakVerifikasi(Request $request, $id)
+{
     try {
         $skripsi = Skripsi::find($id);
-
         if (!$skripsi) {
             return response()->json([
                 'success' => false,
-                'message' => 'Skripsi tidak ditemukan',
+                'message' => 'Skripsi tidak ditemukan.',
             ], 404);
         }
 
-        // Ubah status
+        // Cek alasan dari request
+        $reasons = $request->input('reasons', []);
+        if (empty($reasons) || !is_array($reasons)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Alasan penolakan belum dipilih.',
+            ], 422);
+        }
+
+        // Set status ditolak (2)
         if ($skripsi->status == 0) {
-            $skripsi->status = 1;
-            $message = "Skripsi berhasil diverifikasi";
+            $skripsi->status = 2;
+            $message = "Skripsi berhasil ditolak";
         } elseif ($skripsi->status == 1) {
-            // $skripsi->status = 0;
-            $message = "Skripsi sudah diverifikasi";
-        } elseif ($skripsi->status == 2) {
-            // $skripsi->status = 0;
-            $message = "Skripsi gagal diverifikasi";
+            return response()->json([
+                'success' => false,
+                'message' => 'Skripsi sudah diverifikasi, tidak bisa ditolak.',
+            ], 400);
         } else {
             return response()->json([
                 'success' => false,
-                'message' => 'Status skripsi tidak valid',
+                'message' => 'Status skripsi tidak valid.',
             ], 400);
         }
 
         $skripsi->save();
-        if ($skripsi) {
-            Notifikasi::create([
-                'skripsi_id' => $skripsi->id,
-                'mahasiswa_id' => $skripsi->user_id,
-                'deskripsi' => 'Skripsi Anda Diverifikasi',
-            ]);
-        }
+
+        // Simpan notifikasi dengan deskripsi lengkap
+        Notifikasi::create([
+            'skripsi_id'   => $skripsi->id,
+            'mahasiswa_id' => $skripsi->user_id,
+            'deskripsi'    => 'Skripsi Anda ditolak karena: ' . implode(', ', $reasons),
+        ]);
 
         return response()->json([
             'success' => true,
@@ -451,90 +573,70 @@ public function index1() {
     }
 }
 
-    public function tolakVerifikasi($id)
-    {
-    try{
-        $skripsi = Skripsi::find($id);
 
-        if (!$skripsi) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Skripsi tidak ditemukan.',
-            ], 404);
-        }
+    // public function showMetadataPdf($id)
+    // {
+        //     $skripsi = DB::table('skripsis')
+        //     ->join('users', 'skripsis.penulis', '=', 'users.name')
+        //     ->select('skripsis.*', 'users.prodi')
+        //     ->where('skripsis.id', $id)  // Menambahkan kondisi status
+        //     ->first();
 
-        // Set status ditolak
-        if ($skripsi->status == 0) {
-            $skripsi->status = 2;
-            $message = "Skripsi berhasil diverifikasi";
-        } elseif ($skripsi->status == 1) {
-            $message = "Skripsi sudah diverifikasi, dan tidak bisa ditolak";
-        } elseif ($skripsi->status == 2) {
-            $message = "Skripsi gagal diverifikasi";
-        } else {
-            return response()->json([
-                'success' => false,
-                'message' => 'Status skripsi tidak valid',
-            ], 400);
-        }
+        //     // Buat PDF dari view
+        //     $pdf = Pdf::loadView('metadata', compact('skripsi'))
+        //                ->setPaper('A4', 'portrait');
 
-        $skripsi->save();
-        if ($skripsi) {
-            Notifikasi::create([
-                'skripsi_id' => $skripsi->id,
-                'mahasiswa_id' => $skripsi->user_id,
-                'deskripsi' => 'Skripsi Anda Ditolak',
-            ]);
-        }
-
-        return response()->json([
-            'success' => true,
-            'message' => $message,
-        ]);   
-    } catch (\Exception $e) {
-        return response()->json([
-            'success' => false,
-            'message' => 'Terjadi kesalahan: ' . $e->getMessage(),
-        ], 500);
-    }
-    }
-
-    public function cariYangMirip(Request $request)
+        //     // Menambahkan header inline agar tidak langsung diunduh
+        //     return response($pdf->output(), 200)
+        //     ->header('Content-Type', 'application/pdf')
+        //     ->header('Content-Disposition', 'inline; filename="metadata-skripsi.pdf"');
+        // }
+        // public function postkomentar (Request $request){
+        //     dd($request->all());
+        // }
+        public function searchSkripsi(Request $request)
 {
-    $judul = $request->input('judul');
-    $keywords = explode(' ', $judul);
-
-    $skripsi = Skripsi::with('mahasiswa.jurusan')
-                    ->where('status', 1)
-                    ->where(function ($query) use ($keywords) {
-                        foreach ($keywords as $keyword) {
-                            $query->orWhere('judul', 'LIKE', '%' . $keyword . '%');
-                        }
-                    })
-                    ->get();
-
-    $jurusans = Jurusan::orderBy('nama_jurusan')->get(); // agar tetap bisa render form
-
-    return view('skripsi2', compact('skripsi', 'jurusans'));
-}
-
-    public function searchSkripsi(Request $request){
     $jurusans = Jurusan::orderBy('nama_jurusan')->get();
 
-    $query = Skripsi::with('mahasiswa.jurusan')
+    $query = Skripsi::with(['mahasiswa.jurusan', 'metadata'])
             ->where('status', 1);
 
+    // Pencarian berdasarkan judul - cek di skripsi dan metadata
     if ($request->filled('judul')) {
-        $query->where('judul', 'like', '%'.$request->judul.'%');
+        $query->where(function($q) use ($request) {
+            $q->where('judul', 'like', '%'.$request->judul.'%')
+              ->orWhereHas('metadata', function($metaQuery) use ($request) {
+                  $metaQuery->where('title', 'like', '%'.$request->judul.'%')
+                           ->orWhere('subject', 'like', '%'.$request->judul.'%')
+                           ->orWhere('description', 'like', '%'.$request->judul.'%')
+                           ->orWhere('keywords', 'like', '%'.$request->judul.'%');
+              });
+        });
     }
+
+    // Pencarian berdasarkan penulis - cek di skripsi dan metadata
     if ($request->filled('penulis')) {
-        $query->where('penulis', 'like', '%'.$request->penulis.'%');
+        $query->where(function($q) use ($request) {
+            $q->where('penulis', 'like', '%'.$request->penulis.'%')
+              ->orWhereHas('metadata', function($metaQuery) use ($request) {
+                  $metaQuery->where('creator', 'like', '%'.$request->penulis.'%')
+                           ->orWhere('contributor', 'like', '%'.$request->penulis.'%');
+              });
+        });
     }
+
+    // Pencarian berdasarkan tahun rilis - cek di skripsi dan metadata
     if ($request->filled('rilis')) {
-        $query->where('rilis', $request->rilis);
+        $query->where(function($q) use ($request) {
+            $q->where('rilis', $request->rilis)
+              ->orWhereHas('metadata', function($metaQuery) use ($request) {
+                  $metaQuery->where('date_issued', $request->rilis);
+              });
+        });
     }
+
+    // Filter berdasarkan program studi
     if ($request->filled('prodi')) {
-        // filter berdasarkan nama jurusan
         $query->whereHas('mahasiswa.jurusan', function($q) use ($request) {
             $q->where('nama_jurusan', $request->prodi);
         });
@@ -545,51 +647,166 @@ public function index1() {
     return view('skripsi2', compact('skripsi', 'jurusans'));
 }
 
-    public function findSkripsi(Request $request)
-    {
-        $jurusans = Jurusan::orderBy('nama_jurusan')->get(); // Tambahkan agar blade tetap bisa menampilkan opsi jurusan
+public function findSkripsi(Request $request)
+{
+    $jurusans = Jurusan::orderBy('nama_jurusan')->get();
 
-        $query = Skripsi::with('mahasiswa.jurusan')
-                        ->where('status', 1);
+    $query = Skripsi::with(['mahasiswa.jurusan', 'metadata'])
+                    ->where('status', 1);
 
-        if ($request->filled('judul')) {
-            $query->where('judul', 'LIKE', '%' . $request->judul . '%');
-        }
-        if ($request->filled('penulis')) {
-            $query->where('penulis', 'LIKE', '%' . $request->penulis . '%');
-        }
-        if ($request->filled('rilis')) {
-            $query->where('rilis', 'LIKE', '%' . $request->rilis . '%');
-        }
-        if ($request->filled('prodi')) {
-            $query->whereHas('mahasiswa.jurusan', function($q) use ($request) {
-                $q->where('nama_jurusan', $request->prodi);
-            });
-        }
-
-        $skripsi = $query->orderBy('created_at', 'desc')->paginate(10);
-
-        return view('skripsi2', compact('skripsi', 'jurusans'));
+    // Pencarian berdasarkan judul - cek di skripsi dan metadata
+    if ($request->filled('judul')) {
+        $query->where(function($q) use ($request) {
+            $q->where('judul', 'LIKE', '%' . $request->judul . '%')
+              ->orWhereHas('metadata', function($metaQuery) use ($request) {
+                  $metaQuery->where('title', 'LIKE', '%' . $request->judul . '%')
+                           ->orWhere('subject', 'LIKE', '%' . $request->judul . '%')
+                           ->orWhere('description', 'LIKE', '%' . $request->judul . '%')
+                           ->orWhere('keywords', 'LIKE', '%' . $request->judul . '%');
+              });
+        });
     }
-// public function showMetadataPdf($id)
-// {
-//     $skripsi = DB::table('skripsis')
-//     ->join('users', 'skripsis.penulis', '=', 'users.name')
-//     ->select('skripsis.*', 'users.prodi')
-//     ->where('skripsis.id', $id)  // Menambahkan kondisi status
-//     ->first();
 
-//     // Buat PDF dari view
-//     $pdf = Pdf::loadView('metadata', compact('skripsi'))
-//                ->setPaper('A4', 'portrait');
+    // Pencarian berdasarkan penulis - cek di skripsi dan metadata
+    if ($request->filled('penulis')) {
+        $query->where(function($q) use ($request) {
+            $q->where('penulis', 'LIKE', '%' . $request->penulis . '%')
+              ->orWhereHas('metadata', function($metaQuery) use ($request) {
+                  $metaQuery->where('creator', 'LIKE', '%' . $request->penulis . '%')
+                           ->orWhere('contributor', 'LIKE', '%' . $request->penulis . '%');
+              });
+        });
+    }
 
-//     // Menambahkan header inline agar tidak langsung diunduh
-//     return response($pdf->output(), 200)
-//     ->header('Content-Type', 'application/pdf')
-//     ->header('Content-Disposition', 'inline; filename="metadata-skripsi.pdf"');
-// }
-    // public function postkomentar (Request $request){
-    //     dd($request->all());
-    // }
+    // Pencarian berdasarkan tahun rilis - cek di skripsi dan metadata
+    if ($request->filled('rilis')) {
+        $query->where(function($q) use ($request) {
+            $q->where('rilis', 'LIKE', '%' . $request->rilis . '%')
+              ->orWhereHas('metadata', function($metaQuery) use ($request) {
+                  $metaQuery->where('date_issued', 'LIKE', '%' . $request->rilis . '%');
+              });
+        });
+    }
 
+    // Filter berdasarkan program studi
+    if ($request->filled('prodi')) {
+        $query->whereHas('mahasiswa.jurusan', function($q) use ($request) {
+            $q->where('nama_jurusan', $request->prodi);
+        });
+    }
+
+    $skripsi = $query->orderBy('created_at', 'desc')->paginate(10);
+
+    return view('skripsi2', compact('skripsi', 'jurusans'));
+}
+
+public function mahasiswa()
+{
+    // Ambil semua jurusan untuk dropdown filter
+    $jurusans = Jurusan::orderBy('nama_jurusan')->get();
+
+    // Ambil skripsi yang sudah terverifikasi, plus relasi mahasiswa→jurusan dan metadata
+    $skripsi = Skripsi::with(['mahasiswa.jurusan', 'metadata'])
+                ->where('status', 1)
+                ->orderBy('created_at', 'desc')
+                ->get();
+
+    return view('skripsi2', compact('skripsi', 'jurusans'));
+}
+
+public function cariYangMirip(Request $request)
+{
+    $judul = $request->input('judul');
+    $keywords = explode(' ', $judul);
+
+    $skripsi = Skripsi::with(['mahasiswa.jurusan', 'metadata'])
+                    ->where('status', 1)
+                    ->where(function ($query) use ($keywords) {
+                        foreach ($keywords as $keyword) {
+                            $query->orWhere('judul', 'LIKE', '%' . $keyword . '%')
+                                  ->orWhere('katakunci', 'LIKE', '%' . $keyword . '%')
+                                  ->orWhere('abstrak', 'LIKE', '%' . $keyword . '%')
+                                  ->orWhereHas('metadata', function($metaQuery) use ($keyword) {
+                                      $metaQuery->where('title', 'LIKE', '%' . $keyword . '%')
+                                               ->orWhere('subject', 'LIKE', '%' . $keyword . '%')
+                                               ->orWhere('description', 'LIKE', '%' . $keyword . '%')
+                                               ->orWhere('keywords', 'LIKE', '%' . $keyword . '%')
+                                               ->orWhere('coverage', 'LIKE', '%' . $keyword . '%');
+                                  });
+                        }
+                    })
+                    ->get();
+
+    $jurusans = Jurusan::orderBy('nama_jurusan')->get();
+
+    return view('skripsi2', compact('skripsi', 'jurusans'));
+}
+
+// Method tambahan untuk pencarian advanced menggunakan metadata
+public function advancedSearch(Request $request)
+{
+    $jurusans = Jurusan::orderBy('nama_jurusan')->get();
+
+    $query = Skripsi::with(['mahasiswa.jurusan', 'metadata'])
+                    ->where('status', 1);
+
+    // Pencarian berdasarkan metadata spesifik
+    if ($request->filled('subject')) {
+        $query->whereHas('metadata', function($metaQuery) use ($request) {
+            $metaQuery->where('subject', 'LIKE', '%' . $request->subject . '%');
+        });
+    }
+
+    if ($request->filled('publisher')) {
+        $query->whereHas('metadata', function($metaQuery) use ($request) {
+            $metaQuery->where('publisher', 'LIKE', '%' . $request->publisher . '%');
+        });
+    }
+
+    if ($request->filled('language')) {
+        $query->whereHas('metadata', function($metaQuery) use ($request) {
+            $metaQuery->where('language', $request->language);
+        });
+    }
+
+    if ($request->filled('type')) {
+        $query->whereHas('metadata', function($metaQuery) use ($request) {
+            $metaQuery->where('type', $request->type);
+        });
+    }
+
+    if ($request->filled('coverage')) {
+        $query->whereHas('metadata', function($metaQuery) use ($request) {
+            $metaQuery->where('coverage', 'LIKE', '%' . $request->coverage . '%');
+        });
+    }
+
+    // Pencarian global di semua field metadata
+    if ($request->filled('global_search')) {
+        $searchTerm = $request->global_search;
+        $query->where(function($q) use ($searchTerm) {
+            $q->where('judul', 'LIKE', '%' . $searchTerm . '%')
+              ->orWhere('penulis', 'LIKE', '%' . $searchTerm . '%')
+              ->orWhere('abstrak', 'LIKE', '%' . $searchTerm . '%')
+              ->orWhere('katakunci', 'LIKE', '%' . $searchTerm . '%')
+              ->orWhereHas('metadata', function($metaQuery) use ($searchTerm) {
+                  $metaQuery->where('title', 'LIKE', '%' . $searchTerm . '%')
+                           ->orWhere('creator', 'LIKE', '%' . $searchTerm . '%')
+                           ->orWhere('contributor', 'LIKE', '%' . $searchTerm . '%')
+                           ->orWhere('subject', 'LIKE', '%' . $searchTerm . '%')
+                           ->orWhere('description', 'LIKE', '%' . $searchTerm . '%')
+                           ->orWhere('publisher', 'LIKE', '%' . $searchTerm . '%')
+                           ->orWhere('keywords', 'LIKE', '%' . $searchTerm . '%')
+                           ->orWhere('coverage', 'LIKE', '%' . $searchTerm . '%')
+                           ->orWhere('identifier', 'LIKE', '%' . $searchTerm . '%')
+                           ->orWhere('source', 'LIKE', '%' . $searchTerm . '%')
+                           ->orWhere('rights', 'LIKE', '%' . $searchTerm . '%');
+              });
+        });
+    }
+
+    $skripsi = $query->orderBy('created_at', 'desc')->paginate(10);
+
+    return view('skripsi2', compact('skripsi', 'jurusans'));
+}
 }

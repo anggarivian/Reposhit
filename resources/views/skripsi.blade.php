@@ -1,4 +1,3 @@
-
 @extends('adminlte::page')
 
 @section('title', 'AdminLTE')
@@ -8,462 +7,475 @@
 @stop
 
 @section('content')
-<div class="container-fluid">
-    <div class="card card-default">
-    <div class="card-header">{{__(' Data Skripsi')}}</div>
-        <div class="card-body">
-            <div class="d-flex justify-content-between mb-3">
-                    <!-- Button trigger modal -->
-                    @if ($skripsi == null)
-                    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal">
-                        Tambah Data Skripsi
-                    </button>
-                    @endif
-                {{-- <div class="tombol">
-                    <button type="button" class="btn btn-info" >
-                        Export
-                    </button>
-                </div> --}}
+    <div class="container-fluid my-4">
+
+        @if(is_null($skripsi))
+            {{-- --------------------------------------------------------
+                FORM: tampilkan hanya jika user belum punya skripsi
+                -------------------------------------------------------- --}}
+            <div class="card mb-4 shadow-sm">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0"><i class="fas fa-plus mr-2"></i>Tambah Data Skripsi</h5>
+                </div>
+                <div class="card-body">
+                    <form method="POST" action="{{ route('tambah.skripsi') }}" enctype="multipart/form-data">
+                        @csrf
+
+                        {{-- Judul & Abstrak --}}
+                        <div class="form-group">
+                            <label for="title">Judul <span class="text-danger">*</span></label>
+                            <input type="text"
+                                name="title"
+                                id="title"
+                                class="form-control @error('title') is-invalid @enderror"
+                                value="{{ old('title') }}"
+                                required>
+                            @error('title')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                        </div>
+                        <div class="form-group">
+                            <label for="description">Abstrak <span class="text-danger">*</span></label>
+                            <textarea
+                                name="description"
+                                id="description"
+                                class="form-control @error('description') is-invalid @enderror"
+                                rows="3"
+                                required>{{ old('description') }}</textarea>
+                            @error('description')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                        </div>
+
+                        {{-- Dosen Pembimbing --}}
+                        <div class="form-group">
+                            <label for="contributor">Dosen Pembimbing <span class="text-danger">*</span></label>
+                            <select
+                                name="contributor"
+                                id="contributor"
+                                class="form-control @error('contributor') is-invalid @enderror"
+                                required>
+                                <option value="">-- Pilih Dosen --</option>
+                                @foreach($namaDospem as $d)
+                                    <option value="{{ $d->nama }}" {{ old('contributor') == $d->nama ? 'selected' : '' }}>
+                                        {{ $d->nama }}
+                                    </option>
+                                @endforeach
+                            </select>
+                            @error('contributor')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                        </div>
+
+                        {{-- Tahun Rilis & Jumlah Halaman --}}
+                        <div class="form-row">
+                            <div class="form-group col-md-6">
+                                <label for="date_issued">Tahun Rilis <span class="text-danger">*</span></label>
+                                <input type="number"
+                                    name="date_issued"
+                                    id="date_issued"
+                                    class="form-control @error('date_issued') is-invalid @enderror"
+                                    value="{{ old('date_issued') }}"
+                                    min="1900"
+                                    max="{{ date('Y') }}"
+                                    required>
+                                @error('date_issued')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                            </div>
+                            <div class="form-group col-md-6">
+                                <label for="coverage">Jumlah Halaman <span class="text-danger">*</span></label>
+                                <input type="number"
+                                    name="coverage"
+                                    id="coverage"
+                                    class="form-control @error('coverage') is-invalid @enderror"
+                                    value="{{ old('coverage') }}"
+                                    min="1"
+                                    required>
+                                @error('coverage')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                            </div>
+                        </div>
+
+                        {{-- Kata Kunci --}}
+                        <div class="form-group">
+                            <label for="keywords">Kata Kunci <span class="text-danger">*</span></label>
+                            <input type="text"
+                                name="keywords"
+                                id="keywords"
+                                class="form-control @error('keywords') is-invalid @enderror"
+                                value="{{ old('keywords') }}"
+                                required>
+                            <small class="form-text text-muted">Pisahkan dengan koma.</small>
+                            @error('keywords')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                        </div>
+
+                        {{-- Upload File --}}
+                        <div class="form-row">
+                            <div class="form-group col-md-4">
+                                <label for="file_skripsi">File Skripsi <span class="text-danger">*</span></label>
+                                <input type="file"
+                                    name="file_skripsi"
+                                    id="file_skripsi"
+                                    class="form-control-file @error('file_skripsi') is-invalid @enderror"
+                                    accept=".pdf"
+                                    required>
+                                @error('file_skripsi')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                            </div>
+                            <div class="form-group col-md-4">
+                                <label for="file_dapus">File Daftar Pustaka <span class="text-danger">*</span></label>
+                                <input type="file"
+                                    name="file_dapus"
+                                    id="file_dapus"
+                                    class="form-control-file @error('file_dapus') is-invalid @enderror"
+                                    accept=".pdf"
+                                    required>
+                                @error('file_dapus')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                            </div>
+                            <div class="form-group col-md-4">
+                                <label for="file_abstrak">File Abstrak <span class="text-danger">*</span></label>
+                                <input type="file"
+                                    name="file_abstrak"
+                                    id="file_abstrak"
+                                    class="form-control-file @error('file_abstrak') is-invalid @enderror"
+                                    accept=".pdf"
+                                    required>
+                                @error('file_abstrak')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                            </div>
+                        </div>
+
+                        {{-- Hidden defaults --}}
+                        <input type="hidden" name="publisher" value="Universitas Suryakancana Fakultas Sains Terapan">
+                        <input type="hidden" name="language"  value="id">
+                        <input type="hidden" name="type"      value="Skripsi">
+                        <input type="hidden" name="format"    value="PDF">
+
+                        <div class="text-right">
+                            <button type="submit" class="btn btn-success">
+                                <i class="fas fa-save mr-1"></i>Submit Skripsi
+                            </button>
+                        </div>
+                    </form>
+                </div>
             </div>
-            <table id="table-data" class="table table-striped text-center">
-                <thead>
-                    <tr class="text-center">
-                        <th>No</th>
-                        <th>Judul</th>
-                        <th>Abstrak</th>
-                        <th>Penulis</th>
-                        <th>Dosen Pembimbing</th>
-                        <th>Rilis</th>
-                        <th>Status</th>
-                        <th>Halaman</th>
-                        <th>Kata Kunci</th>
-                        <th>Opsi</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @php $no=1; @endphp
-                    @if ($skripsi != null)
-                        @foreach($skripsi as $skripsis)
-                        <tr>
-                            <td>{{$no++}}</td>
-                            <td>{{ Str::limit($skripsis->judul, 20) }}</td>
-                            <td>{{ Str::limit($skripsis->abstrak, 20) }}</td>
-                            <td>{{$skripsis->penulis}}</td>
-                            <td>{{$skripsis->dospem}}</td>
-                            <td>{{$skripsis->rilis}}</td>
-                            <td>
-                            @if ($skripsis->status == 0)
-                                <span class="badge badge-warning">Belum Diverifikasi</span>
-                            @elseif ($skripsis->status == 1)
-                                <span class="badge badge-success">Sudah Diverifikasi</span>
-                            @elseif ($skripsis->status == 2)
-                                <span class="badge badge-danger">Ditolak</span>
-                            @else
-                                <span class="badge badge-secondary">Status Tidak Diketahui</span>
+
+        @else
+            {{-- --------------------------------------------------------
+                DETAIL & STATUS: tampilkan jika user sudah punya skripsi
+                -------------------------------------------------------- --}}
+
+            {{-- Cards 2–4: Status Berdasarkan $skripsi->status --}}
+            @switch($skripsi->status)
+
+                {{-- Status 0: Belum Diverifikasi --}}
+                @case(0)
+                {{-- Card 1: Detail Skripsi --}}
+                <div class="card mb-4 shadow-sm">
+                    <div class="card-header bg-info text-white">
+                        <h5 class="mb-0"><i class="fas fa-file-alt mr-2"></i>Detail Skripsi Anda</h5>
+                    </div>
+                    <div class="card-body">
+                        <dl class="row">
+                            <dt class="col-sm-3">Judul</dt>
+                            <dd class="col-sm-9">{{ $skripsi->judul }}</dd>
+
+                            <dt class="col-sm-3">Abstrak</dt>
+                            <dd class="col-sm-9">{{ $skripsi->abstrak }}</dd>
+
+                            <dt class="col-sm-3">Dosen Pembimbing</dt>
+                            <dd class="col-sm-9">{{ $skripsi->dospem }}</dd>
+
+                            <dt class="col-sm-3">Tahun Rilis</dt>
+                            <dd class="col-sm-9">{{ $skripsi->rilis }}</dd>
+
+                            <dt class="col-sm-3">Halaman</dt>
+                            <dd class="col-sm-9">{{ $skripsi->halaman }}</dd>
+
+                            <dt class="col-sm-3">Kata Kunci</dt>
+                            <dd class="col-sm-9">{{ $skripsi->katakunci }}</dd>
+
+                            @if($skripsi->metadata)
+                                <dt class="col-sm-3">Bidang Keilmuan</dt>
+                                <dd class="col-sm-9">{{ $skripsi->metadata->subject }}</dd>
                             @endif
-                            </td>
-                            <td>{{$skripsis->halaman}}</td>
-                            <td>{{$skripsis->katakunci}}</td>
-                            <td>
-                                <a href="/mahasiswa/skripsi/detail/{{ $skripsis->id }}" class="btn btn-info btn-sm">
-                                    <i class="fas fa-eye"></i> Lihat
+
+                            <dt class="col-sm-3">Unduh File</dt>
+                            <dd class="col-sm-9">
+                                <a href="{{ Storage::url('skripsi_files/'.$skripsi->file_skripsi) }}" target="_blank">
+                                    {{ $skripsi->file_skripsi }}
                                 </a>
-                                @if ($skripsis->status != 1)
-                                <button id="btn-edit-skripsi" class="btn btn-success btn-sm" data-toggle="modal" data-target="#edit" data-id="{{ $skripsis->id }}">
-                                    <i class="fas fa-edit"> Edit</i>
-                                </button>              
-                                @endif              
-                                    {{-- <button type="button" class="btn btn-sm btn-danger" onclick="deleteConfirmation('{{$skripsis->id}}' , '{{$skripsis->judul}}' )">
-                                        <i class="fas fa-trash-alt"> Hapus</i> <!-- Ikon untuk Hapus Favorite -->
-                                    </button> --}}
+                            </dd>
+                        </dl>
+                    </div>
+                </div>
+                <div class="card mb-4 shadow-sm">
+                    <div class="card-header bg-secondary text-white">
+                        <h5 class="mb-0"><i class="fas fa-hourglass-start mr-2"></i>Menunggu Verifikasi</h5>
+                    </div>
+                    <div class="card-body">
+                        <p>Skripsi Anda belum diverifikasi oleh admin.</p>
+                        <ul>
+                            <li>Di-submit pada: {{ $skripsi->created_at->format('d M Y H:i') }}</li>
+                            <li>Status: <strong>Belum Diverifikasi</strong></li>
+                        </ul>
+                    </div>
+                </div>
+                @break
+
+                {{-- Status 1: Sudah Diverifikasi --}}
+                @case(1)
+                {{-- Card 1: Detail Skripsi --}}
+                <div class="card mb-4 shadow-sm">
+                    <div class="card-header bg-info text-white">
+                        <h5 class="mb-0"><i class="fas fa-file-alt mr-2"></i>Detail Skripsi Anda</h5>
+                    </div>
+                    <div class="card-body">
+                        <dl class="row">
+                            <dt class="col-sm-3">Judul</dt>
+                            <dd class="col-sm-9">{{ $skripsi->judul }}</dd>
+
+                            <dt class="col-sm-3">Abstrak</dt>
+                            <dd class="col-sm-9">{{ $skripsi->abstrak }}</dd>
+
+                            <dt class="col-sm-3">Dosen Pembimbing</dt>
+                            <dd class="col-sm-9">{{ $skripsi->dospem }}</dd>
+
+                            <dt class="col-sm-3">Tahun Rilis</dt>
+                            <dd class="col-sm-9">{{ $skripsi->rilis }}</dd>
+
+                            <dt class="col-sm-3">Halaman</dt>
+                            <dd class="col-sm-9">{{ $skripsi->halaman }}</dd>
+
+                            <dt class="col-sm-3">Kata Kunci</dt>
+                            <dd class="col-sm-9">{{ $skripsi->katakunci }}</dd>
+
+                            @if($skripsi->metadata)
+                                <dt class="col-sm-3">Bidang Keilmuan</dt>
+                                <dd class="col-sm-9">{{ $skripsi->metadata->subject }}</dd>
+                            @endif
+
+                            <dt class="col-sm-3">Unduh File</dt>
+                            <dd class="col-sm-9">
+                                <a href="{{ Storage::url('skripsi_files/'.$skripsi->file_skripsi) }}" target="_blank">
+                                    {{ $skripsi->file_skripsi }}
+                                </a>
+                            </dd>
+                        </dl>
+                    </div>
+                </div>
+                <div class="card mb-4 shadow-sm">
+                    <div class="card-header bg-success text-white">
+                        <h5 class="mb-0"><i class="fas fa-check-circle mr-2"></i>Telah Diverifikasi</h5>
+                    </div>
+                    <div class="card-body">
+                        <p>Skripsi Anda telah berhasil diverifikasi oleh admin.</p>
+                        <ul>
+                            <li>Di-verifikasi pada: {{ $skripsi->updated_at->format('d M Y H:i') }}</li>
+                            <li>Status: <strong>Terverifikasi</strong></li>
+                        </ul>
+                    </div>
+                </div>
+                @break
+
+                {{-- Status 2: Perlu Perbaikan --}}
+                @case(2)
+                <div class="card mb-4 shadow-sm">
+                    <div class="card-header bg-warning text-dark">
+                        <h5 class="mb-0"><i class="fas fa-exclamation-triangle mr-2"></i>Perlu Perbaikan</h5>
+                    </div>
+                    <div class="card-body">
+                        <p>Skripsi Anda memerlukan revisi/perbaikan sesuai masukan admin.</p>
+                        <ul>
+                            <li>Di-review pada: {{ $skripsi->updated_at->format('d M Y H:i') }}</li>
+                            <li>Status: <strong>Perbaikan</strong></li>
+                        </ul>
+                        @if($notifikasi->deskripsi)
+                            <div class="mt-3">
+                                <h6>Catatan Admin:</h6>
+                                <blockquote class="blockquote">
+                                    {{ $notifikasi->deskripsi }}
+                                </blockquote>
+                            </div>
+                        @endif
+                    </div>
+                </div>
+
+                {{-- Form Perbaikan untuk Status 2 --}}
+                <div class="card mb-4 shadow-sm">
+                    <div class="card-header bg-warning text-dark">
+                        <h5 class="mb-0"><i class="fas fa-edit mr-2"></i>Form Perbaikan Skripsi</h5>
+                    </div>
+                    <div class="card-body">
+                        <form method="POST" action="{{ route('ubah.skripsi', $skripsi->id) }}" enctype="multipart/form-data">
+                            @csrf
+                            @method('PUT')
+
+                            {{-- Tampilkan error umum --}}
+                            @if($errors->any())
+                                <div class="alert alert-danger">
+                                    <ul class="mb-0">
+                                        @foreach($errors->all() as $error)
+                                            <li>{{ $error }}</li>
+                                        @endforeach
+                                    </ul>
                                 </div>
-                            </td>
-                        </tr>
-                        @endforeach
-                    @endif
-                </tbody>
-            </table>
-        </div>
+                            @endif
+
+                            {{-- Judul & Abstrak --}}
+                            <div class="form-group">
+                                <label for="title">Judul <span class="text-danger">*</span></label>
+                                <input type="text"
+                                    name="title"
+                                    id="title"
+                                    class="form-control @error('title') is-invalid @enderror"
+                                    value="{{ old('title', $skripsi->judul) }}"
+                                    required>
+                                @error('title')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                            </div>
+                            <div class="form-group">
+                                <label for="description">Abstrak <span class="text-danger">*</span></label>
+                                <textarea
+                                    name="description"
+                                    id="description"
+                                    class="form-control @error('description') is-invalid @enderror"
+                                    rows="3"
+                                    required>{{ old('description', $skripsi->abstrak) }}</textarea>
+                                @error('description')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                            </div>
+
+                            {{-- Dosen Pembimbing --}}
+                            <div class="form-group">
+                                <label for="contributor">Dosen Pembimbing <span class="text-danger">*</span></label>
+                                <select
+                                    name="contributor"
+                                    id="contributor"
+                                    class="form-control @error('contributor') is-invalid @enderror"
+                                    required>
+                                    <option value="">-- Pilih Dosen --</option>
+                                    @foreach($namaDospem as $d)
+                                        <option value="{{ $d->nama }}"
+                                            {{ old('contributor', $skripsi->dospem) == $d->nama ? 'selected' : '' }}>
+                                            {{ $d->nama }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                                @error('contributor')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                            </div>
+
+                            {{-- Tahun Rilis & Jumlah Halaman --}}
+                            <div class="form-row">
+                                <div class="form-group col-md-6">
+                                    <label for="date_issued">Tahun Rilis <span class="text-danger">*</span></label>
+                                    <input type="number"
+                                        name="date_issued"
+                                        id="date_issued"
+                                        class="form-control @error('date_issued') is-invalid @enderror"
+                                        value="{{ old('date_issued', $skripsi->rilis) }}"
+                                        min="1900"
+                                        max="{{ date('Y') }}"
+                                        required>
+                                    @error('date_issued')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                                </div>
+                                <div class="form-group col-md-6">
+                                    <label for="coverage">Jumlah Halaman <span class="text-danger">*</span></label>
+                                    <input type="number"
+                                        name="coverage"
+                                        id="coverage"
+                                        class="form-control @error('coverage') is-invalid @enderror"
+                                        value="{{ old('coverage', $skripsi->halaman) }}"
+                                        min="1"
+                                        required>
+                                    @error('coverage')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                                </div>
+                            </div>
+
+                            {{-- Kata Kunci --}}
+                            <div class="form-group">
+                                <label for="keywords">Kata Kunci <span class="text-danger">*</span></label>
+                                <input type="text"
+                                    name="keywords"
+                                    id="keywords"
+                                    class="form-control @error('keywords') is-invalid @enderror"
+                                    value="{{ old('keywords', $skripsi->katakunci) }}"
+                                    required>
+                                <small class="form-text text-muted">Pisahkan dengan koma.</small>
+                                @error('keywords')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                            </div>
+
+                            {{-- Upload File (Optional) --}}
+                            <div class="form-row">
+                                <div class="form-group col-md-4">
+                                    <label for="file_skripsi">File Skripsi</label>
+                                    <div class="mb-2">
+                                        <span>File saat ini: </span>
+                                        <a href="{{ Storage::url('skripsi_files/'.$skripsi->file_skripsi) }}" target="_blank">
+                                            {{ $skripsi->file_skripsi }}
+                                        </a>
+                                    </div>
+                                    <input type="file"
+                                        name="file_skripsi"
+                                        id="file_skripsi"
+                                        class="form-control-file @error('file_skripsi') is-invalid @enderror"
+                                        accept=".pdf">
+                                    <small class="form-text text-muted">Kosongkan jika tidak ingin mengubah</small>
+                                    @error('file_skripsi')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                                </div>
+                                <div class="form-group col-md-4">
+                                    <label for="file_dapus">File Daftar Pustaka</label>
+                                    <div class="mb-2">
+                                        <span>File saat ini: </span>
+                                        <a href="{{ Storage::url('skripsi_files/'.$skripsi->file_dapus) }}" target="_blank">
+                                            {{ $skripsi->file_dapus }}
+                                        </a>
+                                    </div>
+                                    <input type="file"
+                                        name="file_dapus"
+                                        id="file_dapus"
+                                        class="form-control-file @error('file_dapus') is-invalid @enderror"
+                                        accept=".pdf">
+                                    <small class="form-text text-muted">Kosongkan jika tidak ingin mengubah</small>
+                                    @error('file_dapus')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                                </div>
+                                <div class="form-group col-md-4">
+                                    <label for="file_abstrak">File Abstrak</label>
+                                    <div class="mb-2">
+                                        <span>File saat ini: </span>
+                                        <a href="{{ Storage::url('skripsi_files/'.$skripsi->file_abstrak) }}" target="_blank">
+                                            {{ $skripsi->file_abstrak }}
+                                        </a>
+                                    </div>
+                                    <input type="file"
+                                        name="file_abstrak"
+                                        id="file_abstrak"
+                                        class="form-control-file @error('file_abstrak') is-invalid @enderror"
+                                        accept=".pdf">
+                                    <small class="form-text text-muted">Kosongkan jika tidak ingin mengubah</small>
+                                    @error('file_abstrak')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                                </div>
+                            </div>
+
+                            {{-- Hidden defaults --}}
+                            <input type="hidden" name="publisher" value="Universitas Suryakancana Fakultas Sains Terapan">
+                            <input type="hidden" name="language"  value="id">
+                            <input type="hidden" name="type"      value="Skripsi">
+                            <input type="hidden" name="format"    value="PDF">
+
+                            <div class="text-right">
+                                <button type="submit" class="btn btn-warning">
+                                    <i class="fas fa-save mr-1"></i>Perbarui Skripsi
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                @break
+
+                {{-- Default: Status Lainnya --}}
+                @default
+                <div class="card mb-4 shadow-sm">
+                    <div class="card-header bg-light">
+                        <h5 class="mb-0"><i class="fas fa-info-circle mr-2"></i>Status Tidak Diketahui</h5>
+                    </div>
+                    <div class="card-body">
+                        <p>Status skripsi Anda tidak dikenali. Silakan hubungi admin.</p>
+                    </div>
+                </div>
+            @endswitch
+
+        @endif
+
     </div>
-</div>
-
-<!-- Modal Tambah -->
-<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-xl">
-        <div class="modal-content">
-            <form method="post" action="{{ route('tambah.skripsi') }}" enctype="multipart/form-data">
-                @csrf
-                <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLabel">Tambah Data Skripsi</h5>
-                    <button type="button" class="close" data-dismiss="modal"><span>&times;</span></button>
-                </div>
-                <div class="modal-body">
-                    <div class="form-group">
-                        <label for="judul">Judul</label>
-                        <input type="text" class="form-control" name="judul" id="judul" required placeholder="Masukkan Judul Skripsi">
-                    </div>
-                    <div class="form-group">
-                        <label for="abstrak">Abstrak</label>
-                        <input class="form-control" name="abstrak" id="abstrak" rows="3" required></input>
-                    </div>
-                    <div class="row">
-                        <div class="form-group col-md-3">
-                            <label for="penulis">Penulis</label>
-                            <input type="text" class="form-control" name="penulis" value="{{ Auth::user()->name }}" readonly>
-                        </div>
-                        <div class="form-group col-md-3">
-                            <label for="dospem">Dosen Pembimbing</label>
-                            <select name="dospem" class="form-control" required>
-                                <option value="">Pilih</option>
-                                @foreach ($namaDospem as $nama)
-                                    <option value="{{ $nama->nama }}">{{ $nama->nama }}</option>
-                                @endforeach
-                            </select>
-                        </div>
-                        <div class="form-group col-md-3">
-                            <label for="rilis">Rilis Pada Tahun</label>
-                            <input type="number" class="form-control" name="rilis" required placeholder="Contoh: 2025">
-                        </div>
-                        <div class="form-group col-md-3">
-                            <label for="halaman">Jumlah Halaman</label>
-                            <input type="number" class="form-control" name="halaman" required>
-                        </div>
-                    </div>
-
-                    <div class="row">
-                        <div class="form-group col-md-6">
-                            <label for="katakunci">Kata Kunci</label>
-                            <input type="text" class="form-control" name="katakunci" required placeholder="Contoh: machine learning, onion">
-                        </div>
-                        <div class="form-group col-md-6">
-                            <label for="file_skripsi">File Skripsi (PDF, maks 10 MB)</label>
-                            <input type="file" class="form-control" name="file_skripsi" accept=".pdf" required>
-                        </div>
-                    </div>
-
-                    <div class="row">
-                        <div class="form-group col-md-6">
-                            <label for="file_dapus">File Daftar Pustaka (PDF, maks 10 MB)</label>
-                            <input type="file" class="form-control" name="file_dapus" accept=".pdf" required>
-                        </div>
-                        <div class="form-group col-md-6">
-                            <label for="file_abstrak">File Abstrak (PDF, maks 10 MB)</label>
-                            <input type="file" class="form-control" name="file_abstrak" accept=".pdf" required>
-                        </div>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Tutup</button>
-                    <button type="submit" class="btn btn-primary">Tambah Data</button>
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
-    
-<!-- Modal Edit -->
-<div class="modal fade" id="edit" tabindex="-1" aria-labelledby="modalEditLabel" aria-hidden="true">
-    <div class="modal-dialog modal-xl">
-        <div class="modal-content">
-            <form method="post" action="{{ route('ubah.skripsi') }}" enctype="multipart/form-data">
-                @csrf
-                @method('PATCH')
-
-                <div class="modal-header">
-                    <h5 class="modal-title" id="modalEditLabel">Edit Data Skripsi</h5>
-                    <button type="button" class="close" data-dismiss="modal">
-                        <span>&times;</span>
-                    </button>
-                </div>
-
-                <div class="modal-body">
-                    <input type="hidden" name="id" id="edit-id">
-
-                    <div class="form-group">
-                        <label for="edit-judul">Judul</label>
-                        <input type="text" class="form-control" name="judul" id="edit-judul" required>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="edit-abstrak">Abstrak</label>
-                        <input class="form-control" name="abstrak" id="edit-abstrak" rows="3" required></input>
-                    </div>
-
-                    <div class="row">
-                        <div class="form-group col-md-3">
-                            <label for="edit-penulis">Penulis</label>
-                            <input type="text" class="form-control" name="penulis" value="{{ Auth::user()->name }}" readonly>
-                        </div>
-                        <div class="form-group col-md-3">
-                            <label for="edit-dospem">Dosen Pembimbing</label>
-                            <select name="dospem" class="form-control" id="edit-dospem" required>
-                                <option value="">Pilih</option>
-                                @foreach ($namaDospem as $nama)
-                                    <option value="{{ $nama->nama }}">{{ $nama->nama }}</option>
-                                @endforeach
-                            </select>
-                        </div>
-                        <div class="form-group col-md-3">
-                            <label for="edit-rilis">Rilis Tahun</label>
-                            <input type="number" class="form-control" name="rilis" id="edit-rilis" required>
-                        </div>
-                        <div class="form-group col-md-3">
-                            <label for="edit-halaman">Jumlah Halaman</label>
-                            <input type="number" class="form-control" name="halaman" id="edit-halaman" required>
-                        </div>
-                    </div>
-
-                    <div class="row">
-                        <div class="form-group col-md-6">
-                            <label for="edit-katakunci">Kata Kunci</label>
-                            <input type="text" class="form-control" name="katakunci" id="edit-katakunci" required>
-                        </div>
-                        <div class="form-group col-md-6">
-                            <label for="edit-file_skripsi">File Skripsi (PDF, maks 10 MB)</label>
-                            <input type="file" class="form-control" name="file_skripsi" id="edit-file_skripsi" accept=".pdf">
-                            <div id="file_skripsi-area" class="mb-1"></div>
-                        </div>
-                    </div>
-
-                    <div class="row">
-                        <div class="form-group col-md-6">
-                            <label for="edit-file_dapus">File Daftar Pustaka (PDF, maks 10 MB)</label>
-                            <input type="file" class="form-control" name="file_dapus" id="edit-file_dapus" accept=".pdf">
-                            <div id="file_dapus-area1" class="mb-1"></div>
-                        </div>
-                        <div class="form-group col-md-6">
-                            <label for="edit-file_abstrak">File Abstrak (PDF, maks 10 MB)</label>
-                            <input type="file" class="form-control" name="file_abstrak" id="edit-file_abstrak" accept=".pdf">
-                            <div id="file_abstrak-area2" class="mb-1"></div>
-                        </div>
-                    </div>
-
-                    <!-- Hidden fields to retain old file names -->
-                    <input type="hidden" name="old_file_skripsi" id="edit-old-file_skripsi">
-                    <input type="hidden" name="old_file_dapus" id="edit-old-file_dapus">
-                    <input type="hidden" name="old_file_abstrak" id="edit-old-file_abstrak">
-                </div>
-
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Tutup</button>
-                    <button type="submit" class="btn btn-primary">Ubah Data</button>
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
-
-@stop
-
+@endsection
 @section('js')
-
-<script>
-  $(function(){
-        $(document).on('click', '#btn-edit-skripsi', function () {
-            let id = $(this).data('id');
-            $('#file_skripsi-area').empty(); // Kosongkan elemen sebelum diisi ulang
-            $('#file-upload-area').hide(); // Sembunyikan area upload file saat modal dibuka
-            $('#file_skripsi-area1').empty(); 
-            $('#file-upload-area1').hide();
-            $('#file_skripsi-area2').empty(); 
-            $('#file-upload-area2').hide();
-
-            $.ajax({
-                type: "GET",
-                url: "{{ url('mahasiswa/ajaxmahasiswa/dataSkripsi') }}/" + id,
-                dataType: 'json',
-                success: function (res) {
-                    $('#edit-id').val(res.id);
-                    $('#edit-judul').val(res.judul);
-                    $('#edit-abstrak').val(res.abstrak);
-                    $('#edit-dospem').val(res.dospem);
-                    $('#edit-rilis').val(res.rilis);
-                    $('#edit-halaman').val(res.halaman);
-                    $('#edit-katakunci').val(res.katakunci);
-                    $('#edit-old-file_skripsi').val(res.file_skripsi);
-                    $('#edit-old-file_dapus').val(res.file_dapus);
-                    $('#edit-old-file_abstrak').val(res.file_abstrak);
-
-                    // Menampilkan status file skripsi
-                    if (res.file_skripsi) {
-                        $('#file_skripsi-area').html('<span class="text-success">File Tersedia: ' + res.file_skripsi + '</span>');
-                        $('#file-upload-area').show(); // Menampilkan form upload file jika file tersedia
-                    } else {
-                        $('#file_skripsi-area').html('<span class="text-danger">File Tidak Tersedia</span>');
-                    }
-                    if (res.file_dapus) {
-                        $('#file_dapus-area1').html('<span class="text-success">File Tersedia: ' + res.file_dapus + '</span>');
-                        $('#file-upload-area1').show(); // Menampilkan form upload file jika file tersedia
-                    } else {
-                        $('#file_dapus-area1').html('<span class="text-danger">File Tidak Tersedia</span>');
-                    }
-                    if (res.file_abstrak) {
-                        $('#file_abstrak-area2').html('<span class="text-success">File Tersedia: ' + res.file_abstrak + '</span>');
-                        $('#file-upload-area2').show(); // Menampilkan form upload file jika file tersedia
-                    } else {
-                        $('#file_abstrak-area2').html('<span class="text-danger">File Tidak Tersedia</span>');
-                    }
-                },
-                error: function () {
-                    alert("Gagal mengambil data!");
-                }
-            });
-        });
-    });
-
-
-        function deleteConfirmation(id,judul) {
-            swal.fire({
-                title: "Hapus?",
-                type: 'warning',
-                text: "Apakah anda yakin akan menghapus Skripsi dengan Judul " +judul+"?!",
-                showCancelButton: !0,
-                confirmButtonText: "Ya, lakukan!",
-                cancelButtonText: "Tidak, batalkan!",
-
-            }).then (function (e) {
-                if (e.value === true) {
-                    var CSRF_TOKEN = $('meta[name="csrf-token"]').attr('content');
-                    $.ajax({
-                        type: 'GET',
-                        url: "{{url('/mahasiswa/skripsi/hapus')}}/"+id,
-                        data: {_token: CSRF_TOKEN},
-                        dataType: 'JSON',
-                        success: function (results) {
-                            if (results.success === true) {
-                                swal.fire("Done!", results.message, "success");
-                                setTimeout(function(){
-                                    location.reload();
-                                },1000);
-                            } else {
-                                swal.fire("Error!", results.message, "error");
-                            }
-                        }
-                    });
-                } else {
-                    e.dismiss;
-                }
-            }, function (dismiss) {
-                return false;
-            })
-        }
-</script>
 @stop
-
-
-{{-- @extends('adminlte::page')
-
-@section('title', 'Mahasiswa Skripsi')
-
-@section('content_header')
-    <h1 class="m-0 text-dark">Mahasiswa Skripsi</h1>
-@stop
-
-@section('content')
-<div class="container-fluid">
-    @if(!$skripsi)
-        Jika belum kirim, buka modal tambah otomatis
-        <div class="card">
-            <div class="card-body text-center">
-                <button id="trigger-add" type="button" class="btn btn-primary" data-toggle="modal" data-target="#modalTambah">
-                    Tambah Data Skripsi
-                </button>
-            </div>
-        </div>
-    @else
-        @switch($skripsi->status)
-            @case(0)
-                Menunggu Verifikasi
-                <div class="card border-warning mb-4">
-                    <div class="card-header bg-warning text-white">Proses Verifikasi</div>
-                    <div class="card-body">
-                        <p>Data skripsi Anda telah dikirim dan sedang menunggu verifikasi oleh admin.</p>
-                    </div>
-                </div>
-                @break
-
-            @case(1)
-                Diterima
-                <div class="card border-success mb-4">
-                    <div class="card-header bg-success text-white">Diterima</div>
-                    <div class="card-body">
-                        <p>Selamat! Skripsi Anda telah <strong>Diterima</strong> oleh admin.</p>
-                    </div>
-                </div>
-                @break
-
-            @case(2)
-                Ditolak
-                <div class="card border-danger mb-4">
-                    <div class="card-header bg-danger text-white">Ditolak</div>
-                    <div class="card-body">
-                        <p>Mohon maaf, skripsi Anda <strong>Ditolak</strong>. Silakan perbaiki data dan kirim ulang.</p>
-                        <button type="button" class="btn btn-success" data-toggle="modal" data-target="#modalEdit">
-                            Edit Skripsi
-                        </button>
-                    </div>
-                </div>
-                @break
-
-            @default
-                <div class="alert alert-secondary">Status tidak diketahui.</div>
-        @endswitch
-    @endif
-</div>
-
-Modal Tambah Skripsi
-<div class="modal fade" id="modalTambah" tabindex="-1" aria-hidden="true">
-  <div class="modal-dialog modal-xl">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title">Tambah Data Skripsi</h5>
-        <button type="button" class="close" data-dismiss="modal">&times;</button>
-      </div>
-      <form method="post" action="{{ route('tambah.skripsi') }}" enctype="multipart/form-data">
-        @csrf
-        <div class="modal-body">
-          @include('_form', ['prefix' => ''])
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-          <button type="submit" class="btn btn-primary">Kirim</button>
-        </div>
-      </form>
-    </div>
-  </div>
-</div>
-
-Modal Edit Skripsi
-<div class="modal fade" id="modalEdit" tabindex="-1" aria-hidden="true">
-  <div class="modal-dialog modal-xl">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title">Edit Data Skripsi</h5>
-        <button type="button" class="close" data-dismiss="modal">&times;</button>
-      </div>
-      <form method="post" action="{{ route('ubah.skripsi') }}" enctype="multipart/form-data">
-        @csrf
-        @method('PATCH')
-        <div class="modal-body">
-          @include('_form', ['prefix' => 'edit-'])
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-          <button type="submit" class="btn btn-primary">Update</button>
-        </div>
-      </form>
-    </div>
-  </div>
-</div>
-@stop
-
-@section('js')
-<script>
-$(document).ready(function() {
-    @if(!$skripsi)
-        Tampilkan modal tambah otomatis ketika belum ada data
-        $('#modalTambah').modal('show');
-    @endif
-});
-</script>
-@stop --}}

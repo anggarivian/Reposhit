@@ -28,7 +28,7 @@
                             <i class="fas fa-arrow-left"></i> Kembali
                         </button>
                     @else
-                        <!-- In your blade template, replace the search form section with this: -->
+                        <!-- Enhanced search form dengan metadata support -->
                         <form id="searchForm" action="{{ route('findSkripsi') }}" method="GET" class="search-panel">
                             <div class="input-group">
                                 <div class="input-group-prepend">
@@ -36,32 +36,46 @@
                                         <i class="fas fa-search"></i>
                                     </span>
                                 </div>
-                                <input type="text" name="judul" class="form-control" placeholder="Cari judul skripsi..." value="{{ request('judul') }}">
+                                <input type="text" name="judul" class="form-control" placeholder="Cari judul, subjek, kata kunci, atau deskripsi..." value="{{ request('judul') }}">
                                 <div class="input-group-append">
                                     <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                         Filter <i class="fas fa-filter"></i>
                                     </button>
-                                    <div class="dropdown-menu p-3" style="width: 300px;" onclick="event.stopPropagation();">
+                                    <div class="dropdown-menu p-3" style="width: 350px;" onclick="event.stopPropagation();">
                                         <div class="form-group">
-                                            <label>Penulis</label>
-                                            <input type="text" name="penulis" class="form-control" placeholder="Nama penulis" value="{{ request('penulis') }}">
+                                            <label>Penulis / Kontributor</label>
+                                            <input type="text" name="penulis" class="form-control" placeholder="Nama penulis atau kontributor" value="{{ request('penulis') }}">
                                         </div>
                                         <div class="form-group">
                                             <label>Tahun</label>
                                             <input type="text" name="rilis" class="form-control" placeholder="Tahun publikasi" value="{{ request('rilis') }}">
                                         </div>
-                                            <div class="form-group">
-                                                <label>Program Studi</label>
-                                                <select name="prodi" class="form-control">
-                                                    <option value="">Semua Program Studi</option>
-                                                    @foreach($jurusans as $jurusan)
-                                                        <option value="{{ $jurusan->nama_jurusan }}"
-                                                            {{ request('prodi') == $jurusan->nama_jurusan ? 'selected' : '' }}>
-                                                            {{ $jurusan->nama_jurusan }}
-                                                        </option>
-                                                    @endforeach
-                                                </select>
-                                            </div>
+                                        <div class="form-group">
+                                            <label>Program Studi</label>
+                                            <select name="prodi" class="form-control">
+                                                <option value="">Semua Program Studi</option>
+                                                @foreach($jurusans as $jurusan)
+                                                    <option value="{{ $jurusan->nama_jurusan }}"
+                                                        {{ request('prodi') == $jurusan->nama_jurusan ? 'selected' : '' }}>
+                                                        {{ $jurusan->nama_jurusan }}
+                                                    </option>
+                                                @endforeach
+                                            </select>
+                                        </div>
+                                        <!-- Tambahan filter metadata -->
+                                        <div class="form-group">
+                                            <label>Subjek</label>
+                                            <input type="text" name="subject" class="form-control" placeholder="Subjek atau bidang keilmuan" value="{{ request('subject') }}">
+                                        </div>
+                                        {{-- <div class="form-group">
+                                            <label>Tipe Dokumen</label>
+                                            <select name="type" class="form-control">
+                                                <option value="">Semua Tipe</option>
+                                                <option value="Skripsi" {{ request('type') == 'Skripsi' ? 'selected' : '' }}>Skripsi</option>
+                                                <option value="Tesis" {{ request('type') == 'Tesis' ? 'selected' : '' }}>Tesis</option>
+                                                <option value="Laporan" {{ request('type') == 'Laporan' ? 'selected' : '' }}>Laporan</option>
+                                            </select>
+                                        </div> --}}
                                         <button type="submit" class="btn btn-primary btn-block">
                                             Terapkan Filter
                                         </button>
@@ -78,23 +92,25 @@
                 </div>
             </div>
         </div>
-        
+
         <div class="notification" id="notification"></div>
-        
+
         <div class="card-body">
-            @if(request()->has('judul') || request()->has('penulis') || request()->has('rilis'))
+            @if(request()->has('judul') || request()->has('penulis') || request()->has('rilis') || request()->has('subject') || request()->has('type'))
                 <div class="alert alert-info">
-                    <i class="fas fa-info-circle"></i> Hasil pencarian untuk: 
-                    @if(request('judul')) <span class="badge badge-primary">Judul: {{ request('judul') }}</span> @endif
+                    <i class="fas fa-info-circle"></i> Hasil pencarian untuk:
+                    @if(request('judul')) <span class="badge badge-primary">Pencarian: {{ request('judul') }}</span> @endif
                     @if(request('penulis')) <span class="badge badge-primary">Penulis: {{ request('penulis') }}</span> @endif
                     @if(request('rilis')) <span class="badge badge-primary">Tahun: {{ request('rilis') }}</span> @endif
                     @if(request('prodi')) <span class="badge badge-primary">Prodi: {{ request('prodi') }}</span> @endif
+                    @if(request('subject')) <span class="badge badge-primary">Subjek: {{ request('subject') }}</span> @endif
+                    @if(request('type')) <span class="badge badge-primary">Tipe: {{ request('type') }}</span> @endif
                     <a href="{{ route('searchSkripsi') }}" class="float-right text-decoration-none">
                         <i class="fas fa-times"></i> Reset
                     </a>
                 </div>
             @endif
-            
+
             @if($skripsi->isEmpty())
                 <div id="no-skripsi-message" class="alert alert-info text-center py-5" role="alert">
                     <i class="fas fa-info-circle fa-3x mb-3"></i>
@@ -166,6 +182,9 @@
                                                 <h5 class="author-name">
                                                     <i class="fas fa-user-graduate text-muted mr-1"></i>
                                                     {{ $skripsis->penulis }}
+                                                    @if($skripsis->metadata && $skripsis->metadata->creator && $skripsis->metadata->creator !== $skripsis->penulis)
+                                                        <small class="text-muted">({{ $skripsis->metadata->creator }})</small>
+                                                    @endif
                                                     <span class="badge badge-pill badge-light">
                                                         {{ $skripsis->mahasiswa->jurusan->nama_jurusan ?? '-' }}
                                                     </span>
@@ -179,12 +198,29 @@
                                         </div>
 
                                         <h4 class="skripsi-title mt-2">
-                                            <a href="/home/skripsi/detail/{{ $skripsis->id }}">{{ $skripsis->judul }}</a>
+                                            <a href="/home/skripsi/detail/{{ $skripsis->id }}">
+                                                {{ $skripsis->judul }}
+                                            </a>
                                         </h4>
 
+                                        <!-- Tampilkan subjek dari metadata jika ada -->
+                                        @if($skripsis->metadata && $skripsis->metadata->subject)
+                                            <div class="mb-2">
+                                                <span class="badge badge-secondary">
+                                                    <i class="fas fa-bookmark"></i> {{ $skripsis->metadata->subject }}
+                                                </span>
+                                            </div>
+                                        @endif
+
                                         <div class="skripsi-abstract">
-                                            {{ Str::limit($skripsis->abstrak, 180) }}
-                                            @if(strlen($skripsis->abstrak) > 180)
+                                            <!-- Prioritas: description dari metadata, kemudian abstrak dari skripsi -->
+                                            @php
+                                                $abstractText = $skripsis->metadata && $skripsis->metadata->description
+                                                    ? $skripsis->metadata->description
+                                                    : $skripsis->abstrak;
+                                            @endphp
+                                            {{ Str::limit($abstractText, 180) }}
+                                            @if(strlen($abstractText) > 180)
                                             <a href="#" data-toggle="modal" data-target="#abstrakModal{{ $skripsis->id }}" class="text-primary">
                                                 Baca Selengkapnya
                                             </a>
@@ -192,18 +228,36 @@
                                         </div>
                                         <div class="d-flex align-items-center flex-wrap gap-2">
                                             <span class="badge badge-light">
-                                                <i class="fas fa-university"></i> Universitas Suryakancana
+                                                <i class="fas fa-university"></i>
+                                                {{ $skripsis->metadata && $skripsis->metadata->publisher ? $skripsis->metadata->publisher : 'Universitas Suryakancana' }}
                                             </span>
                                             <span class="badge badge-light mr-2">
-                                                <i class="fas fa-calendar-alt"></i> {{ $skripsis->rilis }}
+                                                <i class="fas fa-calendar-alt"></i>
+                                                {{ $skripsis->metadata && $skripsis->metadata->date_issued ? $skripsis->metadata->date_issued : $skripsis->rilis }}
                                             </span>
-                                                @if($skripsis->katakunci)
-                                                    @foreach(explode(',', $skripsis->katakunci) as $tag)
-                                                        <a href="{{ route('searchSkripsi', ['judul' => trim($tag)]) }}" class="badge badge-info ml-1" style="text-decoration:none;">
-                                                            <i class="fas fa-tag"></i> {{ trim($tag) }}
-                                                        </a>
-                                                    @endforeach
-                                                @endif
+                                            @if($skripsis->metadata && $skripsis->metadata->type)
+                                                <span class="badge badge-info mr-2">
+                                                    <i class="fas fa-file-alt"></i> {{ $skripsis->metadata->type }}
+                                                </span>
+                                            @endif
+                                            @if($skripsis->metadata && $skripsis->metadata->language)
+                                                <span class="badge badge-success mr-2">
+                                                    <i class="fas fa-language"></i> {{ strtoupper($skripsis->metadata->language) }}
+                                                </span>
+                                            @endif
+                                            <!-- Tampilkan kata kunci dari metadata atau skripsi -->
+                                            @php
+                                                $keywords = $skripsis->metadata && $skripsis->metadata->keywords
+                                                    ? $skripsis->metadata->keywords
+                                                    : $skripsis->katakunci;
+                                            @endphp
+                                            @if($keywords)
+                                                @foreach(explode(',', $keywords) as $tag)
+                                                    <a href="{{ route('searchSkripsi', ['judul' => trim($tag)]) }}" class="badge badge-info ml-1" style="text-decoration:none;">
+                                                        <i class="fas fa-tag"></i> {{ trim($tag) }}
+                                                    </a>
+                                                @endforeach
+                                            @endif
                                         </div>
                                         <div class="skripsi-actions mt-3">
                                             @if(auth()->user()->favorites()->where('id_skripsi', $skripsis->id)->exists())
@@ -261,80 +315,188 @@
     </div>
 </div>
 
-<!-- Modal untuk Tampilan Abstrak - Mengikuti struktur asli -->
+<!-- Modal untuk Tampilan Abstrak - Enhanced dengan metadata -->
 @foreach($skripsi as $skripsis)
     <div class="modal fade" id="abstrakModal{{ $skripsis->id }}" tabindex="-1" role="dialog" aria-labelledby="abstrakModalLabel{{ $skripsis->id }}" aria-hidden="true">
         <div class="modal-dialog modal-lg" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h6>Universitas Suryakancana</h6>
+                    <h6>{{ $skripsis->metadata && $skripsis->metadata->publisher ? $skripsis->metadata->publisher : 'Universitas Suryakancana' }}</h6>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
                 <div class="modal-body">
                     <div class="header">
-                        <h5 class="modal-title" id="abstrakModalLabel{{ $skripsis->id }}">{{ $skripsis->judul }}</h5>
-                        <h6 class="modal-title penulis">{{ $skripsis->penulis }}, author</h6>
+                        <h5 class="modal-title" id="abstrakModalLabel{{ $skripsis->id }}">
+                            {{ $skripsis->metadata && $skripsis->metadata->title ? $skripsis->metadata->title : $skripsis->judul }}
+                        </h5>
+                        <h6 class="modal-title penulis">
+                            {{ $skripsis->metadata && $skripsis->metadata->creator ? $skripsis->metadata->creator : $skripsis->penulis }}, author
+                            @if($skripsis->metadata && $skripsis->metadata->contributor)
+                                <br><small class="text-muted">Kontributor: {{ $skripsis->metadata->contributor }}</small>
+                            @endif
+                        </h6>
                         <hr class="dashed-line">
                     </div>
                     <p>Abstrak</p>
-                    <p class="abstrak-text">{{ $skripsis->abstrak }}</p>
+                    <p class="abstrak-text">
+                        {{ $skripsis->metadata && $skripsis->metadata->description ? $skripsis->metadata->description : $skripsis->abstrak }}
+                    </p>
+                    @if($skripsis->metadata && $skripsis->metadata->coverage)
+                        <p><strong>Cakupan:</strong> {{ $skripsis->metadata->coverage }}</p>
+                    @endif
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Modal untuk Tampilan Metadata - Mengikuti struktur asli -->
+    <!-- Modal untuk Tampilan Metadata - Enhanced dengan semua field metadata -->
     <div class="modal fade" id="metadataModal{{ $skripsis->id }}" tabindex="-1" role="dialog" aria-labelledby="metadataLabel{{ $skripsis->id }}" aria-hidden="true">
         <div class="modal-dialog modal-lg" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h6>Universitas Suryakancana</h6>
+                    <h6>{{ $skripsis->metadata && $skripsis->metadata->publisher ? $skripsis->metadata->publisher : 'Universitas Suryakancana' }}</h6>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
                 <div class="modal-body">
-                    <h1>Universitas Suryakancana Library</h1>
+                    <h1>{{ $skripsis->metadata && $skripsis->metadata->publisher ? $skripsis->metadata->publisher : 'Universitas Suryakancana' }} Library</h1>
 
                     <div class="utama">
-                        <div class="judul">
-                            <strong>Judul:</strong>
+                        <div class="row">
+                            <div class="col-md-3"><strong>Judul:</strong></div>
+                            <div class="col-md-9">
+                                <p>{{ $skripsis->metadata && $skripsis->metadata->title ? $skripsis->metadata->title : $skripsis->judul }}</p>
+                            </div>
                         </div>
-                        <div class="isi">
-                            <p>{{ $skripsis->judul }}</p>
+
+                        <div class="row">
+                            <div class="col-md-3"><strong>Pengarang:</strong></div>
+                            <div class="col-md-9">
+                                <p>{{ $skripsis->metadata && $skripsis->metadata->creator ? $skripsis->metadata->creator : $skripsis->penulis }}</p>
+                            </div>
                         </div>
-                        <div class="judul">
-                            <strong>Pengarang:</strong>
-                            
+
+                        @if($skripsis->metadata && $skripsis->metadata->contributor)
+                        <div class="row">
+                            <div class="col-md-3"><strong>Kontributor:</strong></div>
+                            <div class="col-md-9">
+                                <p>{{ $skripsis->metadata->contributor }}</p>
+                            </div>
                         </div>
-                        <div class="isi">
-                            <p>{{ $skripsis->penulis }}</p>
+                        @endif
+
+                        @if($skripsis->metadata && $skripsis->metadata->subject)
+                        <div class="row">
+                            <div class="col-md-3"><strong>Subjek:</strong></div>
+                            <div class="col-md-9">
+                                <p>{{ $skripsis->metadata->subject }}</p>
+                            </div>
                         </div>
-                        <div class="judul">
-                            <strong>Penerbitan:</strong>
+                        @endif
+
+                        <div class="row">
+                            <div class="col-md-3"><strong>Penerbitan:</strong></div>
+                            <div class="col-md-9">
+                                <p>{{ $skripsis->mahasiswa->jurusan->nama_jurusan ?? '-' }} {{ $skripsis->metadata && $skripsis->metadata->publisher ? $skripsis->metadata->publisher : 'Universitas Suryakancana' }}</p>
+                            </div>
                         </div>
-                        <div class="isi">
-                            <p>{{ $skripsis->mahasiswa->jurusan->nama_jurusan ?? '-' }} Universitas Suryakancana</p>
+
+                        <div class="row">
+                            <div class="col-md-3"><strong>Tahun Terbit:</strong></div>
+                            <div class="col-md-9">
+                                <p>{{ $skripsis->metadata && $skripsis->metadata->date_issued ? $skripsis->metadata->date_issued : $skripsis->rilis }}</p>
+                            </div>
                         </div>
-                        
-                        <div class="judul">
-                            <strong>Link Terkait:</strong>
-                            <ul>
-                                <li><a href="/home/skripsi/detail/{{$skripsis->id}}">Deskripsi Bibliografi</a></li>
-                                <li>
-                                    <a href="{{ route('searchSkripsi') }}?judul={{ $skripsis->judul }}&penulis=&rilis=">
-                                        Dokumen Yang Mirip
-                                    </a>
-                                </li>
-                                <li><a href="/home/skripsi">Universitas Suryakancana Library</a></li>
-                            </ul>
+
+                        @if($skripsis->metadata && $skripsis->metadata->type)
+                        <div class="row">
+                            <div class="col-md-3"><strong>Tipe Dokumen:</strong></div>
+                            <div class="col-md-9">
+                                <p>{{ $skripsis->metadata->type }}</p>
+                            </div>
+                        </div>
+                        @endif
+
+                        @if($skripsis->metadata && $skripsis->metadata->format)
+                        <div class="row">
+                            <div class="col-md-3"><strong>Format:</strong></div>
+                            <div class="col-md-9">
+                                <p>{{ $skripsis->metadata->format }}</p>
+                            </div>
+                        </div>
+                        @endif
+
+                        @if($skripsis->metadata && $skripsis->metadata->language)
+                        <div class="row">
+                            <div class="col-md-3"><strong>Bahasa:</strong></div>
+                            <div class="col-md-9">
+                                <p>{{ strtoupper($skripsis->metadata->language) }}</p>
+                            </div>
+                        </div>
+                        @endif
+
+                        @if($skripsis->metadata && $skripsis->metadata->identifier)
+                        <div class="row">
+                            <div class="col-md-3"><strong>Identifier:</strong></div>
+                            <div class="col-md-9">
+                                <p>{{ $skripsis->metadata->identifier }}</p>
+                            </div>
+                        </div>
+                        @endif
+
+                        @if($skripsis->metadata && $skripsis->metadata->rights)
+                        <div class="row">
+                            <div class="col-md-3"><strong>Hak Cipta:</strong></div>
+                            <div class="col-md-9">
+                                <p>{{ $skripsis->metadata->rights }}</p>
+                            </div>
+                        </div>
+                        @endif
+
+                        @if($skripsis->metadata && $skripsis->metadata->coverage)
+                        <div class="row">
+                            <div class="col-md-3"><strong>Cakupan:</strong></div>
+                            <div class="col-md-9">
+                                <p>{{ $skripsis->metadata->coverage }}</p>
+                            </div>
+                        </div>
+                        @endif
+
+                        <div class="row">
+                            <div class="col-md-3"><strong>Kata Kunci:</strong></div>
+                            <div class="col-md-9">
+                                <p>
+                                    @php
+                                        $keywords = $skripsis->metadata && $skripsis->metadata->keywords
+                                            ? $skripsis->metadata->keywords
+                                            : $skripsis->katakunci;
+                                    @endphp
+                                    {{ $keywords }}
+                                </p>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-3"><strong>Link Terkait:</strong></div>
+                            <div class="col-md-9">
+                                <ul>
+                                    <li><a href="/home/skripsi/detail/{{$skripsis->id}}">Deskripsi Bibliografi</a></li>
+                                    <li>
+                                        <a href="{{ route('searchSkripsi') }}?judul={{ $skripsis->judul }}&penulis=&rilis=">
+                                            Dokumen Yang Mirip
+                                        </a>
+                                    </li>
+                                    <li><a href="/home/skripsi">{{ $skripsis->metadata && $skripsis->metadata->publisher ? $skripsis->metadata->publisher : 'Universitas Suryakancana' }} Library</a></li>
+                                </ul>
+                            </div>
                         </div>
                     </div>
 
-                    <div class="footer">
-                        <p>&copy; {{ date('Y') }} Universitas Suryakancana Library. All Rights Reserved.</p>
+                    <div class="footer mt-4">
+                        <p>&copy; {{ date('Y') }} {{ $skripsis->metadata && $skripsis->metadata->publisher ? $skripsis->metadata->publisher : 'Universitas Suryakancana' }} Library. All Rights Reserved.</p>
                     </div>
                 </div>
             </div>
@@ -346,7 +508,7 @@
     <div class="modal-dialog modal-xl" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h6 class="modal-title" id="dapusModalLabel{{ $skripsis->id }}">Daftar Pustaka - {{ $skripsis->judul }}</h6>
+                <h6 class="modal-title" id="dapusModalLabel{{ $skripsis->id }}">Daftar Pustaka - {{ $skripsis->metadata && $skripsis->metadata->title ? $skripsis->metadata->title : $skripsis->judul }}</h6>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Tutup">
                     <span aria-hidden="true">&times;</span>
                 </button>
@@ -362,18 +524,13 @@
                         </div>
                         <div class="card-body p-0">
                             <div id="pdf-container-{{ $skripsis->id }}" style="position: relative;">
-                                <iframe 
+                                <iframe
                                     id="pdfFrame{{ $skripsis->id }}"
-                                    src="{{ asset('storage/daftar_pustaka_files/' . $skripsis->file_dapus) }}#toolbar=0&navpanes=0&scrollbar=0" 
-                                    width="100%" 
-                                    height="600px" 
+                                    src="{{ asset('storage/daftar_pustaka_files/' . $skripsis->file_dapus) }}#toolbar=0&navpanes=0&scrollbar=0"
+                                    width="100%"
+                                    height="600px"
                                     style="border: none;">
                                 </iframe>
-                                {{-- <div class="pdf-controls" style="position: absolute; top: 10px; right: 10px;">
-                                    <button class="btn btn-secondary btn-sm" onclick="openFullscreen('pdf-container-{{ $skripsis->id }}')">
-                                        <i class="fas fa-expand"></i> Layar Penuh
-                                    </button>
-                                </div> --}}
                             </div>
                         </div>
                     </div>
@@ -384,12 +541,13 @@
         </div>
     </div>
 </div>
+
 <!-- Modal Abstrak PDF dengan Tampilan Non-Download -->
 <div class="modal fade" id="abstrakPdfModal{{ $skripsis->id }}" tabindex="-1" role="dialog" aria-labelledby="abstrakPdfModalLabel{{ $skripsis->id }}" aria-hidden="true">
     <div class="modal-dialog modal-xl" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h6 class="modal-title" id="abstrakPdfModalLabel{{ $skripsis->id }}">Abstrak PDF - {{ $skripsis->judul }}</h6>
+                <h6 class="modal-title" id="abstrakPdfModalLabel{{ $skripsis->id }}">Abstrak PDF - {{ $skripsis->metadata && $skripsis->metadata->title ? $skripsis->metadata->title : $skripsis->judul }}</h6>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Tutup">
                     <span aria-hidden="true">&times;</span>
                 </button>
@@ -404,10 +562,10 @@
                             </h5>
                         </div>
                         <div class="card-body p-0">
-                            <iframe 
-                                src="{{ asset('storage/abstrak_files/' . $skripsis->file_abstrak) }}#toolbar=0&navpanes=0&scrollbar=0" 
-                                width="100%" 
-                                height="600px" 
+                            <iframe
+                                src="{{ asset('storage/abstrak_files/' . $skripsis->file_abstrak) }}#toolbar=0&navpanes=0&scrollbar=0"
+                                width="100%"
+                                height="600px"
                                 style="border: none;">
                             </iframe>
                         </div>
@@ -429,31 +587,31 @@
     .skripsi-item {
         transition: all 0.3s;
     }
-    
+
     .skripsi-title a {
         color: #3490dc;
         text-decoration: none;
         font-weight: 600;
         transition: color 0.3s;
     }
-    
+
     .skripsi-title a:hover {
         color: #1e70af;
         text-decoration: underline;
     }
-    
+
     .author-name {
         color: #555;
         font-size: 1rem;
     }
-    
+
     .skripsi-abstract {
         color: #555;
         line-height: 1.6;
         margin-top: 10px;
         font-size: 0.95rem;
     }
-    
+
     .views-badge {
         background-color: #f8f9fa;
         padding: 3px 8px;
@@ -461,12 +619,12 @@
         font-size: 0.8rem;
         color: #666;
     }
-    
+
     .skripsi-icon {
         position: relative;
         margin-top: 15px;
     }
-    
+
     .year-badge {
         position: absolute;
         bottom: -10px;
@@ -478,78 +636,78 @@
         padding: 2px 8px;
         border-radius: 10px;
     }
-    
+
     .skripsi-actions .btn {
         margin-right: 5px;
         margin-bottom: 5px;
     }
-    
+
     /* Search Panel */
     .search-panel {
         padding: 10px 0;
     }
-    
+
     /* Modal Styles - Keeping original structure but improving appearance */
     .modal-header h6 {
         margin: 0;
         font-weight: bold;
         font-size: 1.1rem;
     }
-    
+
     .header h5 {
         margin: 10px 0;
         font-weight: bold;
         color: #333;
     }
-    
+
     .header h6.penulis {
         color: #666;
     }
-    
+
     .dashed-line {
         border: 0;
         border-top: 2px dashed #3490dc;
         height: 1px;
         margin: 15px 0;
     }
-    
+
     .abstrak-text {
         text-align: justify;
         line-height: 1.8;
         color: #333;
         margin-top: 10px;
     }
-    
+
     /* Original modal structure styles */
     .utama {
         margin: 20px 0;
     }
-    
+
     .utama .judul {
         margin-bottom: 5px;
         color: #3490dc;
     }
-    
+
     .utama .isi {
         margin-bottom: 15px;
         padding-left: 10px;
     }
-    
+
     .utama ul {
         padding-left: 25px;
     }
-    
+
     .utama ul li {
         margin-bottom: 5px;
     }
-    
+
     .footer {
         margin-top: 30px;
         text-align: center;
         color: #666;
         font-size: 0.9rem;
     }
-    
+
     /* Notification */
     .notification {
         position: fixed;
@@ -571,22 +729,22 @@
     .notification-danger {
         background-color: #dc3545;
     }
-    
+
     /* Card hover effects */
     .card {
         transition: transform 0.3s, box-shadow 0.3s;
     }
-    
+
     .card:hover {
         transform: translateY(-5px);
         box-shadow: 0 10px 20px rgba(0,0,0,0.1);
     }
-    
+
     /* Small animation for buttons */
     .btn {
         transition: all 0.3s;
     }
-    
+
     .btn:hover {
         transform: translateY(-2px);
     }
@@ -601,23 +759,23 @@
         $('.dropdown-menu').on('click', function(e) {
             e.stopPropagation();
         });
-        
+
         // Ensure dropdown remains open when selecting from the prodi dropdown
         $('select[name="prodi"]').on('change', function(e) {
             e.stopPropagation();
         });
-        
+
         // Prevent form submission when clicking inside dropdown
         $('.dropdown-menu input, .dropdown-menu select').on('click', function(e) {
             e.stopPropagation();
         });
-        
+
         // Keep the remaining notification and animation code
         // Fade out no-skripsi message
         setTimeout(function() {
             $('#no-skripsi-message').fadeOut('slow');
         }, 10000);
-        
+
         // Notification handling
         let notificationMessage = "{{ session('favorite') }}";
         let notificationType = "{{ session('favorite_type') }}";
@@ -635,7 +793,7 @@
                 $('#notification').fadeOut(500);
             }, 5000);
         }
-        
+
         // Add animation to cards on page load
         $('.skripsi-item').each(function(index) {
             $(this).css({
@@ -644,7 +802,7 @@
                 'opacity': '0'
             });
         });
-        
+
         // Ensure modals work correctly
         $('.modal').on('shown.bs.modal', function () {
             $(this).find('[autofocus]').focus();

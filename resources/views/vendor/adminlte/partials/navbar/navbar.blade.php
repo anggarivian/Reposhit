@@ -1,5 +1,5 @@
-<nav class="main-header navbar 
-    {{ config('adminlte.classes_topnav_nav', 'navbar-expand') }} 
+<nav class="main-header navbar
+    {{ config('adminlte.classes_topnav_nav', 'navbar-expand') }}
     {{ config('adminlte.classes_topnav', 'navbar-white navbar-light') }}">
 
     {{-- Navbar left links --}}
@@ -23,17 +23,45 @@
         @each('adminlte::partials.navbar.menu-item', $adminlte->menu('navbar-right'), 'item')
 
         {{-- Notifikasi Lonceng --}}
-        <li class="nav-item dropdown" id="notif-dropdown">
-            <a class="nav-link" data-toggle="dropdown" href="#">
-                <i class="far fa-bell"></i>
-                <span class="badge badge-warning navbar-badge d-none" id="notif-count"></span>
+@php use Illuminate\Support\Str; @endphp
+
+<li class="nav-item dropdown" id="notif-dropdown">
+    <a class="nav-link" data-toggle="dropdown" href="#">
+        <i class="far fa-bell"></i>
+        @if($notifikasiCount > 0)
+            <span class="badge badge-warning navbar-badge">{{ $notifikasiCount }}</span>
+        @endif
+    </a>
+
+    <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right" id="notif-menu">
+        <span class="dropdown-header">{{ $notifikasiCount }} Notifikasi</span>
+        <div class="dropdown-divider"></div>
+
+        @forelse($notifikasis as $notif)
+            <a href="{{ route('skripsi')}}" class="dropdown-item">
+                <div class="media">
+                    <div class="media-body">
+                        {{-- Tampilkan potongan deskripsi --}}
+                        <h3 class="dropdown-item-title">
+                            {{ Str::limit($notif->deskripsi, 40) }}
+                        </h3>
+                        {{-- Tanggal --}}
+                        <p class="text-xs text-muted mb-0">
+                            <i class="far fa-clock mr-1"></i>
+                            {{ $notif->created_at->diffForHumans() }}
+                        </p>
+                    </div>
+                </div>
             </a>
-            <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right" id="notif-menu">
-                <span class="dropdown-header" id="notif-header">0 Notifikasi</span>
-                <div class="dropdown-divider"></div>
-                <div id="notif-items"></div>
-            </div>
-        </li>
+            <div class="dropdown-divider"></div>
+        @empty
+            <span class="dropdown-item text-center text-muted">
+                Tidak ada notifikasi
+            </span>
+        @endforelse
+    </div>
+</li>
+
 
         {{-- User menu link --}}
         @if(Auth::user())
@@ -70,7 +98,7 @@ document.addEventListener('DOMContentLoaded', function () {
             const notifs = data.data;
             console.log(count);
             console.log(notifs);
-            
+
             const countElem = document.getElementById('notif-count');
             const headerElem = document.getElementById('notif-header');
             const itemsContainer = document.getElementById('notif-items');

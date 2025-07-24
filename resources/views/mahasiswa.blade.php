@@ -57,8 +57,8 @@
                                     <span class="password-text" id="password-{{ $mahasiswas->id }}">
                                         •••••••••
                                     </span>
-                                    <button class="btn btn-sm btn-outline-secondary ml-2 toggle-password" 
-                                            data-password="{{ $mahasiswas->password_text ?? 'Tidak tersedia' }}" 
+                                    <button class="btn btn-sm btn-outline-secondary ml-2 toggle-password"
+                                            data-password="{{ $mahasiswas->lastPassword->password_text ?? 'Tidak tersedia' }}"
                                             data-target="password-{{ $mahasiswas->id }}">
                                         <i class="fas fa-eye"></i>
                                     </button>
@@ -294,7 +294,7 @@
                         'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                     }
                 });
-                
+
                 $.ajax({
                     type: 'GET',
                     url: "{{url('/admin/mahasiswa/hapus')}}/" + id,
@@ -325,7 +325,7 @@
             const passwordText = $(this).data('password');
             const $passwordElement = $('#' + targetId);
             const $icon = $(this).find('i');
-            
+
             if ($passwordElement.text().includes('•')) {
                 $passwordElement.text(passwordText);
                 $icon.removeClass('fa-eye').addClass('fa-eye-slash');

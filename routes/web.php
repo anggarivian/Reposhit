@@ -69,10 +69,11 @@ Route::middleware('is_admin')->group(function () {
     Route::get('/admin/skripsi/hapus/{id}', [SkripsiController::class, 'hapus1'])->name('hapus.skripsi');
     Route::get('/admin/skripsi/verifikasi/{id}', [SkripsiController::class,'verifikasi'])->name('verifikasi');
     Route::get('/admin/skripsi/tolak/{id}', [SkripsiController::class, 'tolakVerifikasi'])->name('tolakVerifikasi');
+    Route::post('/admin/skripsi/tolak/{id}', [SkripsiController::class, 'tolakVerifikasi'])->name('skripsi.tolak');
     Route::get('/admin/skripsi/detail/{id}', [SkripsiController::class, 'showPdf'])->name('admin.skripsi.detail');
 
     // Route Komentar Admin ------------------------------------------------------------------------------
-    Route::post('admin//comment/detail', [CommentController::class, 'postkomentar1'])->name('postkomentar1');
+    Route::post('admin/comment/detail', [CommentController::class, 'postkomentar1'])->name('postkomentar1');
     Route::delete('/admin/comment/delete/{id}', [CommentController::class, 'delete'])->name('deletekomentar1');
     Route::put('admin/comment/updatekomentar/{id}', [CommentController::class, 'update1'])->name('updatekomentar1');
     Route::post('admin/comment/postbalaskomentar', [CommentController::class, 'postBalasan1'])->name('postBalasan1');
@@ -91,8 +92,8 @@ Route::middleware('auth','is_mahasiswa')->group(function () {
     Route::get('/home/skripsi', [SkripsiController::class, 'mahasiswa'])->middleware('auth')->name('mahasiswa.skripsi');
     Route::get('/home/skripsi/detail/{id}', [SkripsiController::class, 'detailskripsi']);
     // Route::get('/home/skripsi/cariYangMirip', [SkripsiController::class, 'cariYangMirip'])->name('cariYangMirip');
-    Route::get('/home/skripsi/search', [SkripsiController::class, 'searchSkripsi'])->name('searchSkripsi');
-    Route::get('/home/skripsi/find', [SkripsiController::class, 'findSkripsi'])->name('findSkripsi');
+    // Route::get('/home/skripsi/search', [SkripsiController::class, 'searchSkripsi'])->name('searchSkripsi');
+    // Route::get('/home/skripsi/find', [SkripsiController::class, 'findSkripsi'])->name('findSkripsi');
     // route::get('/home/skripsi/detail/{id}', [SkripsiController::class, 'showDetail'])->name('skripsi.detail');
     // Route::get('/metadata/{id}', [SkripsiController::class, 'showMetadataPdf'])->name('metadata');
     Route::get('/home/riwayat', [RiwayatSkripsiController::class, 'showHistory'])->name('riwayatskripsi');
@@ -107,18 +108,18 @@ Route::post('/home/update-password', [App\Http\Controllers\MahasiswaController::
     Route::put('home/skripsi/detail/comment/updatekomentar/{id}', [CommentController::class, 'update'])->name('updatekomentar');
     Route::delete('/home/skripsi/detail/comment/hapus/{id}', [CommentController::class, 'deletekomentar'])->name('deletekomentar');
 // Route favorite  ---------------------------------------------------------------------------
-    Route::post('/home/skripsi/{id}/add-favorite', [FavoriteController::class, 'addFavorite'])->name('addFavorite');
+    // Route::post('/home/skripsi/{id}/add-favorite', [FavoriteController::class, 'addFavorite'])->name('addFavorite');
     Route::get('/home/favorite', [FavoriteController::class, 'showFavorites'])->name('favorites');
     Route::delete('/home/favorites/{id}', [FavoriteController::class, 'removeFavorite'])->name('removeFavorite');
-    Route::delete('home/skripsi/detail/favorites/remove/{id}', [FavoriteController::class, 'removeFavorite1'])->name('removeFavorite1');
+    // Route::delete('home/skripsi/detail/favorites/remove/{id}', [FavoriteController::class, 'removeFavorite1'])->name('removeFavorite1');
      // Route Skripsi ------------------------------------------------------------------------------
      Route::get('/mahasiswa/skripsi', [SkripsiController::class, 'index'])->name('skripsi');
      Route::post('/mahasiswa/skripsi', [SkripsiController::class, 'tambah'])->name('tambah.skripsi');
-     Route::patch('/mahasiswa/skripsi/ubah', [SkripsiController::class, 'ubah'])->name('ubah.skripsi');
+     Route::put('/mahasiswa/skripsi/ubah/{id}', [SkripsiController::class, 'ubah'])->name('ubah.skripsi');
      Route::get('mahasiswa/ajaxmahasiswa/dataSkripsi/{id}', [SkripsiController::class, 'getDataSkripsi']);
      Route::get('/mahasiswa/skripsi/hapus/{id}', [SkripsiController::class, 'hapus'])->name('hapus.skripsi');
      Route::get('/mahasiswa/skripsi/detail/{id}', [SkripsiController::class, 'detailskripsi']);
-     route::get('/home/skripsi/cariYangMirip', [SkripsiController::class, 'cariYangMirip'])->name('cariYangMirip');
+    //  route::get('/home/skripsi/cariYangMirip', [SkripsiController::class, 'cariYangMirip'])->name('cariYangMirip');
      // Add these routes to your web.php file
 Route::delete('/riwayat-skripsi/{id}', [RiwayatSkripsiController::class, 'deleteHistory'])->name('deleteHistory');
 Route::delete('/riwayat-skripsi', [RiwayatSkripsiController::class, 'deleteAllHistory'])->name('deleteAllHistory');
@@ -136,3 +137,23 @@ Route::delete('/riwayat-skripsi', [RiwayatSkripsiController::class, 'deleteAllHi
 //     Route::get('/dosen/skripsi/detail/{id}', [SkripsiController::class, 'tampilPdf'])->name('pdf.show');
 
 // });
+
+
+// Tambahkan routes ini ke file routes/web.php
+
+// Routes untuk pencarian skripsi dengan metadata
+Route::get('/home/skripsi', [SkripsiController::class, 'mahasiswa'])->name('searchSkripsi');
+Route::get('/home/skripsi/search', [SkripsiController::class, 'searchSkripsi'])->name('searchSkripsi');
+Route::get('/home/skripsi/find', [SkripsiController::class, 'findSkripsi'])->name('findSkripsi');
+Route::get('/home/skripsi/similar', [SkripsiController::class, 'cariYangMirip'])->name('cariYangMirip');
+
+// Route tambahan untuk advanced search dengan metadata
+Route::get('/home/skripsi/advanced-search', [SkripsiController::class, 'advancedSearch'])->name('advancedSearch');
+
+// Routes untuk detail dan favorit (yang sudah ada)
+Route::get('/home/skripsi/detail/{id}', [SkripsiController::class, 'showPdf'])->name('skripsi.show');
+// Route::post('/home/skripsi/{id}/favorite', [SkripsiController::class, 'addFavorite'])->name('addFavorite');
+Route::post('/home/skripsi/{id}/add-favorite', [FavoriteController::class, 'addFavorite'])->name('addFavorite');
+// Route::delete('/home/skripsi/{id}/favorite', [SkripsiController::class, 'removeFavorite'])->name('removeFavorite1');
+Route::delete('home/skripsi/detail/favorites/remove/{id}', [FavoriteController::class, 'removeFavorite1'])->name('removeFavorite1');
+

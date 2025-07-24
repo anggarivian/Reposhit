@@ -31,20 +31,14 @@ public function boot()
         $notifikasis = collect();
         $notifikasiCount = 0;
 
-        if ($user && $user->roles_id == 2 && $user->mahasiswa) {
-            $mahasiswaId = $user->mahasiswa->id;
-            $notifikasis = Notifikasi::where('mahasiswa_id', $mahasiswaId)
-                            ->latest()
-                            ->take(5)
-                            ->get();
+        if ($user && $user->roles_id === 2) {
+            $mahasiswaId = $user->id;
+            $notifikasis = Notifikasi::where('mahasiswa_id', $mahasiswaId)->latest()->get();
 
             $notifikasiCount = Notifikasi::where('mahasiswa_id', $mahasiswaId)->count();
         }
 
-        $view->with([
-            'notifikasis' => $notifikasis,
-            'notifikasiCount' => $notifikasiCount,
-        ]);
+        $view->with(compact('notifikasis', 'notifikasiCount', 'user'));
     });
 }
 }

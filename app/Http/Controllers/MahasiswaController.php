@@ -16,25 +16,16 @@ class MahasiswaController extends Controller
         // Read Data Mahasiswa ----------------------------------------------------------------------------------------------
          public function index() {
              $jurusans = Jurusan::all(); // untuk dropdown
-            // Mengambil data mahasiswa dengan password asli mereka
-            $mahasiswa = User::with(['jurusan']) // relasi jurusan
+            $mahasiswa = User::with(['jurusan', 'lastPassword'])
                 ->where('roles_id', 2)
-                ->leftJoin('password_histories', function($join) {
-                    $join->on('users.id', '=', 'password_histories.user_id')
-                        ->whereRaw('password_histories.id = (
-                            SELECT MAX(id) FROM password_histories 
-                            WHERE user_id = users.id
-                        )');
-                })
-                ->select('users.*', 'password_histories.password_text')
-                ->paginate(6);
-                
+                ->paginate(10);
+
             return view('mahasiswa', compact('mahasiswa','jurusans'));
         }
-    
+
         // Tambah Data Mahasiswa ----------------------------------------------------------------------------------------------
         public function tambah(Request $req){
-    
+
             // Validasi Data Mahasiswa ----------------------------------------------------------------
             $req->validate([
                 'name' => 'required|string|max:30',
@@ -46,10 +37,10 @@ class MahasiswaController extends Controller
                 'password' => 'required|string|min:8|max:255',
                 'jurusan_id' => 'required|exists:jurusans,id',
             ]);
-    
+
             // Create Data Mahasiswa ------------------------------------------------------------------
             $mahasiswa = new User;
-    
+
             $mahasiswa->name = $req->get('name');
             $mahasiswa->npm = $req->get('npm');
             // $mahasiswa->email = $req->get('email');
@@ -59,16 +50,16 @@ class MahasiswaController extends Controller
             $mahasiswa->jurusan_id = $req->get('jurusan_id');
             $mahasiswa->password = Hash::make($req->get('password'));
             $mahasiswa->roles_id = 2;
-    
+
             $mahasiswa->save();
-            
+
             // Simpan password asli ke dalam password_histories
             $passwordHistory = new PasswordHistory;
             $passwordHistory->user_id = $mahasiswa->id;
             $passwordHistory->password_text = $req->get('password');
             $passwordHistory->created_by = auth()->id(); // ID admin yang membuat
             $passwordHistory->save();
-    
+
             $notification = array(
                 'message' =>'Data Mahasiswa berhasil ditambahkan', 'alert-type' =>'success'
             );
@@ -83,57 +74,76 @@ class MahasiswaController extends Controller
     }
 
     // Ubah Data Mahasiswa ----------------------------------------------------------------------------------------------
-    public function ubah(Request $req) {
+    public function ubah(Request $req)
+{
+    // Validasi Data Mahasiswa ----------------------------------------------------------------
+    $req->validate([
+        'id'               => 'required|exists:users,id',
+        'name'             => 'required|string|max:30',
+        'npm'              => 'required|string|min:10|max:10',
+        // 'email'          => 'required|email|max:50',
+        'tgl_lahir'        => 'required|date',
+        'alamat'           => 'required|string|max:255',
+        'angkatan'         => 'required|string|min:4|max:4',
+        'jurusan_id'       => 'required|exists:jurusans,id',
+        'password'         => 'nullable|string|min:8|max:255|confirmed',
+    ]);
 
-        // Validasi Data Mahasiswa ----------------------------------------------------------------
-        $req->validate([
-            'name' => 'required|string|max:30',
-            'npm' => 'required|string|max:10|min:10',
-            // 'email' => 'required|email|max:50',
-            'tgl_lahir' => 'required|date',
-            'alamat' => 'required|string|max:255',
-            'angkatan' => 'required|string|max:4|min:4',
-            'jurusan_id' => 'required|exists:jurusans,id',
+    // Ambil model Mahasiswa ------------------------------------------------------------------
+    $mahasiswa = User::findOrFail($req->get('id'));
+
+    // Update Data Profil ---------------------------------------------------------------------
+    $mahasiswa->name       = $req->get('name');
+    $mahasiswa->npm        = $req->get('npm');
+    // $mahasiswa->email    = $req->get('email');
+    $mahasiswa->tgl_lahir  = $req->get('tgl_lahir');
+    $mahasiswa->alamat     = $req->get('alamat');
+    $mahasiswa->angkatan   = $req->get('angkatan');
+    $mahasiswa->jurusan_id = $req->get('jurusan_id');
+
+    // Jika ada password baru, hash & catat riwayatnya ----------------------------------------
+    if ($req->filled('password')) {
+        $plainPassword = $req->get('password');
+        $mahasiswa->password = Hash::make($plainPassword);
+
+        PasswordHistory::create([
+            'user_id'      => $mahasiswa->id,
+            'password_text'=> $plainPassword,
+            'created_by'   => auth()->id(),
         ]);
-
-        // Update Data Mahasiswa ------------------------------------------------------------------
-        $mahasiswa = User::find($req->get('id'));
-
-        $mahasiswa->name = $req->get('name');
-        $mahasiswa->npm = $req->get('npm');
-        // $mahasiswa->email = $req->get('email');
-        $mahasiswa->tgl_lahir = $req->get('tgl_lahir');
-        $mahasiswa->alamat = $req->get('alamat');
-        $mahasiswa->angkatan = $req->get('angkatan');
-        $mahasiswa->jurusan_id = $req->get('jurusan_id');
-
-        $mahasiswa->save();
-
-        $notification = array(
-            'message' => 'Data Mahasiswa berhasil diubah',
-            'alert-type' => 'success'
-        );
-        return redirect()->route('mahasiswa')->with($notification);
     }
-    
+
+    // Simpan perubahan -----------------------------------------------------------------------
+    $mahasiswa->save();
+
+    // Notifikasi & Redirect ------------------------------------------------------------------
+    return redirect()
+        ->route('mahasiswa')
+        ->with([
+            'message'    => 'Data Mahasiswa berhasil diubah',
+            'alert-type' => 'success'
+        ]);
+}
+
+
     // Hapus Data Mahasiswa ----------------------------------------------------------------------------------------------
     public function hapus($id) {
         try {
             $mahasiswa = User::find($id);
-            
+
             if ($mahasiswa) {
                 // Hapus password history terlebih dahulu (cascade sebenarnya sudah menangani ini)
                 \App\Models\PasswordHistory::where('user_id', $id)->delete();
-                
+
                 // Hapus user
                 $mahasiswa->delete();
-                
+
                 return response()->json([
                     'success' => true,
                     'message' => 'Data mahasiswa berhasil dihapus',
                 ]);
             }
-            
+
             return response()->json([
                 'success' => false,
                 'message' => 'Data mahasiswa tidak ditemukan',
@@ -145,36 +155,35 @@ class MahasiswaController extends Controller
             ]);
         }
     }
-    
+
     // Reset Password Mahasiswa ----------------------------------------------------------------------------------------------
-    public function resetPassword(Request $req) {
-        $req->validate([
-            'id' => 'required',
-            'password' => 'required|string|min:8|max:255',
-        ]);
-        
-        $mahasiswa = User::find($req->get('id'));
-        
-        if (!$mahasiswa) {
-            return back()->with('error', 'Mahasiswa tidak ditemukan');
-        }
-        
-        // Update password
-        $mahasiswa->password = Hash::make($req->get('password'));
-        $mahasiswa->save();
-        
-        // Simpan ke password history
-        $passwordHistory = new \App\Models\PasswordHistory();
-        $passwordHistory->user_id = $mahasiswa->id;
-        $passwordHistory->password_text = $req->get('password');
-        $passwordHistory->created_by = auth()->id();
-        $passwordHistory->save();
-        
-        return redirect()->route('mahasiswa')->with([
-            'message' => 'Password mahasiswa berhasil direset',
-            'alert-type' => 'success'
-        ]);
-    }
+    public function resetPassword(Request $req)
+{
+    $req->validate([
+        'id' => 'required|exists:users,id',
+        'password' => 'required|string|min:8|max:255',
+    ]);
+
+    $mahasiswa = User::find($req->get('id'));
+
+    // Update password
+    $plainPassword = $req->get('password');
+    $mahasiswa->password = Hash::make($plainPassword);
+    $mahasiswa->save();
+
+    // Simpan riwayat password
+    PasswordHistory::create([
+        'user_id'      => $mahasiswa->id,
+        'password_text'=> $plainPassword,
+        'created_by'   => Auth::id(),
+    ]);
+
+    return redirect()->route('mahasiswa')->with([
+        'message'    => 'Password mahasiswa berhasil direset',
+        'alert-type' => 'success'
+    ]);
+}
+
 
     // Import Mahasiswa --------------------------------------------------------------------------------------------------
     public function import(Request $request)
@@ -230,7 +239,7 @@ class MahasiswaController extends Controller
         if (!$user) {
             return redirect()->route('login');
         }
-        
+
         return view('resetpassword', compact('user'));
     }
 
@@ -238,39 +247,46 @@ class MahasiswaController extends Controller
      * Memproses perubahan password
      */
     public function updatePassword(Request $request)
-    {
-        $customMessages = [
-            'current_password.required' => 'Password saat ini harus diisi.',
-            'password.required' => 'Password baru harus diisi.',
-            'password.string' => 'Password baru harus berupa teks.',
-            'password.min' => 'Password minimal harus memiliki 8 karakter.',
-            'password.confirmed' => 'Konfirmasi password tidak sesuai.',
-            'password.different' => 'Password baru harus berbeda dengan password saat ini.',
-        ];
+{
+    $customMessages = [
+        'current_password.required'  => 'Password saat ini harus diisi.',
+        'password.required'          => 'Password baru harus diisi.',
+        'password.string'            => 'Password baru harus berupa teks.',
+        'password.min'               => 'Password minimal harus memiliki 8 karakter.',
+        'password.confirmed'         => 'Konfirmasi password tidak sesuai.',
+        'password.different'         => 'Password baru harus berbeda dengan password saat ini.',
+    ];
 
-        $request->validate([
-            'current_password' => 'required',
-            'password' => 'required|string|min:8|confirmed|different:current_password',
-        ], $customMessages);
+    $request->validate([
+        'current_password' => 'required',
+        'password'         => 'required|string|min:8|confirmed|different:current_password',
+    ], $customMessages);
 
-        $user = Auth::user();
-        
-        // Verifikasi password saat ini
-        if (!Hash::check($request->current_password, $user->password)) {
-            return back()->withErrors(['current_password' => 'Password saat ini tidak cocok.']);
-        }
+    $user = Auth::user();
 
-        // Update password
-        $user->password = Hash::make($request->password);
-        $user->save();
-
-        // Siapkan notifikasi
-        $notification = [
-            'message' => 'Password berhasil diperbarui.',
-            'alert-type' => 'success'
-        ];
-
-        // Redirect dengan notifikasi
-        return redirect()->route('home')->with($notification);
+    // Verifikasi password saat ini
+    if (! Hash::check($request->current_password, $user->password)) {
+        return back()->withErrors([
+            'current_password' => 'Password saat ini tidak cocok.'
+        ]);
     }
+
+    // Update password
+    $plainPassword = $request->password;
+    $user->password = Hash::make($plainPassword);
+    $user->save();
+
+    // Simpan riwayat password
+    PasswordHistory::create([
+        'user_id'      => $user->id,
+        'password_text'=> $plainPassword,
+        'created_by'   => $user->id, // atau Auth::id(), sama saja
+    ]);
+
+    return redirect()->route('home')->with([
+        'message'    => 'Password berhasil diperbarui.',
+        'alert-type' => 'success'
+    ]);
+}
+
 }

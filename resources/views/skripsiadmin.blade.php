@@ -33,7 +33,7 @@
                     @foreach($skripsi as $skripsis)
                     <tr>
                         <!-- Nomor urut dengan pagination -->
-                        <td>{{ $dosen->firstItem() + $index }}</td>
+                        <td>{{ $loop->iteration }}</td>
                         <td>{{ Str::limit($skripsis->judul, 20) }}</td>
                         <td>{{ $skripsis->penulis }}</td>
                         <td>{{ Str::limit($skripsis->abstrak, 20) }}</td>
@@ -41,14 +41,15 @@
                         <td>{{ $skripsis->rilis }}</td>
                         <td>
                             @if ($skripsis->status == 0)
-                                <span class="badge badge-warning">Belum Diverifikasi</span>
+                                <span class="badge badge-warning">Menunggu Verifikasi</span>
                             @elseif ($skripsis->status == 1)
-                                <span class="badge badge-success">Sudah Diverifikasi</span>
+                                <span class="badge badge-success">Terverifikasi</span>
                             @elseif ($skripsis->status == 2)
-                                <span class="badge badge-danger">Ditolak</span>
+                                <span class="badge badge-danger">Perlu Revisi</span>
                             @else
                                 <span class="badge badge-secondary">Status Tidak Diketahui</span>
                             @endif
+
                         </td>
                         <td>{{ $skripsis->halaman }}</td>
                         <td>{{ $skripsis->created_at->format('Y-m-d') }}</td>
@@ -56,14 +57,16 @@
                             <div class="form-group" role="group" aria-label="Basic example">
                                 <a href="{{ route('admin.skripsi.detail', $skripsis->id ) }}">
                                     <button class="btn btn-sm btn-info">
-                                        <i class="fas fa-eye"> Lihat Skripsi</i> 
+                                        <i class="fas fa-eye"></i>
                                     </button>
                                 </a>
                                 <button type="button" class="btn btn-sm btn-danger" onclick="deleteConfirmation('{{ $skripsis->id }}' , '{{ $skripsis->judul }}')">
-                                    <i class="fas fa-trash-alt"> Hapus </i>
+                                    <i class="fas fa-trash-alt"></i>
                                 </button>
-                                <button type="button" class="btn btn-sm btn-info" onclick="verifikasiAtauTolak('{{ $skripsis->id }}', '{{ $skripsis->judul }}')">
-                                    <i class="fas fa-check-circle"> Verifikasi / Tolak</i>
+                                <meta name="csrf-token" content="{{ csrf_token() }}">
+                                <button type="button" class="btn btn-sm btn-primary"
+                                        onclick="verifikasiAtauTolak('{{ $skripsis->id }}', '{{ $skripsis->judul }}')">
+                                    Proses !
                                 </button>
                             </div>
                         </td>
@@ -82,7 +85,7 @@
 
 <!-- Modal Edit -->
 {{-- Modal Edit tetap ada, hanya dikomentari jika tidak digunakan --}}
-{{-- 
+{{--
 <div class="modal fade" id="edit" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-xl">
         <div class="modal-content">
@@ -154,8 +157,8 @@
     $(function(){
         $(document).on('click', '#btn-edit-skripsi', function () {
             let id = $(this).data('id');
-            $('#file_skripsi-area').empty(); 
-            $('#file-upload-area').hide(); 
+            $('#file_skripsi-area').empty();
+            $('#file-upload-area').hide();
 
             $.ajax({
                 type: "GET",
@@ -220,54 +223,79 @@
     }
 
     function verifikasiAtauTolak(id, name) {
-        Swal.fire({
-            title: 'Verifikasi atau Tolak?',
-            text: 'Apa yang ingin Anda lakukan pada skripsi: ' + name + '?',
-            icon: 'question',
-            showCancelButton: true,
-            showDenyButton: true,
-            confirmButtonText: 'Verifikasi',
-            denyButtonText: 'Tolak Verifikasi',
-            cancelButtonText: 'Batal'
-        }).then((result) => {
-            var CSRF_TOKEN = $('meta[name="csrf-token"]').attr('content');
+    Swal.fire({
+        title: 'Verifikasi atau Tolak?',
+        text: 'Apa yang ingin Anda lakukan pada skripsi: ' + name + '?',
+        icon: 'question',
+        showCancelButton: true,
+        showDenyButton: true,
+        confirmButtonText: 'Verifikasi',
+        denyButtonText: 'Tolak Verifikasi',
+        cancelButtonText: 'Batal'
+    }).then((result) => {
+        const CSRF_TOKEN = $('meta[name="csrf-token"]').attr('content');
 
-            if (result.isConfirmed) {
-                $.ajax({
-                    type: 'GET',
-                    url: "/admin/skripsi/verifikasi/" + id,
-                    data: {_token: CSRF_TOKEN},
-                    dataType: 'JSON',
-                    success: function (results) {
-                        if (results.success === true) {
-                            Swal.fire("Berhasil!", results.message, "success");
-                            setTimeout(function () {
-                                location.reload();
-                            }, 1000);
-                        } else {
-                            Swal.fire("Gagal!", results.message, "error");
-                        }
+        if (result.isConfirmed) {
+            // kode verifikasi tetap sama
+            $.getJSON("/admin/skripsi/verifikasi/" + id, {_token: CSRF_TOKEN})
+             .done(function(res) {
+                if (res.success) {
+                    Swal.fire("Berhasil!", res.message, "success");
+                    setTimeout(() => location.reload(), 1000);
+                } else {
+                    Swal.fire("Gagal!", res.message, "error");
+                }
+             });
+        }
+        else if (result.isDenied) {
+            // modal alasan
+            Swal.fire({
+                title: 'Pilih Alasan Penolakan',
+                html:
+                    `<div style="text-align:left">` +
+                    `<label><input type="checkbox" class="swal2-checkbox" value="Judul tidak sesuai"> Judul tidak sesuai</label><br>` +
+                    `<label><input type="checkbox" class="swal2-checkbox" value="Abstrak kurang jelas"> Abstrak kurang jelas</label><br>` +
+                    `<label><input type="checkbox" class="swal2-checkbox" value="Tahun rilis tidak sesuai"> Tahun rilis tidak sesuai</label><br>` +
+                    `<label><input type="checkbox" class="swal2-checkbox" value="Halaman typo atau salah"> Halaman typo atau salah</label><br>` +
+                    `<label><input type="checkbox" class="swal2-checkbox" value="File salah upload"> File salah upload</label>` +
+                    `</div>`,
+                focusConfirm: false,
+                showCancelButton: true,
+                confirmButtonText: 'Kirim Penolakan',
+                cancelButtonText: 'Batal',
+                preConfirm: () => {
+                    // kumpulkan semua yang dicentang
+                    const checked = Array.from(document.querySelectorAll('.swal2-checkbox:checked'))
+                                         .map(el => el.value);
+                    if (checked.length === 0) {
+                        Swal.showValidationMessage('Pilih minimal satu alasan!');
                     }
-                });
-            } else if (result.isDenied) {
-                $.ajax({
-                    type: 'GET',
-                    url: "/admin/skripsi/tolak/" + id,
-                    data: {_token: CSRF_TOKEN},
-                    dataType: 'JSON',
-                    success: function (results) {
-                        if (results.success === true) {
-                            Swal.fire("Ditolak!", results.message, "success");
-                            setTimeout(function () {
-                                location.reload();
-                            }, 1000);
-                        } else {
-                            Swal.fire("Gagal!", results.message, "error");
+                    return checked;
+                }
+            }).then((reasonResult) => {
+                if (reasonResult.isConfirmed) {
+                    // kirim alasan via AJAX POST
+                    $.ajax({
+                        type: 'POST',
+                        url: "/admin/skripsi/tolak/" + id,
+                        data: {
+                            _token: CSRF_TOKEN,
+                            reasons: reasonResult.value  // array of strings
+                        },
+                        dataType: 'JSON',
+                        success: function (res) {
+                            if (res.success) {
+                                Swal.fire("Ditolak!", res.message, "success");
+                                setTimeout(() => location.reload(), 1000);
+                            } else {
+                                Swal.fire("Gagal!", res.message, "error");
+                            }
                         }
-                    }
-                });
-            }
-        });
-    }
+                    });
+                }
+            });
+        }
+    });
+}
 </script>
 @stop

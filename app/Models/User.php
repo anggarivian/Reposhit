@@ -8,6 +8,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use App\Models\favorite;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class User extends Authenticatable
 {
@@ -25,6 +26,11 @@ class User extends Authenticatable
     // ];
 
     protected $guarded = [];
+
+    public function lastPassword()
+    {
+        return $this->hasOne(PasswordHistory::class)->latestOfMany();
+    }
 
     public function findForPassport($username) {
         return $this->where('npm', $username)->first();
@@ -67,12 +73,8 @@ class User extends Authenticatable
     {
         return $this->belongsTo(Jurusan::class);
     }
-    public function passwordHistories()
-    {
-        return $this->hasMany(PasswordHistory::class);
-    }
 
-    /** 
+    /**
      * Mengambil password_text terakhir dari history
      */
     public function getLatestPasswordTextAttribute()

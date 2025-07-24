@@ -231,15 +231,15 @@
             .masthead {
                 padding: 4rem 0;
             }
-            
+
             .search-form {
                 padding: 1.5rem;
             }
-            
+
             .form-control {
                 margin-bottom: 1rem;
             }
-            
+
             .table-responsive {
                 font-size: 0.9rem;
             }
@@ -373,7 +373,7 @@
     <!-- Search Section -->
     <section class="search-section" id="search">
         <div class="container">
-            <!-- Section Heading -->
+        <!-- Section Heading -->
             <h2 class="text-center text-uppercase text-secondary mb-0 fw-bold">Cari Skripsi</h2>
             <!-- Icon Divider -->
             <div class="divider-custom">
@@ -382,57 +382,95 @@
                 <div class="divider-custom-line"></div>
             </div>
 
-            <!-- Search Form -->
-            <div class="search-form">
-                <form action="/welcome" method="GET" id="searchForm">
-                    <div class="row g-3 justify-content-center">
-                        <div class="col-md-3">
-                            <input type="text" class="form-control" name="judul" id="judul" value="{{ request('judul') }}" placeholder="Cari Judul">
-                        </div>
-                        <div class="col-md-3">
-                            <input type="text" class="form-control" name="penulis" id="penulis" value="{{ request('penulis') }}" placeholder="Cari Penulis">
-                        </div>
-                        <div class="col-md-3">
-                            <input type="text" class="form-control" name="rilis" id="rilis" value="{{ request('rilis') }}" placeholder="Cari Tahun Terbit">
-                        </div>
-                        <div class="col-md-2">
-                            <button type="submit" class="btn btn-search w-100">
-                                <i class="fas fa-search me-2"></i>Cari
-                            </button>
-                        </div>
+        <!-- Search Form -->
+        <div class="search-form">
+            <form action="/welcome" method="GET" id="searchForm">
+                <div class="row g-3 justify-content-center">
+                    <div class="col-md-2">
+                        <input
+                            type="text"
+                            class="form-control"
+                            name="judul"
+                            id="judul"
+                            value="{{ old('judul', request('judul')) }}"
+                            placeholder="Cari Judul">
                     </div>
-                </form>
-            </div>
+                    <div class="col-md-2">
+                        <input
+                            type="text"
+                            class="form-control"
+                            name="penulis"
+                            id="penulis"
+                            value="{{ old('penulis', request('penulis')) }}"
+                            placeholder="Cari Penulis">
+                    </div>
+                    <div class="col-md-2">
+                        <input
+                            type="text"
+                            class="form-control"
+                            name="rilis"
+                            id="rilis"
+                            value="{{ old('tahun', request('tahun')) }}"
+                            placeholder="Tahun Terbit">
+                    </div>
+                    <div class="col-md-2">
+                        <input
+                            type="text"
+                            class="form-control"
+                            name="subject"
+                            id="subject"
+                            value="{{ old('subject', request('subject')) }}"
+                            placeholder="Topik (Subject)">
+                    </div>
+                    <div class="col-md-2">
+                        <input
+                            type="text"
+                            class="form-control"
+                            name="keywords"
+                            id="keywords"
+                            value="{{ old('keywords', request('keywords')) }}"
+                            placeholder="Kata Kunci">
+                    </div>
+                    <div class="col-md-1">
+                        <button type="submit" class="btn btn-search w-100">
+                            Cari
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
 
-            <!-- Table -->
-            <div class="table-container mt-5">
-                @if($skripsi->count() > 0)
+        <!-- Table / No Results -->
+        <div class="table-container mt-5">
+            @if(isset($hasFilter) && $hasFilter)
+                @if($results && $results->count() > 0)
                 <div class="table-responsive">
-                    <table class="table table-hover mb-0" id="table-data">
-                        <thead>
-                            <tr class="text-center">
+                    <table class="table table-hover mb-0 text-center" id="table-data">
+                        <thead class="table-secondary">
+                            <tr>
                                 <th scope="col">No</th>
                                 <th scope="col">Judul</th>
                                 <th scope="col">Penulis</th>
-                                <th scope="col">Dosen Pembimbing</th>
                                 <th scope="col">Tahun Rilis</th>
+                                <th scope="col">Topik</th>
+                                <th scope="col">Kata Kunci</th>
                                 <th scope="col">Halaman</th>
                                 <th scope="col">Aksi</th>
                             </tr>
                         </thead>
                         <tbody>
-                            @php $no=1; @endphp
-                            @foreach($skripsi as $skripsis)
+                            @foreach($results as $idx => $item)
                             <tr>
-                                <td class="text-center">{{$no++}}</td>
-                                <td>{{$skripsis->judul}}</td>
-                                <td>{{$skripsis->penulis}}</td>
-                                <td>{{$skripsis->dospem}}</td>
-                                <td class="text-center">{{$skripsis->rilis}}</td>
-                                <td class="text-center">{{$skripsis->halaman}}</td>
-                                <td class="text-center">
-                                    <a href="/welcome/detail/{{$skripsis->id}}">
-                                        <button class="btn btn-detail">
+                                <td>{{ $idx + 1 + ($results->currentPage() - 1) * $results->perPage() }}</td>
+                                <td>{{ $item->judul }}</td>
+                                <td>{{ $item->penulis }}</td>
+                                <td>{{ $item->rilis }}</td>
+                                <td>{{ optional($item->metadata)->subject ?? '-' }}</td>
+                                <td>{{ optional($item->metadata)->keywords ?? '-' }}</td>
+                                <td>{{ $item->halaman }}</td>
+                                <td>
+                                    <a href="{{ url('/welcome/detail/'.$item->id) }}">
+                                        <button class="btn btn-detail btn-sm">
                                             <i class="fas fa-info-circle me-1"></i>Detail
                                         </button>
                                     </a>
@@ -441,21 +479,28 @@
                             @endforeach
                         </tbody>
                     </table>
+
+                    {{-- pagination --}}
+                    <div class="d-flex justify-content-center mt-4">
+                        {{ $results->links() }}
+                    </div>
                 </div>
                 @else
-                <div class="no-results mt-4">
-                    <div class="no-results-icon">
-                        <i class="fas fa-search-minus"></i>
+                <div class="no-results mt-4 text-center">
+                    <div class="no-results-icon mb-3">
+                        <i class="fas fa-search-minus fa-2x text-secondary"></i>
                     </div>
                     <h4>Tidak Ada Hasil</h4>
                     <p class="text-muted">Maaf, skripsi yang Anda cari tidak ditemukan.</p>
-                    <a href="/welcome" class="btn btn-search mt-3">
-                        <i class="fas fa-redo me-2"></i>Reset Pencarian
+                    <a href="{{ url('/welcome') }}" class="btn btn-search mt-2">
+                        <i class="fas fa-redo me-1"></i>Reset Pencarian
                     </a>
                 </div>
                 @endif
-            </div>
+            @endif
         </div>
+    </div>
+
     </section>
 
     <!-- About Section -->
@@ -473,7 +518,7 @@
             <div class="row">
                 <div class="col-lg-12">
                     <p class="lead text-center">
-                        Fakultas Sains Terapan (FASTER) Universitas Suryakancana adalah institusi pendidikan tinggi yang berlokasi di Jalan Pasir Gede Raya, Cianjur. 
+                        Fakultas Sains Terapan (FASTER) Universitas Suryakancana adalah institusi pendidikan tinggi yang berlokasi di Jalan Pasir Gede Raya, Cianjur.
                         Komitmen kami adalah menjadi institusi yang unggul di tingkat ASEAN dalam penyelenggaraan pendidikan dan penelitian untuk kesejahteraan masyarakat pada tahun 2030.
                     </p>
                 </div>
@@ -556,20 +601,7 @@
             observer.observe(card);
         });
 
-        // Check if search was performed with no results and show notification
-        document.addEventListener('DOMContentLoaded', function() {
-            const urlParams = new URLSearchParams(window.location.search);
-            const hasSearchParams = urlParams.has('judul') || urlParams.has('penulis') || urlParams.has('rilis');
-            
-            if (hasSearchParams && {{ $skripsi->count() }} === 0) {
-                Swal.fire({
-                    icon: 'info',
-                    title: 'Tidak Ditemukan',
-                    text: 'Maaf, skripsi yang Anda cari tidak ditemukan.',
-                    confirmButtonColor: '#18a19f'
-                });
-            }
-        });
+
     </script>
 </body>
 </html>

@@ -35,7 +35,7 @@
                         </div>
                     </div>
                 </div>
-                
+
                 <!-- Jumlah Dosen -->
                 <div class="col-lg-3 grid-margin mb-4">
                     <div class="card shadow-sm">
@@ -56,7 +56,7 @@
                         </div>
                     </div>
                 </div>
-                
+
                 <!-- Jumlah Mahasiswa -->
                 <div class="col-lg-3 grid-margin mb-4">
                     <div class="card shadow-sm">
@@ -77,7 +77,7 @@
                         </div>
                     </div>
                 </div>
-                
+
                 <!-- Jumlah Skripsi -->
                 <div class="col-lg-3 grid-margin mb-4">
                     <div class="card shadow-sm">
@@ -97,108 +97,8 @@
                     </div>
                 </div>
             </div>
-            @if ($user->roles_id == 2 && $status != null)
-    @php
-        $statusConfig = [
-            0 => [
-                'class' => 'bg-gradient-warning',
-                'icon_color' => '#ffc107',
-                'text' => 'Menunggu Verifikasi',
-                'icon' => '<path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>'
-            ],
-            1 => [
-                'class' => 'bg-gradient-success',
-                'icon_color' => '#28a745',
-                'text' => 'Sudah Diverifikasi',
-                'icon' => '<path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>'
-            ],
-            2 => [
-                'class' => 'bg-gradient-danger',
-                'icon_color' => '#dc3545',
-                'text' => 'File Anda Ada Yang Salah',
-                'icon' => '<path d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"/>'
-            ],
-        ];
-
-        $currentStatus = $statusConfig[$status->status] ?? $statusConfig[0];
-    @endphp
-
-    <div class="row">
-        <div class="col-lg-12 grid-margin mb-4">
-            <div class="card shadow-lg border-0 overflow-hidden">
-                <div class="card-body {{ $currentStatus['class'] }} position-relative">
-
-                    {{-- Content --}}
-                    <div class="row align-items-center">
-                        <div class="col-auto">
-                            <div class="icon-container bg-white p-4 rounded-circle shadow-sm d-flex align-items-center justify-content-center">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="45" height="45" viewBox="0 0 24 24" fill="none"
-                                     stroke="{{ $currentStatus['icon_color'] }}" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                                    {!! $currentStatus['icon'] !!}
-                                </svg>
-                            </div>
-                        </div>
-
-                        <div class="col text-white">
-                            <div class="d-flex align-items-center mb-2">
-                                <h4 class="mb-0 me-2">Status Skripsi</h4>
-                                <span class="badge bg-white text-dark m-1 px-3 py-2 rounded-pill">
-                                    {{ Auth()->user()->name }}
-                                </span>
-                            </div>
-
-                            <div class="mb-3">
-                                <h6 class="mb-1 opacity-90">Judul Skripsi:</h6>
-                                <h5 class="font-weight-bold mb-0">{{ $status->judul }}</h5>
-                            </div>
-
-                            <div class="d-flex align-items-center">
-                                <div class="status-indicator me-3">
-                                    <div class="d-flex align-items-center">
-                                        <div class="status-dot bg-white rounded-circle me-2 " style="width: 12px; height: 12px; margin-right:5px;"></div>
-                                        <h5 class="mb-0 font-weight-bold">{{ $currentStatus['text'] }}</h5>
-                                    </div>
-                                </div>
-
-                                @if ($status->status == 1)
-                                    <div class="badge bg-success-subtle text-success m-1 px-3 py-2 rounded-pill">
-                                        <i class="fas fa-check-circle me-1"></i> Verified
-                                    </div>
-                                @elseif ($status->status == 2)
-                                    <div class="badge bg-danger-subtle text-danger m-1 px-3 py-2 rounded-pill">
-                                        <i class="fas fa-times-circle me-1"></i> Rejected
-                                    </div>
-                                @else
-                                    <div class="badge bg-warning-subtle text-warning m-1 px-3 py-2 rounded-pill">
-                                        <i class="fas fa-clock me-1"></i> Pending
-                                    </div>
-                                @endif
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                {{-- Progress Bar --}}
-                <div class="progress" style="height: 4px;">
-                    <div class="progress-bar 
-                        {{ 
-                            $status->status == 1 ? 'bg-success' : 
-                            ($status->status == 2 ? 'bg-danger' : 'bg-warning') 
-                        }}"
-                        role="progressbar"
-                        style="width: 
-                            {{ 
-                                $status->status == 1 ? '100%' : 
-                                ($status->status == 2 ? '50%' : '30%') 
-                            }};">
-                    </div>
-                </div>
-            </div>
         </div>
     </div>
-@endif
-
-        </div>
     </div>
 @stop
 
