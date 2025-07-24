@@ -1,0 +1,51 @@
+/* custom-viewer.css */
+
+/* ================================================
+   1) HIDE SIDEBAR (thumbnail, outline, layers, dsb.)
+   ================================================ */
+#sidebarContainer {
+  display: none !important;
+}
+
+/* ================================================
+   2) HIDE SEMUA TOOLBAR DI ATAS (sidebarToggle, page nav, zoom, find, print, download, editor, etc.)
+   ================================================ */
+/* toolbar container utama */
+#toolbarContainer,
+#toolbarViewer,
+.toolbar,
+.toolbarHorizontalGroup,
+.toolbarButtonWithContainer,
+#toolbarSidebar,
+#toolbarSidebarLeft,
+#toolbarSidebarRight,
+#secondaryToolbarToggle,
+#secondaryToolbar,
+#findbar {
+  display: none !important;
+}
+
+/* tombol–tombol individual (sb gunanya bila inline styles) */
+button.toolbarButton,
+button#sidebarToggleButton,
+button#viewFindButton,
+button#zoomInButton,
+button#zoomOutButton,
+input#pageNumber,
+span#numPages {
+  display: none !important;
+}
+
+/* ================================================
+   3) FULLSCREEN PDF VIEW
+   ================================================ */
+#viewerContainer {
+  top: 0 !important;
+  height: 100% !important;
+}
+
+/* sembunyikan scrollbar juga (opsional) */
+#outerContainer > .scrollbar,
+#viewerContainer > .scrollbar {
+  display: none !important;
+}

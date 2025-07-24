@@ -60,6 +60,8 @@ Route::middleware('is_admin')->group(function () {
     Route::get('admin/ajaxadmin/dataMahasiswa/{id}', [MahasiswaController::class, 'getDataMahasiswa']);
     Route::get('/admin/mahasiswa/hapus/{id}', [MahasiswaController::class,'hapus'])->name('hapus.mahasiswa');
     Route::post('/admin/mahasiswa/reset-password', [MahasiswaController::class, 'resetPassword'])->name('reset.password.mahasiswa');
+    // Route::get('/admin/skripsi/{id}', [SkripsiController::class, 'show'])->name('buku.show');
+
     // Route::get('/admin/mahasiswa/toggle-verifikasi/{id}', [MahasiswaController::class, 'toggleVerifikasi'])->name('toggle.verifikasi');
 
     // Route Skripsi ------------------------------------------------------------------------------
@@ -83,6 +85,10 @@ Route::middleware('is_admin')->group(function () {
     Route::post('/admin/dosen/import', [DosenController::class,'import'])->name('dosen.import');
     // Route::get('/admin/skripsi/detail/{id}', [SkripsiController::class, 'showPdf'])->name('pdf.show');
 });
+
+    Route::get('/admin/skripsi/{id}/pdf', [SkripsiController::class, 'skripsiPdf'])->name('skripsi.streamPdf');
+    Route::get('/admin/dapus/{id}/pdf', [SkripsiController::class, 'dapusPdf'])->name('dapus.streamPdf');
+    Route::get('/admin/abstrak/{id}/pdf', [SkripsiController::class, 'abstrakPdf'])->name('abstrak.streamPdf');
 
 
 Route::get('/welcome/detail/{id}', [SkripsiController::class, 'welcomeskripsi']);

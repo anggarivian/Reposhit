@@ -16,6 +16,40 @@
     </div>
 @stop
 
+@section('css')
+    <style>
+
+    img {
+        -webkit-user-select: none;
+        -webkit-touch-callout: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+        pointer-events: none;
+    }
+    .pdf-viewer {
+        max-width: 800px; margin: auto;
+        padding: 10px;
+        overflow-y: auto;
+        border: 1px solid #ccc;
+        max-height: 600px;
+    }
+    .pdf-page {
+        margin-bottom: 20px;
+        position: relative;
+    }
+    .pdf-page img {
+        width: 100%; height: auto;
+        user-select: none; pointer-events: none;
+    }
+    .watermark {
+        position: absolute;
+        bottom: 5px; right: 10px;
+        font-size: 12px; color: rgba(255,0,0,0.5);
+    }
+    </style>
+@endsection
+
 @section('content')
 <div class="container-fluid">
     <div class="card card-primary card-outline">
@@ -523,14 +557,18 @@
                             </h5>
                         </div>
                         <div class="card-body p-0">
-                            <div id="pdf-container-{{ $skripsis->id }}" style="position: relative;">
-                                <iframe
-                                    id="pdfFrame{{ $skripsis->id }}"
-                                    src="{{ asset('storage/daftar_pustaka_files/' . $skripsis->file_dapus) }}#toolbar=0&navpanes=0&scrollbar=0"
-                                    width="100%"
-                                    height="600px"
-                                    style="border: none;">
-                                </iframe>
+                            <div id="pdf-container" style="position: relative; height: 600px; width: 100%;">
+                                    <iframe
+                                        id="pdfFrame"
+                                        src="{{ asset('pdfjs/web/viewer.html') }}?file={{ urlencode( route('dapus.streamPdf', $skripsis->id )) }}#toolbar=0&navpanes=0&scrollbar=0"
+                                        style="width:100%; height:100%; border:none;"
+                                        sandbox="allow-scripts allow-same-origin"
+                                    ></iframe>
+                                <div class="pdf-controls" style="position: absolute; top: 10px; right: 10px;">
+                                    <button id="fullscreenButton" class="btn btn-secondary btn-sm">
+                                        <i class="fas fa-expand"></i> Layar Penuh
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -562,12 +600,19 @@
                             </h5>
                         </div>
                         <div class="card-body p-0">
-                            <iframe
-                                src="{{ asset('storage/abstrak_files/' . $skripsis->file_abstrak) }}#toolbar=0&navpanes=0&scrollbar=0"
-                                width="100%"
-                                height="600px"
-                                style="border: none;">
-                            </iframe>
+                            <div id="pdf-container" style="position: relative; height: 600px; width: 100%;">
+                                    <iframe
+                                        id="pdfFrame"
+                                        src="{{ asset('pdfjs/web/viewer.html') }}?file={{ urlencode( route('abstrak.streamPdf', $skripsis->id )) }}#toolbar=0&navpanes=0&scrollbar=0"
+                                        style="width:100%; height:100%; border:none;"
+                                        sandbox="allow-scripts allow-same-origin"
+                                    ></iframe>
+                                <div class="pdf-controls" style="position: absolute; top: 10px; right: 10px;">
+                                    <button id="fullscreenButton" class="btn btn-secondary btn-sm">
+                                        <i class="fas fa-expand"></i> Layar Penuh
+                                    </button>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 @else
@@ -752,6 +797,24 @@
 @stop
 
 @section('js')
+<script>
+    const iframe = document.getElementById('pdfFrame');
+
+    iframe.addEventListener('load', () => {
+        const doc = iframe.contentDocument || iframe.contentWindow.document;
+
+        // cegah klik kanan
+        doc.addEventListener('contextmenu', e => e.preventDefault());
+
+        // cegah seleksi & shortcut umum
+        doc.body.style.userSelect = 'none';
+        doc.addEventListener('keydown', function(e) {
+            if (e.ctrlKey && ['p','s','u'].includes(e.key.toLowerCase()) || e.key === 'F12') {
+            e.preventDefault();
+            }
+        });
+    });
+</script>
 <script>
         // Add this to your JS section
     $(document).ready(function() {

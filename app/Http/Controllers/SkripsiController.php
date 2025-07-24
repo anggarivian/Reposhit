@@ -17,6 +17,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\Facades\Storage;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 use Barryvdh\DomPDF\Facade\Pdf; // Correctly import the Pdf facade
 
 class SkripsiController extends Controller
@@ -126,27 +127,30 @@ class SkripsiController extends Controller
         $skripsi->status    = 0 ;
         $skripsi->user_id   = Auth::id();
 
-        // Upload file helper
-        $uploadFile = function($file, $folder, $prefix) {
-            $ext      = $file->extension();
-            $name     = $prefix.'_'.time().'.'.$ext;
-            $file->storeAs('public/'.$folder, $name);
-            return $name;
-        };
-
         // Simpan file skripsi
-        if ($request->hasFile('file_skripsi')) {
-            $skripsi->file_skripsi = $uploadFile($request->file('file_skripsi'), 'skripsi_files', 'skripsi');
-        }
+if ($request->hasFile('file_skripsi')) {
+    $file = $request->file('file_skripsi');
+    $nama_file = 'skripsi_' . time() . '.' . $file->extension();
+    $file->move(public_path('uploads/skripsi_files'), $nama_file);
+    $skripsi->file_skripsi = $nama_file;
+}
 
-        // Simpan file daftar pustaka
-        if ($request->hasFile('file_dapus')) {
-            $skripsi->file_dapus = $uploadFile($request->file('file_dapus'), 'daftar_pustaka_files', 'daftar_pustaka');
-        }
-        // Simpan file daftar pustaka
-        if ($request->hasFile('file_abstrak')) {
-            $skripsi->file_abstrak = $uploadFile($request->file('file_abstrak'), 'abstrak_files', 'abstrak');
-        }
+// Simpan file daftar pustaka
+if ($request->hasFile('file_dapus')) {
+    $file = $request->file('file_dapus');
+    $nama_file = 'daftar_pustaka_' . time() . '.' . $file->extension();
+    $file->move(public_path('uploads/daftar_pustaka_files'), $nama_file);
+    $skripsi->file_dapus = $nama_file;
+}
+
+// Simpan file abstrak
+if ($request->hasFile('file_abstrak')) {
+    $file = $request->file('file_abstrak');
+    $nama_file = 'abstrak_' . time() . '.' . $file->extension();
+    $file->move(public_path('uploads/abstrak_files'), $nama_file);
+    $skripsi->file_abstrak = $nama_file;
+}
+
 
         $skripsi->save();
 
@@ -399,9 +403,79 @@ class SkripsiController extends Controller
 
         // Check if the user is an admin
         $isAdmin = $user->role === 'admin';
-
+        // dd($skripsi);
         // Mengirim data PDF, data user, data skripsi, dan status admin ke view 'detail'
         return view('detailskripsimahasiswa', compact('user', 'skripsi', 'comments', 'isAdmin'));
+    }
+
+     public function skripsiPdf(int $id): StreamedResponse
+    {
+        $skripsi = Skripsi::findOrFail($id);
+
+        if (! $skripsi->file_skripsi) {
+            abort(404, 'File PDF tidak ditemukan.');
+        }
+
+        $path = public_path('uploads/skripsi_files/' . $skripsi->file_skripsi);
+
+        if (! file_exists($path)) {
+            abort(404, 'File PDF tidak ditemukan di server.');
+        }
+
+        return new StreamedResponse(function () use ($path) {
+            readfile($path);
+        }, 200, [
+            'Content-Type'        => 'application/pdf',
+            'Content-Disposition' => 'inline; filename="'.basename($path).'"',
+            'Cache-Control'       => 'no-store, no-cache, must-revalidate',
+            'Pragma'              => 'no-cache',
+        ]);
+    }
+    public function dapusPdf(int $id): StreamedResponse
+    {
+        $skripsi = Skripsi::findOrFail($id);
+
+        if (! $skripsi->file_dapus) {
+            abort(404, 'File PDF tidak ditemukan.');
+        }
+
+        $path = public_path('uploads/daftar_pustaka_files/' . $skripsi->file_dapus);
+
+        if (! file_exists($path)) {
+            abort(404, 'File PDF tidak ditemukan di server.');
+        }
+
+        return new StreamedResponse(function () use ($path) {
+            readfile($path);
+        }, 200, [
+            'Content-Type'        => 'application/pdf',
+            'Content-Disposition' => 'inline; filename="'.basename($path).'"',
+            'Cache-Control'       => 'no-store, no-cache, must-revalidate',
+            'Pragma'              => 'no-cache',
+        ]);
+    }
+    public function abstrakPdf(int $id): StreamedResponse
+    {
+        $skripsi = Skripsi::findOrFail($id);
+
+        if (! $skripsi->file_abstrak) {
+            abort(404, 'File PDF tidak ditemukan.');
+        }
+
+        $path = public_path('uploads/abstrak_files/' . $skripsi->file_abstrak);
+
+        if (! file_exists($path)) {
+            abort(404, 'File PDF tidak ditemukan di server.');
+        }
+
+        return new StreamedResponse(function () use ($path) {
+            readfile($path);
+        }, 200, [
+            'Content-Type'        => 'application/pdf',
+            'Content-Disposition' => 'inline; filename="'.basename($path).'"',
+            'Cache-Control'       => 'no-store, no-cache, must-revalidate',
+            'Pragma'              => 'no-cache',
+        ]);
     }
 
     // Get Data Skripsi ----------------------------------------------------------------------------------------------

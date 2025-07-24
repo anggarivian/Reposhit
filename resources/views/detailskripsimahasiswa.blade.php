@@ -20,7 +20,7 @@
             border-spacing: 0;
             background-color: #ffffff;
         }
-        
+
         .repo-table th {
             width: 22%;
             background-color: #f0f4f8;
@@ -30,7 +30,7 @@
             font-weight: 600;
             color: #2d3748;
         }
-        
+
         .repo-table td {
             padding: 16px;
             border-bottom: 1px solid #e2e8f0;
@@ -38,7 +38,7 @@
             line-height: 1.7;
             color: #4a5568;
         }
-        
+
         .meta-icon {
             display: inline-flex;
             align-items: center;
@@ -50,7 +50,7 @@
             color: white;
             box-shadow: 0 2px 5px rgba(0,0,0,0.15);
         }
-        
+
         .abstrak-content {
             max-height: 200px;
             overflow-y: auto;
@@ -58,7 +58,36 @@
             line-height: 1.8;
             text-align: justify;
         }
-    </style>
+
+    img {
+        -webkit-user-select: none;
+        -webkit-touch-callout: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+        pointer-events: none;
+    }
+    .pdf-viewer {
+        max-width: 800px; margin: auto;
+        padding: 10px;
+        overflow-y: auto;
+        border: 1px solid #ccc;
+        max-height: 600px;
+    }
+    .pdf-page {
+        margin-bottom: 20px;
+        position: relative;
+    }
+    .pdf-page img {
+        width: 100%; height: auto;
+        user-select: none; pointer-events: none;
+    }
+    .watermark {
+        position: absolute;
+        bottom: 5px; right: 10px;
+        font-size: 12px; color: rgba(255,0,0,0.5);
+    }
+</style>
 
 <div class="row">
     <div class="col-12">
@@ -182,15 +211,13 @@
                     <h5 class="mb-0"><i class="fas fa-file-pdf text-danger mr-2"></i>Dokumen Skripsi</h5>
                 </div>
                 <div class="card-body p-0">
-                    <div id="pdf-container" style="position: relative;">
-                            <iframe 
-                                id="pdfFrame" 
-                                src="{{ asset('storage/skripsi_files/' . $skripsi->file_skripsi) }}#toolbar=0" 
-                                width="100%" 
-                                height="600px" 
-                                style="border: none;">
-                                <p>Your browser does not support iframes.</p>
-                            </iframe>
+                    <div id="pdf-container" style="position: relative; height: 600px; width: 100%;">
+                            <iframe
+                                id="pdfFrame"
+                                src="{{ asset('pdfjs/web/viewer.html') }}?file={{ urlencode( route('skripsi.streamPdf', $skripsi->id )) }}#toolbar=0&navpanes=0&scrollbar=0"
+                                style="width:100%; height:100%; border:none;"
+                                sandbox="allow-scripts allow-same-origin"
+                            ></iframe>
                         <div class="pdf-controls" style="position: absolute; top: 10px; right: 10px;">
                             <button id="fullscreenButton" class="btn btn-secondary btn-sm">
                                 <i class="fas fa-expand"></i> Layar Penuh
@@ -226,7 +253,7 @@
             </form>
 
             <hr>
-            
+
 {{-- Filter Komentar --}}
 <div class="comment-section-header mb-3">
     <h4><i class="fas fa-comments"></i> Diskusi Akademik (Admin Panel)</h4>
@@ -317,7 +344,7 @@
                                         <small class="text-muted">
                                             Diposting pada {{ \Carbon\Carbon::parse($reply->created_at)->locale('id_ID')->isoFormat('D MMMM YYYY HH:mm') }}
                                         </small>
-                                        
+
                                         {{-- Admin dapat mengedit semua balasan --}}
                                         <button class="btn btn-warning btn-sm mt-2" data-toggle="collapse" data-target="#editReplyForm{{ $reply->id }}">Edit</button>
                                         <div id="editReplyForm{{ $reply->id }}" class="collapse mt-3">
@@ -335,7 +362,7 @@
                                                 </div>
                                             </form>
                                         </div>
-                                        
+
                                         {{-- Admin dapat menghapus semua balasan --}}
                                         <form action="{{ route('deletekomentar1', $reply->id) }}" method="POST" style="display:inline;">
                                             @csrf
@@ -424,7 +451,7 @@
                                         <small class="text-muted">
                                             Diposting pada {{ \Carbon\Carbon::parse($reply->created_at)->locale('id_ID')->isoFormat('D MMMM YYYY HH:mm') }}
                                         </small>
-                                        
+
                                         {{-- Admin dapat mengedit semua balasan --}}
                                         <button class="btn btn-warning btn-sm mt-2" data-toggle="collapse" data-target="#editReplyForm{{ $reply->id }}">Edit</button>
                                         <div id="editReplyForm{{ $reply->id }}" class="collapse mt-3">
@@ -442,7 +469,7 @@
                                                 </div>
                                             </form>
                                         </div>
-                                        
+
                                         {{-- Admin dapat menghapus semua balasan --}}
                                         <form action="{{ route('deletekomentar1', $reply->id) }}" method="POST" style="display:inline;">
                                             @csrf
@@ -467,6 +494,24 @@
 @stop
 
 @section('js')
+<script>
+    const iframe = document.getElementById('pdfFrame');
+
+    iframe.addEventListener('load', () => {
+        const doc = iframe.contentDocument || iframe.contentWindow.document;
+
+        // cegah klik kanan
+        doc.addEventListener('contextmenu', e => e.preventDefault());
+
+        // cegah seleksi & shortcut umum
+        doc.body.style.userSelect = 'none';
+        doc.addEventListener('keydown', function(e) {
+            if (e.ctrlKey && ['p','s','u'].includes(e.key.toLowerCase()) || e.key === 'F12') {
+            e.preventDefault();
+            }
+        });
+    });
+</script>
 <script>
     document.addEventListener('DOMContentLoaded', function () {
         // Notifikasi otomatis hilang setelah 5 detik
