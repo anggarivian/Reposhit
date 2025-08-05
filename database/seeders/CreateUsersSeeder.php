@@ -39,7 +39,7 @@ class CreateUsersSeeder extends Seeder
             ],
 
             [
-            'npm'        => '5520120051',
+            'npm'        => '1',
             'name'       => 'isAdmin',
             'tgl_lahir'  => '2000-01-01',
             'alamat'     => 'Jl. Admin Raya',
