@@ -16,8 +16,8 @@ class CreateJurusanSeeder extends Seeder
         DB::table('jurusans')->insert([
         ['id' => 1, 'nama_jurusan' => 'Agribisnis', 'kode_jurusan' => 'AGR'],
         ['id' => 2, 'nama_jurusan' => 'Agroteknologi', 'kode_jurusan' => 'AGT'],
-        ['id' => 3, 'nama_jurusan' => 'Pemanfaatan Sumberdaya Perikanan', 'kode_jurusan' => 'PSP'],
-        ['id' => 4, 'nama_jurusan' => 'Administrasi Bisnis Internasional', 'kode_jurusan' => 'ABI'],
+        ['id' => 3, 'nama_jurusan' => 'program go japan', 'kode_jurusan' => 'PGP'],
+        ['id' => 4, 'nama_jurusan' => 'rekognisi pembelajaran lampau', 'kode_jurusan' => 'RPL'],
     ]);
     }
 }
