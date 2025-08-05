@@ -25,6 +25,7 @@ class CreateUsersTable extends Migration
             $table->foreignId('jurusan_id')->constrained('jurusans')->onDelete('cascade');
             // $table->string('prodi');
             $table->string('password');
+            $table->boolean('status')->nullable();
             $table->foreignId('roles_id')->constrained();
             $table->rememberToken();
             $table->timestamps();

@@ -41,7 +41,7 @@ class SkripsiController extends Controller
                         ->where('user_id', Auth::id())
                         ->first();      // ambil 1 record, bukan collection
 
-            $namaDospem = Dosen::all();
+            $namaDospem = Dosen::where('status', 1)->get(); // hanya dosen aktif
 
             $notifikasi = Notifikasi::where('mahasiswa_id', Auth::id())->latest()->first();
 
@@ -50,7 +50,7 @@ class SkripsiController extends Controller
 
 
         public function index1() {
-            $skripsi = Skripsi::orderBy('created_at', 'desc')->paginate(10);
+            $skripsi = Skripsi::orderBy('created_at', 'desc')->paginate(5);
             $namaDospem = Dosen::all();
             $namaPenulis = User::where('roles_id', 2)->get();
 
@@ -721,59 +721,74 @@ if ($request->hasFile('file_abstrak')) {
     return view('skripsi2', compact('skripsi', 'jurusans'));
 }
 
-public function findSkripsi(Request $request)
-{
-    $jurusans = Jurusan::orderBy('nama_jurusan')->get();
+    public function findSkripsi(Request $request){
+        $jurusans = Jurusan::orderBy('nama_jurusan')->get();
 
-    $query = Skripsi::with(['mahasiswa.jurusan', 'metadata'])
-                    ->where('status', 1);
+        $query = Skripsi::with(['mahasiswa.jurusan', 'metadata','dospem'])
+                        ->where('status', 1);
 
-    // Pencarian berdasarkan judul - cek di skripsi dan metadata
-    if ($request->filled('judul')) {
-        $query->where(function($q) use ($request) {
-            $q->where('judul', 'LIKE', '%' . $request->judul . '%')
-              ->orWhereHas('metadata', function($metaQuery) use ($request) {
-                  $metaQuery->where('title', 'LIKE', '%' . $request->judul . '%')
-                           ->orWhere('subject', 'LIKE', '%' . $request->judul . '%')
-                           ->orWhere('description', 'LIKE', '%' . $request->judul . '%')
-                           ->orWhere('keywords', 'LIKE', '%' . $request->judul . '%');
-              });
+        // Pencarian berdasarkan judul - cek di skripsi dan metadata
+        if ($request->filled('judul')) {
+            $query->where(function($q) use ($request) {
+                $q->where('judul', 'LIKE', '%' . $request->judul . '%')
+                ->orWhereHas('metadata', function($metaQuery) use ($request) {
+                    $metaQuery->where('title', 'LIKE', '%' . $request->judul . '%')
+                            ->orWhere('subject', 'LIKE', '%' . $request->judul . '%')
+                            ->orWhere('description', 'LIKE', '%' . $request->judul . '%')
+                            ->orWhere('keywords', 'LIKE', '%' . $request->judul . '%');
+                });
+            });
+        }
+
+        // Pencarian berdasarkan penulis - cek di skripsi dan metadata
+        if ($request->filled('penulis')) {
+            $query->where(function($q) use ($request) {
+                $q->where('penulis', 'LIKE', '%' . $request->penulis . '%')
+                ->orWhereHas('metadata', function($metaQuery) use ($request) {
+                    $metaQuery->where('creator', 'LIKE', '%' . $request->penulis . '%')
+                            ->orWhere('contributor', 'LIKE', '%' . $request->penulis . '%');
+                });
+            });
+        }
+
+        // Pencarian berdasarkan tahun rilis - cek di skripsi dan metadata
+        if ($request->filled('rilis')) {
+            $query->where(function($q) use ($request) {
+                $q->where('rilis', 'LIKE', '%' . $request->rilis . '%')
+                ->orWhereHas('metadata', function($metaQuery) use ($request) {
+                    $metaQuery->where('date_issued', 'LIKE', '%' . $request->rilis . '%');
+                });
+            });
+        }
+
+        // Filter berdasarkan program studi
+        if ($request->filled('prodi')) {
+            $query->whereHas('mahasiswa.jurusan', function($q) use ($request) {
+                $q->where('nama_jurusan', $request->prodi);
+            });
+        }
+        // Pencarian berdasarkan dosen pembimbing (dospem) lewat relasi
+        if ($request->filled('dospem')) {
+            $query->where(function($q) use ($request) {
+            $q->where('dospem', 'LIKE', '%' . $request->dospem . '%')
+          ->orWhereHas('metadata', function($metaQuery) use ($request) {
+              $metaQuery->where('keywords', 'LIKE', '%' . $request->dospem . '%');
         });
-    }
-
-    // Pencarian berdasarkan penulis - cek di skripsi dan metadata
-    if ($request->filled('penulis')) {
-        $query->where(function($q) use ($request) {
-            $q->where('penulis', 'LIKE', '%' . $request->penulis . '%')
-              ->orWhereHas('metadata', function($metaQuery) use ($request) {
-                  $metaQuery->where('creator', 'LIKE', '%' . $request->penulis . '%')
-                           ->orWhere('contributor', 'LIKE', '%' . $request->penulis . '%');
-              });
-        });
-    }
-
-    // Pencarian berdasarkan tahun rilis - cek di skripsi dan metadata
-    if ($request->filled('rilis')) {
-        $query->where(function($q) use ($request) {
-            $q->where('rilis', 'LIKE', '%' . $request->rilis . '%')
-              ->orWhereHas('metadata', function($metaQuery) use ($request) {
-                  $metaQuery->where('date_issued', 'LIKE', '%' . $request->rilis . '%');
-              });
-        });
-    }
-
-    // Filter berdasarkan program studi
-    if ($request->filled('prodi')) {
-        $query->whereHas('mahasiswa.jurusan', function($q) use ($request) {
-            $q->where('nama_jurusan', $request->prodi);
-        });
-    }
-
-    $skripsi = $query->orderBy('created_at', 'desc')->paginate(10);
-
-    return view('skripsi2', compact('skripsi', 'jurusans'));
+    });
 }
+        // Pencarian berdasarkan kata kunci - cek di skripsi.katakunci dan metadata.keywords
+            if ($request->filled('katakunci')) {
+                $query->where(function($q) use ($request) {
+                    $q->where('katakunci', 'LIKE', '%' . $request->katakunci . '%')
+                    ->orWhereHas('metadata', function($metaQuery) use ($request) {
+                        $metaQuery->where('keywords', 'LIKE', '%' . $request->katakunci . '%');
+                    });
+                });
+            }
+        $skripsi = $query->orderBy('created_at', 'desc')->paginate(10);
 
+        return view('skripsi2', compact('skripsi', 'jurusans'));
+}
 public function mahasiswa()
 {
     // Ambil semua jurusan untuk dropdown filter

@@ -18,7 +18,7 @@ class MahasiswaController extends Controller
              $jurusans = Jurusan::all(); // untuk dropdown
             $mahasiswa = User::with(['jurusan', 'lastPassword'])
                 ->where('roles_id', 2)
-                ->paginate(10);
+                ->paginate(5);
 
             return view('mahasiswa', compact('mahasiswa','jurusans'));
         }
@@ -49,6 +49,7 @@ class MahasiswaController extends Controller
             $mahasiswa->angkatan = $req->get('angkatan');
             $mahasiswa->jurusan_id = $req->get('jurusan_id');
             $mahasiswa->password = Hash::make($req->get('password'));
+            $mahasiswa->status = true; // ✅ default aktif
             $mahasiswa->roles_id = 2;
 
             $mahasiswa->save();
@@ -87,6 +88,7 @@ class MahasiswaController extends Controller
         'angkatan'         => 'required|string|min:4|max:4',
         'jurusan_id'       => 'required|exists:jurusans,id',
         'password'         => 'nullable|string|min:8|max:255|confirmed',
+        'status' => 'required|in:0,1',
     ]);
 
     // Ambil model Mahasiswa ------------------------------------------------------------------
@@ -100,6 +102,7 @@ class MahasiswaController extends Controller
     $mahasiswa->alamat     = $req->get('alamat');
     $mahasiswa->angkatan   = $req->get('angkatan');
     $mahasiswa->jurusan_id = $req->get('jurusan_id');
+    $mahasiswa->status = $req->get('status');
 
     // Jika ada password baru, hash & catat riwayatnya ----------------------------------------
     if ($req->filled('password')) {

@@ -42,4 +42,16 @@ class LoginController extends Controller
             'password' => $request->input('password'),
         ], $request->filled('remember'));
     }
+
+    protected function authenticated(Request $request, $user)
+{
+    if ($user->roles_id == 2 && $user->status == 0) {
+        Auth::logout();
+
+        return redirect()->route('login')
+            ->withErrors(['npm' => 'Akun Anda tidak aktif. Silakan hubungi admin.']);
+    }
+
+    return redirect()->intended($this->redirectPath());
+}
 }

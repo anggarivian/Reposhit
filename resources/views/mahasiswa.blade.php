@@ -38,6 +38,7 @@
                         <th>Jurusan</th>
                         <th>Alamat</th>
                         <th>Password</th>
+                        <th>Status</th>
                         <th>Opsi</th>
                     </tr>
                 </thead>
@@ -64,6 +65,13 @@
                                     </button>
                                 </div>
                             </td>
+                            <td>
+    @if($mahasiswas->status == 1)
+        <span class="badge badge-success">Aktif</span>
+    @else
+        <span class="badge badge-danger">Tidak Aktif</span>
+    @endif
+</td>
                             <td>
                                 <div class="form-group" role="group" aria-label="Basic example">
                                     <button type="button" id="btn-edit-mahasiswa" class="btn btn-sm btn-success" data-toggle="modal" data-target="#edit" data-id="{{ $mahasiswas->id }}">
@@ -197,6 +205,13 @@
                             </select>
                         </div>
                     </div>
+                    <div class="form-group col-md-12">
+                        <label for="status">Status</label>
+                        <select name="status" id="edit-status" class="form-control" required>
+                            <option value="1">Aktif</option>
+                            <option value="0">Tidak Aktif</option>
+                        </select>
+                    </div>
                         <div class="form-group">
                             <label for="alamat">Alamat</label>
                             <input type="text" class="form-control" name="alamat" id="edit-alamat" required placeholder="Maksimal 255 Karakter">
@@ -274,6 +289,7 @@
                     $('#edit-angkatan').val(res.angkatan);
                     $('#edit-tgl_lahir').val(res.tgl_lahir);
                     $('#edit-jurusan').val(res.jurusan_id);
+                    $('#edit-status').val(res.status);
                 },
             });
         });

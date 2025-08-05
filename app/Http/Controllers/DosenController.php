@@ -14,7 +14,7 @@ use Maatwebsite\Excel\Facades\Excel;
 class DosenController extends Controller
 {
     public function index() {
-$dosen = Dosen::with('jurusan')->paginate(6);
+$dosen = Dosen::with('jurusan')->paginate(5);
         $jurusan = Jurusan::all();
         return view('dosen', compact('dosen', 'jurusan'));
     }
@@ -26,13 +26,14 @@ $dosen = Dosen::with('jurusan')->paginate(6);
         'nip' => 'required|string|max:18|min:18|unique:dosens,nip',
         'kontak' => 'required|string|max:12',
         'jurusan_id' => 'required|exists:jurusans,id',
-        ]);
+    ]);
 
         $dosen = new Dosen;
         $dosen->nama = $req->nama;
         $dosen->nip = $req->nip;
         $dosen->kontak = $req->kontak;
         $dosen->jurusan_id = $req->jurusan_id;
+        $dosen->status = true; // ✅ default aktif
         $dosen->save();
 
     return redirect()->route('dosen')->with(['message' => 'Data Dosen berhasil ditambahkan', 'alert-type' =>'success']);
@@ -47,9 +48,10 @@ $dosen = Dosen::with('jurusan')->paginate(6);
     public function ubah(Request $req){
     $req->validate([
         'nama' => 'required|string|max:30',
-        'nip' => 'required|string|max:18|min:18',
+        'nip' => 'required|string|size:10', // ✅ validasi panjang string tepat 18 karakter
         'kontak' => 'required|string|max:12',
         'jurusan_id' => 'required|exists:jurusans,id',
+        'status' => 'required|in:0,1',
     ]);
 
     $dosen = Dosen::find($req->id);
@@ -57,9 +59,13 @@ $dosen = Dosen::with('jurusan')->paginate(6);
     $dosen->nip = $req->nip;
     $dosen->kontak = $req->kontak;
     $dosen->jurusan_id = $req->jurusan_id;
+    $dosen->status = $req->status;
     $dosen->save();
 
-    return redirect()->route('dosen')->with(['message' => 'Data Dosen berhasil diubah', 'alert-type' => 'success']);
+    return redirect()->route('dosen')->with([
+        'message' => 'Data Dosen berhasil diubah',
+        'alert-type' => 'success'
+    ]);
 }
 
     // Hapus Data Dosen ----------------------------------------------------------------------------------------------

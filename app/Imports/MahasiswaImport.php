@@ -38,6 +38,7 @@ class MahasiswaImport implements ToModel, WithHeadingRow, WithEvents
         }
 
         // Buat user baru
+         $status = strtolower(trim($row['status'])) === 'aktif' ? true : false;
         $user = new User([
             'npm'        => $row['npm'],
             'name'       => $row['name'],
@@ -47,6 +48,7 @@ class MahasiswaImport implements ToModel, WithHeadingRow, WithEvents
             'jurusan_id' => $jurusan->id,
             'password'   => Hash::make($row['password']),
             'roles_id'   => 2, // Mahasiswa
+            'status'      => $status,
         ]);
 
         // Simpan password asli untuk dicatat

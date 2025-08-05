@@ -28,12 +28,15 @@ public function model(array $row)
         throw new \Exception("Jurusan '{$row['jurusan']}' tidak ditemukan di database.");
     }
 
+      // Ubah status dari teks menjadi boolean
+    $status = strtolower(trim($row['status'])) === 'aktif' ? true : false;
     return new Dosen([
         'nama'        => $row['nama'],
         'nip'         => $row['nip'],
         // 'tgl_lahir'   => $row['tgl_lahir'],
         'kontak'      => $row['kontak'],
         'jurusan_id'  => $jurusan->id,
+        'status'      => $status, // Atau bisa juga 1
     ]);
 }
 

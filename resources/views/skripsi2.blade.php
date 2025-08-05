@@ -70,7 +70,7 @@
                                         <i class="fas fa-search"></i>
                                     </span>
                                 </div>
-                                <input type="text" name="judul" class="form-control" placeholder="Cari judul, subjek, kata kunci, atau deskripsi..." value="{{ request('judul') }}">
+                                <input type="text" name="judul" class="form-control" placeholder="Cari judul" value="{{ request('judul') }}">
                                 <div class="input-group-append">
                                     <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                         Filter <i class="fas fa-filter"></i>
@@ -96,11 +96,19 @@
                                                 @endforeach
                                             </select>
                                         </div>
-                                        <!-- Tambahan filter metadata -->
                                         <div class="form-group">
+                                            <label>Dosen Pembimbing</label>
+                                            <input type="text" name="dospem" class="form-control" placeholder="Nama dosen pembimbing" value="{{ request('dospem') }}">
+                                        </div>
+                                        <div class="form-group">
+                                            <label>Kata Kunci</label>
+                                            <input type="text" name="katakunci" class="form-control" placeholder="Masukkan Kata Kunci" value="{{ request('katakunci') }}">
+                                        </div>
+                                        <!-- Tambahan filter metadata -->
+                                        {{-- <div class="form-group">
                                             <label>Subjek</label>
                                             <input type="text" name="subject" class="form-control" placeholder="Subjek atau bidang keilmuan" value="{{ request('subject') }}">
-                                        </div>
+                                        </div> --}}
                                         {{-- <div class="form-group">
                                             <label>Tipe Dokumen</label>
                                             <select name="type" class="form-control">
@@ -130,14 +138,16 @@
         <div class="notification" id="notification"></div>
 
         <div class="card-body">
-            @if(request()->has('judul') || request()->has('penulis') || request()->has('rilis') || request()->has('subject') || request()->has('type'))
+            @if(request()->has('judul') || request()->has('penulis') || request()->has('rilis') || request()->has('prodi') || request()->has('dospem') || request()->has('katakunci'))
                 <div class="alert alert-info">
                     <i class="fas fa-info-circle"></i> Hasil pencarian untuk:
                     @if(request('judul')) <span class="badge badge-primary">Pencarian: {{ request('judul') }}</span> @endif
                     @if(request('penulis')) <span class="badge badge-primary">Penulis: {{ request('penulis') }}</span> @endif
                     @if(request('rilis')) <span class="badge badge-primary">Tahun: {{ request('rilis') }}</span> @endif
                     @if(request('prodi')) <span class="badge badge-primary">Prodi: {{ request('prodi') }}</span> @endif
-                    @if(request('subject')) <span class="badge badge-primary">Subjek: {{ request('subject') }}</span> @endif
+                    {{-- @if(request('subject')) <span class="badge badge-primary">Subjek: {{ request('subject') }}</span> @endif --}}
+                    @if(request('dospem')) <span class="badge badge-primary">Pembimbing: {{ request('dospem') }}</span> @endif
+                    @if(request('katakunci')) <span class="badge badge-primary">Katakunci: {{ request('katakunci') }}</span> @endif
                     @if(request('type')) <span class="badge badge-primary">Tipe: {{ request('type') }}</span> @endif
                     <a href="{{ route('searchSkripsi') }}" class="float-right text-decoration-none">
                         <i class="fas fa-times"></i> Reset
@@ -213,15 +223,16 @@
                                         <div class="card-body">
                                         <div class="d-flex justify-content-between">
                                             <div>
-                                                <h5 class="author-name">
+                                                <h5 class="author-name mb-1">
                                                     <i class="fas fa-user-graduate text-muted mr-1"></i>
                                                     {{ $skripsis->penulis }}
                                                     @if($skripsis->metadata && $skripsis->metadata->creator && $skripsis->metadata->creator !== $skripsis->penulis)
                                                         <small class="text-muted">({{ $skripsis->metadata->creator }})</small>
                                                     @endif
-                                                    <span class="badge badge-pill badge-light">
+                                                    <span class="badge badge-pill badge-light ml-2">
                                                         {{ $skripsis->mahasiswa->jurusan->nama_jurusan ?? '-' }}
-                                                    </span>
+                                                    </span><br>
+                                                    <small class="text-muted ml-4"><i class="fas fa-chalkboard-teacher mr-1"></i> Dosen Pembimbing: {{ $skripsis->dospem }}</small>
                                                 </h5>
                                             </div>
                                         <div>
@@ -232,7 +243,7 @@
                                         </div>
 
                                         <h4 class="skripsi-title mt-2">
-                                            <a href="/home/skripsi/detail/{{ $skripsis->id }}">
+                                            <a href="/mahasiswa/skripsi/detail/{{ $skripsis->id }}">
                                                 {{ $skripsis->judul }}
                                             </a>
                                         </h4>
@@ -368,7 +379,7 @@
                         <h6 class="modal-title penulis">
                             {{ $skripsis->metadata && $skripsis->metadata->creator ? $skripsis->metadata->creator : $skripsis->penulis }}, author
                             @if($skripsis->metadata && $skripsis->metadata->contributor)
-                                <br><small class="text-muted">Kontributor: {{ $skripsis->metadata->contributor }}</small>
+                                <br><small class="text-muted"> {{ $skripsis->metadata->contributor }}, author</small>
                             @endif
                         </h6>
                         <hr class="dashed-line">
@@ -422,14 +433,14 @@
                         </div>
                         @endif
 
-                        @if($skripsis->metadata && $skripsis->metadata->subject)
+                        {{-- @if($skripsis->metadata && $skripsis->metadata->subject)
                         <div class="row">
                             <div class="col-md-3"><strong>Subjek:</strong></div>
                             <div class="col-md-9">
                                 <p>{{ $skripsis->metadata->subject }}</p>
                             </div>
                         </div>
-                        @endif
+                        @endif --}}
 
                         <div class="row">
                             <div class="col-md-3"><strong>Penerbitan:</strong></div>
@@ -565,9 +576,9 @@
                                         sandbox="allow-scripts allow-same-origin"
                                     ></iframe>
                                 <div class="pdf-controls" style="position: absolute; top: 10px; right: 10px;">
-                                    <button id="fullscreenButton" class="btn btn-secondary btn-sm">
+                                    {{-- <button id="fullscreenButton" class="btn btn-secondary btn-sm">
                                         <i class="fas fa-expand"></i> Layar Penuh
-                                    </button>
+                                    </button> --}}
                                 </div>
                             </div>
                         </div>
@@ -608,9 +619,9 @@
                                         sandbox="allow-scripts allow-same-origin"
                                     ></iframe>
                                 <div class="pdf-controls" style="position: absolute; top: 10px; right: 10px;">
-                                    <button id="fullscreenButton" class="btn btn-secondary btn-sm">
+                                    {{-- <button id="fullscreenButton" class="btn btn-secondary btn-sm">
                                         <i class="fas fa-expand"></i> Layar Penuh
-                                    </button>
+                                    </button> --}}
                                 </div>
                             </div>
                         </div>

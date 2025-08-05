@@ -39,16 +39,15 @@ class CreateUsersSeeder extends Seeder
             ],
 
             [
-                'npm'      => '5520120051',
-                'name'      => 'isAdmin',
-                'tgl_lahir' => 'isAdmin',
-                'alamat'    => 'isAdmin',
-                'angkatan'  => 'isAdmin',
-                // 'prodi'     => 'isAdmin',
-                'jurusan_id'     => 1,
-                // 'email'     => 'admin@mail.com',
-                'password'  => bcrypt('12345'),
-                'roles_id'  => 1
+            'npm'        => '5520120051',
+            'name'       => 'isAdmin',
+            'tgl_lahir'  => '2000-01-01',
+            'alamat'     => 'Jl. Admin Raya',
+            'angkatan'   => '2020',
+            'jurusan_id' => 1,
+            'password'   => bcrypt('12345'),
+            'roles_id'   => 1,
+            'status'     => 1, // ← ini status aktif
             ]
         ];
 

@@ -29,12 +29,13 @@ class FavoriteController extends Controller
     {
         $userId = auth()->user()->id;
 
-        $skripsifavorite = DB::table('favorites')
-                            ->join('skripsis','skripsis.id', '=','favorites.id_skripsi')
-                            ->join('users', 'skripsis.penulis', '=', 'users.name')
-                            ->where('favorites.id_user', $userId)
-                            ->select('skripsis.*','users.prodi')
-                            ->get();
+            $skripsifavorite = DB::table('favorites')
+                ->join('skripsis', 'skripsis.id', '=', 'favorites.id_skripsi')
+                ->join('users', 'skripsis.penulis', '=', 'users.name')
+                ->join('jurusans', 'users.jurusan_id', '=', 'jurusans.id')
+                ->where('favorites.id_user', $userId)
+                ->select('skripsis.*', 'jurusans.nama_jurusan as prodi')
+                ->get();
         // $favoriteSkripsi = Favorite::where('id_user', $userId)
         //                            ->with('skripsi') // Pastikan relasi ada di model Favorite
         //                            ->get()

@@ -182,15 +182,13 @@
                     <h5 class="mb-0"><i class="fas fa-file-pdf text-danger mr-2"></i>Dokumen Skripsi</h5>
                 </div>
                 <div class="card-body p-0">
-                    <div id="pdf-container" style="position: relative;">
-                            <iframe 
-                                id="pdfFrame" 
-                                src="{{ asset('storage/skripsi_files/' . $skripsi->file_skripsi) }}#toolbar=0" 
-                                width="100%" 
-                                height="600px" 
-                                style="border: none;">
-                                <p>Your browser does not support iframes.</p>
-                            </iframe>
+                    <div id="pdf-container" style="position: relative; height: 600px; width: 100%;">
+                            <iframe
+                                id="pdfFrame"
+                                src="{{ asset('pdfjs/web/viewer.html') }}?file={{ urlencode( route('skripsi.streamPdf', $skripsi->id )) }}#toolbar=0&navpanes=0&scrollbar=0"
+                                style="width:100%; height:100%; border:none;"
+                                sandbox="allow-scripts allow-same-origin"
+                            ></iframe>
                         <div class="pdf-controls" style="position: absolute; top: 10px; right: 10px;">
                             <button id="fullscreenButton" class="btn btn-secondary btn-sm">
                                 <i class="fas fa-expand"></i> Layar Penuh

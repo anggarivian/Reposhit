@@ -22,6 +22,7 @@ class CreateDosensTable extends Migration
             // $table->string('tgl_lahir');
             $table->string('kontak');
             $table->foreignId('jurusan_id')->constrained('jurusans')->onDelete('cascade');
+            $table->boolean('status')->nullable();
             // $table->string('program_studi');
             // $table->string('jabatan');
             // $table->string('password');

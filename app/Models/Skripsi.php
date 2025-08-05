@@ -95,4 +95,9 @@ class Skripsi extends Model
               });
         });
     }
+    
+public function dospem() {
+    return $this->belongsTo(Dosen::class, 'dospem_id');
+}
+
 }
