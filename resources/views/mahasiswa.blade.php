@@ -36,6 +36,7 @@
                         <th>Tanggal Lahir</th>
                         <th>Angkatan</th>
                         <th>Jurusan</th>
+                        <th>Dosen Pembimbing</th>
                         <th>Alamat</th>
                         <th>Password</th>
                         <th>Status</th>
@@ -51,6 +52,7 @@
                             <td>{{ $mahasiswas->tgl_lahir }}</td>
                             <td>{{ $mahasiswas->angkatan }}</td>
                             <td>{{ $mahasiswas->jurusan->nama_jurusan ?? '-' }}</td>
+                            <td>{{ $mahasiswas->dosen->nama ?? '-' }}</td>
                             <td>{{ $mahasiswas->alamat }}</td>
                             <td>
                                 <!-- Password dengan toggle visibility -->
@@ -66,12 +68,12 @@
                                 </div>
                             </td>
                             <td>
-    @if($mahasiswas->status == 1)
-        <span class="badge badge-success">Aktif</span>
-    @else
-        <span class="badge badge-danger">Tidak Aktif</span>
-    @endif
-</td>
+                                @if($mahasiswas->status == 1)
+                                    <span class="badge badge-success">Aktif</span>
+                                @else
+                                    <span class="badge badge-danger">Tidak Aktif</span>
+                                @endif
+                            </td>
                             <td>
                                 <div class="form-group" role="group" aria-label="Basic example">
                                     <button type="button" id="btn-edit-mahasiswa" class="btn btn-sm btn-success" data-toggle="modal" data-target="#edit" data-id="{{ $mahasiswas->id }}">
@@ -137,12 +139,21 @@
                         </div>
                     </div>
                     <div class="d-flex">
-                        <div class="form-group col-md-12">
+                        <div class="form-group col-md-6">
                             <label for="prodi">Program Studi</label>
                             <select name="jurusan_id" class="form-control" id="prodi" required>
                                 <option disabled selected>Pilih Jurusan</option>
                                 @foreach($jurusans as $jur)
                                     <option value="{{ $jur->id }}">{{ $jur->nama_jurusan }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="form-group col-md-6">
+                            <label for="dospem">Dosen Pembimbing</label>
+                            <select name="dosen_id" class="form-control" id="dospem" required>
+                                <option disabled selected>Pilih Dospem</option>
+                                @foreach($dosens as $dos)
+                                    <option value="{{ $dos->id }}">{{ $dos->nama }}</option>
                                 @endforeach
                             </select>
                         </div>
@@ -205,13 +216,20 @@
                             </select>
                         </div>
                     </div>
-                    <div class="form-group col-md-12">
-                        <label for="status">Status</label>
-                        <select name="status" id="edit-status" class="form-control" required>
-                            <option value="1">Aktif</option>
-                            <option value="0">Tidak Aktif</option>
-                        </select>
-                    </div>
+                    <div class="d-flex">
+                        <div class="form-group col-md-6">
+                            <label for="status">Status</label>
+                            <select name="status" id="edit-status" class="form-control" required>
+                                <option value="1">Aktif</option>
+                                <option value="0">Tidak Aktif</option>
+                            </select>
+                        </div>
+<div class="form-group col-md-6">
+    <label for="dospem">Dosen Pembimbing</label>
+    <input type="text" class="form-control" id="edit-dosen-nama" readonly>
+    <input type="hidden" name="dosen_id" id="edit-dosen-hidden">
+</div>
+                        </div>
                         <div class="form-group">
                             <label for="alamat">Alamat</label>
                             <input type="text" class="form-control" name="alamat" id="edit-alamat" required placeholder="Maksimal 255 Karakter">
@@ -290,6 +308,13 @@
                     $('#edit-tgl_lahir').val(res.tgl_lahir);
                     $('#edit-jurusan').val(res.jurusan_id);
                     $('#edit-status').val(res.status);
+// BENAR
+if (res.dosen) {
+    $("#edit-dosen-nama").val(res.dosen.nama); // tampilkan nama di readonly input
+} else {
+    $("#edit-dosen-nama").val("Belum ada Dosen");
+}
+$("#edit-dosen-hidden").val(res.dosen_id); // tetap kirim id saat submit
                 },
             });
         });

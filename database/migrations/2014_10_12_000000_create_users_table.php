@@ -23,6 +23,7 @@ class CreateUsersTable extends Migration
             $table->string('alamat');
             $table->string('angkatan');
             $table->foreignId('jurusan_id')->constrained('jurusans')->onDelete('cascade');
+            $table->foreignId('dosen_id')->constrained('dosens')->onDelete('cascade');
             // $table->string('prodi');
             $table->string('password');
             $table->boolean('status')->nullable();

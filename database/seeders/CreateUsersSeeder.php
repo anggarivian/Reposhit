@@ -34,6 +34,7 @@ class CreateUsersSeeder extends Seeder
                 'alamat'    => 'Alamat Mahasiswa',
                 'angkatan'  => '2020',
                 'jurusan_id'=> 2,
+                'dosen_id'=> 2,
                 'password'  => bcrypt('12345'),
                 'roles_id'  => 2
             ],
@@ -45,6 +46,7 @@ class CreateUsersSeeder extends Seeder
             'alamat'     => 'Jl. Admin Raya',
             'angkatan'   => '2020',
             'jurusan_id' => 1,
+            'dosen_id' => 1,
             'password'   => bcrypt('12345'),
             'roles_id'   => 1,
             'status'     => 1, // ← ini status aktif

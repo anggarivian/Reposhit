@@ -14,19 +14,19 @@ use Maatwebsite\Excel\Facades\Excel;
 class DosenController extends Controller
 {
     public function index() {
-$dosen = Dosen::with('jurusan')->paginate(5);
+        $dosen = Dosen::with('jurusan')->paginate(5);
         $jurusan = Jurusan::all();
         return view('dosen', compact('dosen', 'jurusan'));
     }
 
     // Tambah Data Dosen ----------------------------------------------------------------------------------------------
     public function tambah(Request $req){
-    $req->validate([
+        $req->validate([
         'nama' => 'required|string|max:30',
-        'nip' => 'required|string|max:18|min:18|unique:dosens,nip',
+        'nip' => 'required|string|max:18|min:10|unique:dosens,nip',
         'kontak' => 'required|string|max:12',
         'jurusan_id' => 'required|exists:jurusans,id',
-    ]);
+        ]);
 
         $dosen = new Dosen;
         $dosen->nama = $req->nama;
@@ -36,8 +36,8 @@ $dosen = Dosen::with('jurusan')->paginate(5);
         $dosen->status = true; // ✅ default aktif
         $dosen->save();
 
-    return redirect()->route('dosen')->with(['message' => 'Data Dosen berhasil ditambahkan', 'alert-type' =>'success']);
-}
+        return redirect()->route('dosen')->with(['message' => 'Data Dosen berhasil ditambahkan', 'alert-type' =>'success']);
+    }
 
     // Get Data Dosen ----------------------------------------------------------------------------------------------
     public function getDataDosen($id){
@@ -48,7 +48,7 @@ $dosen = Dosen::with('jurusan')->paginate(5);
     public function ubah(Request $req){
     $req->validate([
         'nama' => 'required|string|max:30',
-        'nip' => 'required|string|size:10', // ✅ validasi panjang string tepat 18 karakter
+        'nip' => 'required|string|min:10|max:18|unique:dosens,nip,' . $req->id, // ✅ validasi panjang string tepat 18 karakter
         'kontak' => 'required|string|max:12',
         'jurusan_id' => 'required|exists:jurusans,id',
         'status' => 'required|in:0,1',

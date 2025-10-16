@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use App\Models\PasswordHistory;
 use App\Models\Jurusan;
+use App\Models\Dosen;
 use Illuminate\Http\Request;
 use App\Imports\MahasiswaImport;
 use Illuminate\Support\Facades\Hash;
@@ -14,13 +15,15 @@ use Illuminate\Support\Facades\Auth;
 class MahasiswaController extends Controller
 {
         // Read Data Mahasiswa ----------------------------------------------------------------------------------------------
-         public function index() {
-             $jurusans = Jurusan::all(); // untuk dropdown
-            $mahasiswa = User::with(['jurusan', 'lastPassword'])
+        public function index() {
+            $jurusans = Jurusan::all(); // untuk dropdown
+            $dosens = Dosen::all();     // untuk dropdown
+
+            $mahasiswa = User::with(['jurusan', 'dosen', 'lastPassword'])
                 ->where('roles_id', 2)
                 ->paginate(5);
 
-            return view('mahasiswa', compact('mahasiswa','jurusans'));
+            return view('mahasiswa', compact('mahasiswa', 'jurusans', 'dosens'));
         }
 
         // Tambah Data Mahasiswa ----------------------------------------------------------------------------------------------
@@ -36,6 +39,7 @@ class MahasiswaController extends Controller
                 'angkatan' => 'required|string|max:4|min:4',
                 'password' => 'required|string|min:8|max:255',
                 'jurusan_id' => 'required|exists:jurusans,id',
+                'dosen_id' => 'required|exists:dosens,id',
             ]);
 
             // Create Data Mahasiswa ------------------------------------------------------------------
@@ -48,6 +52,7 @@ class MahasiswaController extends Controller
             $mahasiswa->alamat = $req->get('alamat');
             $mahasiswa->angkatan = $req->get('angkatan');
             $mahasiswa->jurusan_id = $req->get('jurusan_id');
+            $mahasiswa->dosen_id = $req->get('dosen_id');
             $mahasiswa->password = Hash::make($req->get('password'));
             $mahasiswa->status = true; // ✅ default aktif
             $mahasiswa->roles_id = 2;
@@ -69,10 +74,10 @@ class MahasiswaController extends Controller
 
     // Get Data Mahasiswa ----------------------------------------------------------------------------------------------
     public function getDataMahasiswa($id){
-        $mahasiswa = User::find($id);
-        return User::with('jurusan')->find($id);
+        $mahasiswa = User::with(['jurusan', 'dosen'])->find($id);
         return response()->json($mahasiswa);
     }
+
 
     // Ubah Data Mahasiswa ----------------------------------------------------------------------------------------------
     public function ubah(Request $req)

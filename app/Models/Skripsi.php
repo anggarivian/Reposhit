@@ -52,6 +52,10 @@ class Skripsi extends Model
     {
         return explode(',', $this->katakunci);
     }
+    public function dosen()
+{
+    return $this->belongsTo(Dosen::class, 'dosen_id');
+}
 
     // Scope untuk pencarian
     public function scopeSearch($query, $term)

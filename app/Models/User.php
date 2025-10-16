@@ -73,6 +73,10 @@ class User extends Authenticatable
     {
         return $this->belongsTo(Jurusan::class);
     }
+    public function dosen()
+    {
+    return $this->belongsTo(Dosen::class, 'dosen_id');
+    }
 
     /**
      * Mengambil password_text terakhir dari history

@@ -39,7 +39,7 @@
                 <!-- Jumlah Dosen -->
                 <div class="col-lg-3 grid-margin mb-4">
                     <div class="card shadow-sm">
-                        <div class="card-body bg-gradient-dark">
+                        <div class="card-body bg-gradient-secondary">
                             <div class="col-sm-12">
                                 <div class="statistics-details d-flex align-items-center justify-content-between">
                                     <div class="icon-container bg-white p-3 rounded-circle">
@@ -81,11 +81,11 @@
                 <!-- Jumlah Skripsi -->
                 <div class="col-lg-3 grid-margin mb-4">
                     <div class="card shadow-sm">
-                        <div class="card-body bg-gradient-danger">
+                        <div class="card-body bg-gradient-info">
                             <div class="col-sm-12">
                                 <div class="statistics-details d-flex align-items-center justify-content-between">
                                     <div class="icon-container bg-white p-3 rounded-circle">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" viewBox="0 0 24 24" fill="none" stroke="#dc3545" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16c0 1.1.9 2 2 2h12a2 2 0 0 0 2-2V8l-6-6z"/><path d="M14 3v5h5M16 13H8M16 17H8M10 9H8"/></svg>
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" viewBox="0 0 24 24" fill="none" stroke="#5a5a5aff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16c0 1.1.9 2 2 2h12a2 2 0 0 0 2-2V8l-6-6z"/><path d="M14 3v5h5M16 13H8M16 17H8M10 9H8"/></svg>
                                     </div>
                                     <div class="title text-white">
                                         <h5 class="mb-2">Jumlah Skripsi</h5>
