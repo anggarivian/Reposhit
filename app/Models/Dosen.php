@@ -18,4 +18,9 @@ class Dosen extends Model
     
         return $this->belongsTo(Jurusan::class);
     }
+    public function skripsis()
+    {
+    return $this->hasMany(Skripsi::class, 'dosen_id');
+    }
+
 }

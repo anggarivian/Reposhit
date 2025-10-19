@@ -151,7 +151,7 @@ Route::delete('/riwayat-skripsi', [RiwayatSkripsiController::class, 'deleteAllHi
 Route::get('/home/skripsi', [SkripsiController::class, 'mahasiswa'])->name('searchSkripsi');
 Route::get('/home/skripsi/search', [SkripsiController::class, 'searchSkripsi'])->name('searchSkripsi');
 Route::get('/home/skripsi/find', [SkripsiController::class, 'findSkripsi'])->name('findSkripsi');
-Route::get('/home/skripsi/similar', [SkripsiController::class, 'cariYangMirip'])->name('cariYangMirip');
+// Route::get('/home/skripsi/similar', [SkripsiController::class, 'cariYangMirip'])->name('cariYangMirip');
 
 // Route tambahan untuk advanced search dengan metadata
 Route::get('/home/skripsi/advanced-search', [SkripsiController::class, 'advancedSearch'])->name('advancedSearch');

@@ -74,7 +74,7 @@
                                             </div>
                                             
                                             <h4 class="skripsi-title mt-2">
-                                                <a href="/home/skripsi/detail/{{$skripsi->id}}">{{$skripsi->judul}}</a>
+                                                <a href="/mahasiswa/skripsi/detail/{{$skripsi->id}}">{{$skripsi->judul}}</a>
                                             </h4>
                                             
                                             <div class="skripsi-info mt-2">
@@ -96,7 +96,7 @@
                                                     </button>
                                                 </form>
                                                 
-                                                <a href="/home/skripsi/detail/{{$skripsi->id}}" class="btn btn-primary btn-sm">
+                                                <a href="/mahasiswa/skripsi/detail/{{$skripsi->id}}" class="btn btn-primary btn-sm">
                                                     <i class="fas fa-book-reader"></i> Lihat Detail
                                                 </a>
                                             </div>

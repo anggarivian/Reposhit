@@ -24,6 +24,9 @@
                         {{-- Judul & Abstrak --}}
                         <div class="form-group">
                             <label for="title">Judul <span class="text-danger">*</span></label>
+                                <div class="alert alert-info py-1 px-2 mb-2" style="font-size: 13px;">
+                                    <i class="fas fa-info-circle mr-1"></i> Huruf pertama pada judul <strong>wajib huruf kapital</strong>.
+                                </div>
                             <input type="text"
                                 name="title"
                                 id="title"
@@ -46,21 +49,8 @@
                         {{-- Dosen Pembimbing --}}
                         <div class="form-group">
                             <label for="contributor">Dosen Pembimbing <span class="text-danger">*</span></label>
-                            <select
-                                name="contributor"
-                                id="contributor"
-                                class="form-control @error('contributor') is-invalid @enderror"
-                                required>
-                                <option value="">-- Pilih Dosen --</option>
-                                @foreach($namaDospem as $d)
-                                    <option value="{{ $d->nama }}" {{ old('contributor') == $d->nama ? 'selected' : '' }}>
-                                        {{ $d->nama }}
-                                    </option>
-                                @endforeach
-                            </select>
-                            @error('contributor')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                            <input type="text" class="form-control" value="{{ Auth::user()->dosen->nama }}" readonly>
                         </div>
-
                         {{-- Tahun Rilis & Jumlah Halaman --}}
                         <div class="form-row">
                             <div class="form-group col-md-6">
@@ -174,7 +164,7 @@
                             <dd class="col-sm-9">{{ $skripsi->abstrak }}</dd>
 
                             <dt class="col-sm-3">Dosen Pembimbing</dt>
-                            <dd class="col-sm-9">{{ $skripsi->dospem }}</dd>
+                            <dd class="col-sm-9">{{ $skripsi->dosen->nama ?? '-' }}</dd>
 
                             <dt class="col-sm-3">Tahun Rilis</dt>
                             <dd class="col-sm-9">{{ $skripsi->rilis }}</dd>
@@ -229,7 +219,7 @@
                             <dd class="col-sm-9">{{ $skripsi->abstrak }}</dd>
 
                             <dt class="col-sm-3">Dosen Pembimbing</dt>
-                            <dd class="col-sm-9">{{ $skripsi->dospem }}</dd>
+                            <dd class="col-sm-9">{{ $skripsi->dosen->nama ?? '-' }}</dd>
 
                             <dt class="col-sm-3">Tahun Rilis</dt>
                             <dd class="col-sm-9">{{ $skripsi->rilis }}</dd>
@@ -315,6 +305,9 @@
                             {{-- Judul & Abstrak --}}
                             <div class="form-group">
                                 <label for="title">Judul <span class="text-danger">*</span></label>
+                                <div class="alert alert-info py-1 px-2 mb-2" style="font-size: 13px;">
+                                    <i class="fas fa-info-circle mr-1"></i> Huruf pertama pada judul <strong>wajib huruf kapital</strong>.
+                                </div>
                                 <input type="text"
                                     name="title"
                                     id="title"
@@ -337,19 +330,7 @@
                             {{-- Dosen Pembimbing --}}
                             <div class="form-group">
                                 <label for="contributor">Dosen Pembimbing <span class="text-danger">*</span></label>
-                                <select
-                                    name="contributor"
-                                    id="contributor"
-                                    class="form-control @error('contributor') is-invalid @enderror"
-                                    required>
-                                    <option value="">-- Pilih Dosen --</option>
-                                    @foreach($namaDospem as $d)
-                                        <option value="{{ $d->nama }}"
-                                            {{ old('contributor', $skripsi->dospem) == $d->nama ? 'selected' : '' }}>
-                                            {{ $d->nama }}
-                                        </option>
-                                    @endforeach
-                                </select>
+                                    <input type="text" class="form-control" value="{{ Auth::user()->dosen->nama }}" readonly>
                                 @error('contributor')<div class="invalid-feedback">{{ $message }}</div>@enderror
                             </div>
 

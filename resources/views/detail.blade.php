@@ -126,7 +126,7 @@
                                         Dosen Pembimbing
                                     </div>
                                 </th>
-                                <td>{{ $skripsi->dospem }}</td>
+                                <td>{{ $skripsi->dosen->nama }}</td>
                             </tr>
                             <tr>
                                 <th>

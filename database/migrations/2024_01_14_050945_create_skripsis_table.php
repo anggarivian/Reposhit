@@ -17,7 +17,9 @@ class CreateSkripsisTable extends Migration
             $table->id();
             $table->string('judul');
             $table->string('penulis');
-            $table->string('dospem');
+             $table->foreignId('dosen_id')
+              ->constrained('dosens')
+              ->onDelete('cascade');
             $table->string('rilis');
             $table->string('halaman');
             $table->longText('abstrak');

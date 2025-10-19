@@ -232,7 +232,9 @@
                                                     <span class="badge badge-pill badge-light ml-2">
                                                         {{ $skripsis->mahasiswa->jurusan->nama_jurusan ?? '-' }}
                                                     </span><br>
-                                                    <small class="text-muted ml-4"><i class="fas fa-chalkboard-teacher mr-1"></i> Dosen Pembimbing: {{ $skripsis->dospem }}</small>
+                                                        <small class="text-muted ml-4"><i class="fas fa-chalkboard-teacher mr-1"></i> 
+                                                            Dosen Pembimbing: {{ $skripsis->dosen->nama ?? '-' }}
+                                                        </small>
                                                 </h5>
                                             </div>
                                         <div>
